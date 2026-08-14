@@ -63,7 +63,7 @@ const AR = {
     name1Placeholder: 'معاذ',
     name2: 'اسم العروسة',
     name2Placeholder: 'ريم',
-    namesHint: 'اكتب الأسماء بالعربي أو بالإنجليزي، زي ما تحب.',
+    namesHint: 'الأسماء بتظهر في الدعوة زي ما تكتبها بالظبط. لو الدعوة بالعربي، اكتبهم بالعربي.',
     eventDate: 'تاريخ الفرح',
     eventTime: 'الساعة',
     venueName: 'مكان الفرح',
@@ -97,7 +97,7 @@ const AR = {
     photoDragHint: 'حرّك الصورة جوه الإطار لحد ما تعجبك.',
     photoUpload: 'ارفع الصورة',
     themeView: 'شوف التصميم',
-    scriptMismatch: 'الدعوة بالعربي بس الأسماء مكتوبة بالإنجليزي. تحب تكتبهم بالعربي؟',
+    scriptMismatch: 'الدعوة بالعربي، فلازم الأسماء تتكتب بالعربي عشان تظهر صح في الدعوة.',
     scriptMismatchCta: 'عدّل الأسماء',
     themePreviewNote: 'دي معاينة للتصميم ده. ارجع عشان تختاره أو تجرب غيره.',
     themePreviewBack: 'رجوع للتصاميم',
@@ -162,6 +162,7 @@ const AR = {
 
   errors: {
     required: 'الحقل ده مطلوب',
+    nameMustBeArabic: 'اكتب الاسم بالعربي، لأن الدعوة بالعربي',
     missingFields: 'ناقص',
     mapUrl: 'لازم يكون لينك من جوجل مابس',
     messageTooLong: 'الرسالة أطول من اللازم',
@@ -248,7 +249,7 @@ const EN: Dictionary = {
     name1Placeholder: 'Moaaz',
     name2: "Bride's name",
     name2Placeholder: 'Reem',
-    namesHint: 'Type the names in Arabic or English, whichever you prefer.',
+    namesHint: 'The names appear on the invitation exactly as you type them. An Arabic invitation needs Arabic names.',
     eventDate: 'Date',
     eventTime: 'Time',
     venueName: 'Venue',
@@ -283,7 +284,7 @@ const EN: Dictionary = {
     photoDragHint: 'Drag the photo inside the frame until it looks right.',
     photoUpload: 'Upload photo',
     themeView: 'View this design',
-    scriptMismatch: 'The invitation is in English but the names are written in Arabic. Would you like to change them?',
+    scriptMismatch: 'An Arabic invitation needs the names written in Arabic so they render correctly.',
     scriptMismatchCta: 'Edit the names',
     themePreviewNote: 'This is a preview of that design. Go back to choose it or try another.',
     themePreviewBack: 'Back to designs',
@@ -348,6 +349,7 @@ const EN: Dictionary = {
 
   errors: {
     required: 'This field is required',
+    nameMustBeArabic: 'Write this name in Arabic, because the invitation is in Arabic',
     missingFields: 'Still needed',
     mapUrl: 'This needs to be a Google Maps link',
     messageTooLong: 'That message is too long',

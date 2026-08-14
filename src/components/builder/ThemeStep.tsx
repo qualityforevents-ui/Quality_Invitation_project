@@ -10,7 +10,7 @@ import type { PhotoCrop } from '@/lib/imagekit';
 import { buttonClass } from '@/components/ui/Button';
 import { useAutosave } from '@/lib/useAutosave';
 import { cn } from '@/lib/cn';
-import { hasArabicLetters } from '@/lib/script';
+import { nameFitsLanguage } from '@/lib/script';
 import { getTheme, THEMES } from '@/themes/registry';
 import type { Dictionary } from '@/i18n/ui';
 import type { EventType, Lang } from '@/generated/prisma/enums';
@@ -75,15 +75,13 @@ export function ThemeStep({
   }
 
   /*
-   * True when the card's language and the names' script disagree in either direction.
-   * Recomputed as the language toggle changes, so switching to Arabic surfaces it
-   * immediately rather than at the preview.
+   * An Arabic card must show Arabic names, so switching the language to Arabic while the
+   * names are in Latin blocks the way forward rather than merely warning. Recomputed as
+   * the toggle changes, so the consequence appears the moment the choice is made rather
+   * than two screens later.
    */
-  const names = `${name1} ${name2}`;
-  const namesAreArabic = hasArabicLetters(names);
   const scriptMismatch =
-    names.trim().length > 0 &&
-    (invitationLang === 'AR' ? !namesAreArabic : namesAreArabic);
+    !nameFitsLanguage(name1, invitationLang) || !nameFitsLanguage(name2, invitationLang);
 
   const languageOptions: Array<{ value: Lang; label: string }> = [
     { value: 'AR', label: 'العربية' },
@@ -141,8 +139,8 @@ export function ThemeStep({
         worth taking on their behalf.
       */}
       {scriptMismatch ? (
-        <div className="rounded-xl border border-gold/40 bg-gold-wash px-4 py-3">
-          <p className="text-xs leading-relaxed text-ink">{t.theme.scriptMismatch}</p>
+        <div className="rounded-xl border border-danger/40 bg-danger/5 px-4 py-3">
+          <p className="text-xs leading-relaxed text-danger">{t.theme.scriptMismatch}</p>
           <button
             type="button"
             onClick={async () => {
@@ -150,7 +148,7 @@ export function ThemeStep({
               router.refresh();
               router.push('/build');
             }}
-            className="mt-2 text-xs font-semibold text-gold-deep underline underline-offset-4"
+            className="mt-2 text-xs font-semibold text-danger underline underline-offset-4"
           >
             {t.theme.scriptMismatchCta}
           </button>
@@ -220,7 +218,9 @@ export function ThemeStep({
           */}
           <button
             type="button"
+            disabled={scriptMismatch}
             onClick={async () => {
+              if (scriptMismatch) return;
               await flush();
               router.refresh();
               router.push('/build/preview');
@@ -229,6 +229,12 @@ export function ThemeStep({
           >
             {t.theme.toPreview}
           </button>
+
+          {/* Repeated down here because the notice above may be scrolled off screen by
+              the time somebody reaches for this button. */}
+          {scriptMismatch ? (
+            <p className="mt-2 text-center text-xs text-danger">{t.theme.scriptMismatch}</p>
+          ) : null}
         </div>
       </div>
     </div>
