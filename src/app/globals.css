@@ -1,0 +1,163 @@
+@import 'tailwindcss';
+
+@theme {
+  /* Customer facing site: landing, builder, payment. Warm, light, calm. */
+  --color-cream: #fbf7f0;
+  --color-cream-deep: #f4ebdc;
+  --color-ink: #23201b;
+  --color-ink-soft: #6b6355;
+  --color-ink-faint: #9a9184;
+  --color-gold: #b18b47;
+  --color-gold-deep: #8a6a32;
+  --color-gold-wash: #f6efe1;
+  --color-line: #e7dcc7;
+  --color-danger: #a8412f;
+  --color-success: #3f7052;
+  /* WhatsApp brand green. Used only for the support bubble, which is deliberately
+     recognisable rather than on brand: it has to read as WhatsApp at a glance. */
+  --color-whatsapp: #25d366;
+  --color-whatsapp-deep: #1da851;
+
+  /*
+   * Admin. Dark, dense, and deliberately sharing nothing with the customer palette
+   * above: the operator should never be a moment's doubt about which surface they are
+   * looking at, and the two are used minutes apart on the same phone.
+   */
+  --color-adm-bg: #0f1115;
+  --color-adm-panel: #171a21;
+  --color-adm-raised: #1e222b;
+  --color-adm-line: #2b303b;
+  --color-adm-text: #e9ebf1;
+  --color-adm-muted: #8b93a5;
+  --color-adm-accent: #34d399;
+  --color-adm-accent-deep: #10b981;
+  --color-adm-warn: #f59e0b;
+  --color-adm-danger: #f87171;
+
+  /* Font slots. next/font fills the inner variables in src/lib/fonts.ts. */
+  --font-ui-ar: var(--font-tajawal), ui-sans-serif, system-ui, sans-serif;
+  --font-ui-en: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display-ar: var(--font-aref), Georgia, serif;
+  --font-body-ar: var(--font-amiri), Georgia, serif;
+  --font-display-en: var(--font-cormorant), Georgia, serif;
+
+}
+
+/*
+ * Invitation theme slots.
+ *
+ * `inline` is load bearing and not a style preference. A plain @theme block is resolved
+ * at build time, so `--color-inv-bg: var(--inv-bg, #faf5ec)` compiles to the literal
+ * fallback and every theme silently renders the classic palette no matter what its
+ * wrapper sets. With `inline`, the utility emits `var(--inv-bg)` directly and resolves
+ * against the element it is used on, which is the whole mechanism by which a theme is a
+ * change of values rather than a second set of markup.
+ */
+@theme inline {
+  --color-inv-bg: var(--inv-bg);
+  --color-inv-panel: var(--inv-panel);
+  --color-inv-ink: var(--inv-ink);
+  --color-inv-muted: var(--inv-muted);
+  --color-inv-accent: var(--inv-accent);
+  --color-inv-accent-soft: var(--inv-accent-soft);
+  --color-inv-line: var(--inv-line);
+}
+
+/*
+ * Classic values as the defaults, so anything drawn outside a theme wrapper still has
+ * colours rather than collapsing to transparent.
+ */
+:root {
+  --inv-bg: #faf5ec;
+  --inv-panel: #f3e9d8;
+  --inv-ink: #33302a;
+  --inv-muted: #7a6f5c;
+  --inv-accent: #b18b47;
+  --inv-accent-soft: #d9c08a;
+  --inv-line: rgba(177, 139, 71, 0.32);
+}
+
+@layer base {
+  /*
+   * Language drives typography through :lang rather than a class, so the invitation
+   * can sit inside an Arabic page while rendering in English, or the reverse, and
+   * still pick up the right faces. It inherits, so setting lang on one wrapper
+   * switches that whole subtree.
+   */
+  :lang(ar) {
+    font-family: var(--font-ui-ar);
+  }
+
+  :lang(en) {
+    font-family: var(--font-ui-en);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-cream);
+    color: var(--color-ink);
+    /* Room for the floating bars on notched iPhones. */
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  /*
+   * iOS zooms the viewport when a focused input has a font size under 16px, and it
+   * does not zoom back out. Every input in this app is at or above that size.
+   */
+  input,
+  textarea,
+  select,
+  button {
+    font-family: inherit;
+    font-size: 16px;
+  }
+
+  input,
+  textarea {
+    text-align: start;
+  }
+
+  button {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-gold);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+}
+
+@utility tap-target {
+  /* Thumb sized. The whole product is used one handed on a phone. */
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/*
+ * Digits and clock times read left to right even inside Arabic text. Without this a
+ * countdown or a time renders with its parts reordered by the bidi algorithm.
+ */
+@utility numeric {
+  direction: ltr;
+  unicode-bidi: isolate;
+  font-variant-numeric: tabular-nums;
+}
+
+/* The font pair of whichever theme is being rendered. See src/themes/registry.ts. */
+@utility font-inv-display {
+  font-family: var(--inv-display);
+}
+
+@utility font-inv-body {
+  font-family: var(--inv-body);
+}

@@ -1,0 +1,62 @@
+import { getEventInstant } from './format';
+import { getTrack, trackName, trackUrl } from './music';
+import { buildPhotoUrl, parseCrop } from './imagekit';
+import type { Invitation } from '@/generated/prisma/client';
+import type { EventType, Lang } from '@/generated/prisma/enums';
+
+/**
+ * What a theme is given to render.
+ *
+ * Deliberately not the database row. It carries no editToken, no id, and no operator
+ * fields, so the public page cannot leak them into HTML or into the serialised props
+ * that get sent to the browser. It is also plain and serialisable, which matters
+ * because it crosses into client components.
+ */
+export type InvitationView = {
+  lang: Lang;
+  eventType: EventType;
+  name1: string;
+  name2: string;
+  /** UTC midnight of the calendar day, used for display formatting. */
+  eventDate: Date;
+  eventTime: string;
+  /** The real instant the event begins, resolved in Cairo. Drives the countdown. */
+  eventInstantMs: number;
+  venueName: string;
+  venueMapUrl: string | null;
+  customMessage: string | null;
+  themeId: string;
+  /** Null when the track file is not in the build, which is not an error. */
+  musicUrl: string;
+  musicName: string;
+  /**
+   * Delivery URL with the crop already applied, or null when there is no photo.
+   *
+   * Null is a real layout, not a degraded one. Every theme has a version without a
+   * photo where the names and the ornaments get the room instead.
+   */
+  photoUrl: string | null;
+};
+
+export function toInvitationView(invitation: Invitation): InvitationView {
+  const track = getTrack(invitation.musicTrackId);
+
+  return {
+    lang: invitation.invitationLang,
+    eventType: invitation.eventType,
+    name1: invitation.name1,
+    name2: invitation.name2,
+    eventDate: invitation.eventDate,
+    eventTime: invitation.eventTime,
+    eventInstantMs: getEventInstant(invitation.eventDate, invitation.eventTime).getTime(),
+    venueName: invitation.venueName,
+    venueMapUrl: invitation.venueMapUrl,
+    customMessage: invitation.customMessage,
+    themeId: invitation.themeId,
+    musicUrl: trackUrl(track),
+    musicName: trackName(track, invitation.invitationLang),
+    photoUrl: invitation.photoFileId
+      ? buildPhotoUrl(invitation.photoFileId, parseCrop(invitation.photoCrop), { width: 900 })
+      : null,
+  };
+}
