@@ -7,7 +7,7 @@ import { buttonClass } from '@/components/ui/Button';
 import { useAutosave } from '@/lib/useAutosave';
 import { isGoogleMapsUrl } from '@/lib/validation';
 import type { Dictionary } from '@/i18n/ui';
-import type { EventType, Lang } from '@/generated/prisma/enums';
+import type { EventType, Lang, Package } from '@/generated/prisma/enums';
 
 export type BuilderValues = {
   eventType: EventType;
@@ -40,12 +40,15 @@ export function BuildForm({
   lang,
   t,
   today,
+  packageId,
 }: {
   initial: BuilderValues;
   lang: Lang;
   t: Dictionary;
   /** Today in Cairo, "YYYY-MM-DD", resolved on the server so both sides agree. */
   today: string;
+  /** Chosen on the landing page. Stored with the first save so it is never lost. */
+  packageId: Package;
 }) {
   const router = useRouter();
   const formRef = useRef<HTMLDivElement>(null);
@@ -83,6 +86,7 @@ export function BuildForm({
   const patch = useMemo(() => {
     const next: Record<string, unknown> = {
       uiLang: lang,
+      package: packageId,
       eventType: values.eventType,
       name1: values.name1,
       name2: values.name2,
@@ -95,7 +99,7 @@ export function BuildForm({
     if (!mapUrlError) next.venueMapUrl = values.venueMapUrl;
 
     return next;
-  }, [values, lang, mapUrlError]);
+  }, [values, lang, mapUrlError, packageId]);
 
   const { status: saveStatus, flush } = useAutosave(patch);
 

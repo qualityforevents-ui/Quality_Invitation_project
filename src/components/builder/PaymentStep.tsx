@@ -2,15 +2,17 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { SaveIndicator, TextField } from './Fields';
+import { SaveIndicator, TextAreaField, TextField } from './Fields';
 import { CopyField } from '@/components/ui/CopyField';
 import { buttonClass } from '@/components/ui/Button';
 import { useAutosave } from '@/lib/useAutosave';
+import { cn } from '@/lib/cn';
 import { normaliseEgyptianPhone } from '@/lib/validation';
 import { buildPaymentLink, buildPaymentMessage } from '@/lib/whatsapp';
-import { INSTAPAY_ADDRESS, INSTAPAY_NAME, PRICE_EGP } from '@/lib/constants';
+import { INSTAPAY_ADDRESS, INSTAPAY_NAME } from '@/lib/constants';
+import { getPackage, PACKAGES } from '@/lib/packages';
 import type { Dictionary } from '@/i18n/ui';
-import type { Lang } from '@/generated/prisma/enums';
+import type { Lang, Package } from '@/generated/prisma/enums';
 
 /**
  * wa.me on a desktop browser opens WhatsApp Web, and if the visitor is not already
@@ -39,6 +41,8 @@ export function PaymentStep({
   name2,
   statusPath,
   initialPhone,
+  initialPackage,
+  initialCustomRequest,
 }: {
   uiLang: Lang;
   t: Dictionary;
@@ -47,25 +51,35 @@ export function PaymentStep({
   name2: string;
   statusPath: string;
   initialPhone: string;
+  initialPackage: Package;
+  initialCustomRequest: string;
 }) {
   const router = useRouter();
   const isDesktop = useIsDesktop();
 
   const [phone, setPhone] = useState(initialPhone);
+  const [packageId, setPackageId] = useState<Package>(initialPackage);
+  const [customRequest, setCustomRequest] = useState(initialCustomRequest);
   const [messageCopied, setMessageCopied] = useState(false);
+
+  const tier = getPackage(packageId);
 
   const phoneError =
     phone.trim().length > 0 && normaliseEgyptianPhone(phone) === null ? t.payment.phoneError : undefined;
 
   const patch = useMemo(
-    () => (phoneError ? {} : { customerPhone: phone }),
-    [phone, phoneError],
+    () => ({
+      ...(phoneError ? {} : { customerPhone: phone }),
+      package: packageId,
+      customRequest: tier.customDesign ? customRequest : '',
+    }),
+    [phone, phoneError, packageId, customRequest, tier.customDesign],
   );
 
-  const { status: saveStatus, flush } = useAutosave(patch, { enabled: !phoneError });
+  const { status: saveStatus, flush } = useAutosave(patch);
 
-  const message = buildPaymentMessage({ lang: uiLang, requestId, name1, name2 });
-  const link = buildPaymentLink({ lang: uiLang, requestId, name1, name2 });
+  const message = buildPaymentMessage({ lang: uiLang, requestId, name1, name2, packageId });
+  const link = buildPaymentLink({ lang: uiLang, requestId, name1, name2, packageId });
 
   /**
    * The status moves before WhatsApp opens, as the spec requires. keepalive lets the
@@ -112,11 +126,85 @@ export function PaymentStep({
         />
       </div>
 
+      {/*
+        The package is chosen on the landing page, but it is repeated here and left
+        changeable. This is the last screen before money moves, and somebody who picked
+        a tier ten minutes ago should be able to see what they picked and change their
+        mind without going back to the start.
+      */}
+      <section className="flex flex-col gap-2">
+        <h2 className="text-sm font-medium text-ink">{t.payment.packageLabel}</h2>
+
+        {PACKAGES.map((option) => {
+          const selected = option.id === packageId;
+          return (
+            <button
+              key={option.id}
+              type="button"
+              onClick={() => setPackageId(option.id)}
+              aria-pressed={selected}
+              className={cn(
+                'flex items-center gap-3 rounded-xl border px-4 py-3 text-start transition',
+                selected ? 'border-gold bg-gold-wash' : 'border-line bg-white',
+              )}
+            >
+              <span
+                className={cn(
+                  'flex h-5 w-5 shrink-0 items-center justify-center rounded-full border',
+                  selected ? 'border-gold bg-gold' : 'border-line',
+                )}
+                aria-hidden="true"
+              >
+                {selected ? (
+                  <svg viewBox="0 0 12 12" className="h-3 w-3 text-white" fill="none">
+                    <path
+                      d="M2.5 6.2L4.8 8.5L9.5 3.8"
+                      stroke="currentColor"
+                      strokeWidth="1.6"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                ) : null}
+              </span>
+
+              <span className="min-w-0 flex-1">
+                <span className="block text-sm font-semibold text-ink">
+                  {uiLang === 'AR' ? option.nameAr : option.nameEn}
+                </span>
+                <span className="block text-xs text-ink-faint">
+                  {uiLang === 'AR' ? option.taglineAr : option.taglineEn}
+                </span>
+              </span>
+
+              <span className="shrink-0 text-end">
+                <span className="numeric text-lg font-bold text-gold-deep">{option.price}</span>
+                <span className="ms-1 text-xs text-gold-deep">{t.common.egp}</span>
+              </span>
+            </button>
+          );
+        })}
+      </section>
+
       <div className="flex items-baseline justify-center gap-2 rounded-2xl border border-gold/30 bg-gold-wash px-4 py-4">
         <span className="text-sm text-ink-soft">{t.payment.amountLabel}</span>
-        <span className="numeric text-3xl font-bold text-gold-deep">{PRICE_EGP}</span>
+        <span className="numeric text-3xl font-bold text-gold-deep">{tier.price}</span>
         <span className="text-sm font-medium text-gold-deep">{t.common.egp}</span>
       </div>
+
+      {/* Only the bespoke tier asks for a brief, and it is required reading for the
+          operator, so it is stored on the row rather than left in a chat thread. */}
+      {tier.customDesign ? (
+        <TextAreaField
+          label={t.payment.customRequestLabel}
+          hint={t.payment.customRequestHint}
+          value={customRequest}
+          onChange={(event) => setCustomRequest(event.target.value)}
+          maxLength={1200}
+          counterSuffix={t.build.charactersLeft}
+          rows={5}
+        />
+      ) : null}
 
       <section className="flex flex-col gap-2">
         <h2 className="text-sm font-medium text-ink">{t.payment.instapayTitle}</h2>

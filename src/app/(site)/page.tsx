@@ -1,23 +1,29 @@
 import Link from 'next/link';
 import { LanguageToggle } from '@/components/LanguageToggle';
 import { SupportButton } from '@/components/SupportButton';
+import { Flow } from '@/components/landing/Flow';
+import { Packages } from '@/components/landing/Packages';
+import { Reviews } from '@/components/landing/Reviews';
 import { buttonClass } from '@/components/ui/Button';
 import { getDictionary } from '@/i18n/ui';
-import { PRICE_EGP } from '@/lib/constants';
+import { getApprovedReviews } from '@/lib/reviews';
+import { PACKAGES } from '@/lib/packages';
 import { getUiLang } from '@/lib/session';
+
+export const dynamic = 'force-dynamic';
 
 export default async function LandingPage() {
   const lang = await getUiLang();
   const t = getDictionary(lang);
 
-  const steps = [
-    { title: t.landing.step1Title, body: t.landing.step1Body },
-    { title: t.landing.step2Title, body: t.landing.step2Body },
-    { title: t.landing.step3Title, body: t.landing.step3Body },
-  ];
+  const reviews = await getApprovedReviews();
+
+  // The headline price is the cheapest way in, so the number people see first is the
+  // smallest true one rather than an average nobody pays.
+  const lowestPrice = Math.min(...PACKAGES.map((p) => p.price));
 
   return (
-    <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col px-5 pb-12">
+    <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col px-5 pb-16">
       <header className="flex items-center justify-between py-5">
         <span className="text-sm font-semibold tracking-wide text-gold-deep">qlty.events</span>
         <LanguageToggle lang={lang} label={t.common.switchTo} />
@@ -33,7 +39,7 @@ export default async function LandingPage() {
         </p>
 
         <div className="mt-8 flex flex-col gap-3">
-          <Link href="/build" className={buttonClass('primary', 'w-full text-lg')}>
+          <Link href="#packages" className={buttonClass('primary', 'w-full text-lg')}>
             {t.landing.cta}
           </Link>
           <Link href="/sample" className={buttonClass('secondary', 'w-full')}>
@@ -44,36 +50,24 @@ export default async function LandingPage() {
         <div className="mt-6 rounded-2xl border border-line bg-gold-wash px-4 py-4 text-center">
           <div className="flex items-baseline justify-center gap-2">
             <span className="text-sm text-ink-soft">{t.landing.priceLabel}</span>
-            <span className="numeric text-2xl font-bold text-gold-deep">{PRICE_EGP}</span>
+            <span className="text-sm text-ink-soft">{lang === 'AR' ? 'يبدأ من' : 'from'}</span>
+            <span className="numeric text-2xl font-bold text-gold-deep">{lowestPrice}</span>
             <span className="text-sm font-medium text-gold-deep">{t.common.egp}</span>
           </div>
           <p className="mt-1 text-xs text-ink-faint">{t.landing.priceNote}</p>
         </div>
       </section>
 
-      <section className="border-t border-line pt-8">
-        <h2 className="text-lg font-bold">{t.landing.howTitle}</h2>
+      <Packages lang={lang} t={t} />
 
-        <ol className="mt-5 flex flex-col gap-5">
-          {steps.map((step, index) => (
-            <li key={step.title} className="flex gap-4">
-              <span className="numeric mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gold-wash text-sm font-bold text-gold-deep">
-                {index + 1}
-              </span>
-              <div>
-                <h3 className="font-semibold">{step.title}</h3>
-                <p className="mt-1 text-sm leading-relaxed text-ink-soft">{step.body}</p>
-              </div>
-            </li>
-          ))}
-        </ol>
-      </section>
+      <div className="mt-10">
+        <Flow lang={lang} t={t} />
+      </div>
 
-      {/*
-        Floats over the page rather than sitting in a footer, so somebody who is stuck
-        does not have to reach the bottom to find it. It still does not compete with the
-        button that starts the product: different corner, different colour, no words.
-      */}
+      <div className="mt-10">
+        <Reviews reviews={reviews} lang={lang} t={t} />
+      </div>
+
       <SupportButton message={t.landing.supportMessage} label={t.landing.support} />
     </main>
   );

@@ -1,6 +1,7 @@
 import { prisma } from './db';
 import { getEventInstant } from './format';
-import { EVENT_TIMEZONE, PRICE_EGP } from './constants';
+import { EVENT_TIMEZONE } from './constants';
+import { packagePrice } from './packages';
 import { normaliseEgyptianPhone } from './validation';
 import type { Invitation } from '@/generated/prisma/client';
 
@@ -47,10 +48,14 @@ export async function getStats(): Promise<AdminStats> {
   const sevenDaysAgo = new Date(now.getTime() - 7 * DAY_MS);
   const thirtyDaysAgo = new Date(now.getTime() - 30 * DAY_MS);
 
-  const [builtLast7, paidLast7, paidThisMonth, conversionBuilt, conversionPaid] = await Promise.all([
+  const [builtLast7, paidLast7, activatedThisMonth, conversionBuilt, conversionPaid] = await Promise.all([
     prisma.invitation.count({ where: { createdAt: { gte: sevenDaysAgo } } }),
     prisma.invitation.count({ where: { activatedAt: { gte: sevenDaysAgo } } }),
-    prisma.invitation.count({ where: { activatedAt: { gte: monthStart(now) } } }),
+    // The rows themselves, because revenue now depends on which tier each one was.
+    prisma.invitation.findMany({
+      where: { activatedAt: { gte: monthStart(now) } },
+      select: { package: true },
+    }),
     prisma.invitation.count({ where: { createdAt: { gte: thirtyDaysAgo } } }),
     prisma.invitation.count({
       where: { createdAt: { gte: thirtyDaysAgo }, activatedAt: { not: null } },
@@ -60,7 +65,9 @@ export async function getStats(): Promise<AdminStats> {
   return {
     builtLast7,
     paidLast7,
-    revenueThisMonth: paidThisMonth * PRICE_EGP,
+    // Summed per invitation rather than multiplied by one price. Three tiers exist and
+    // an average would be wrong every month.
+    revenueThisMonth: activatedThisMonth.reduce((total, row) => total + packagePrice(row.package), 0),
     conversionRate: conversionBuilt > 0 ? conversionPaid / conversionBuilt : null,
     conversionBuilt,
     conversionPaid,

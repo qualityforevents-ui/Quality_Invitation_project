@@ -112,6 +112,13 @@ export default async function AdminHome({ searchParams }: Props) {
         </section>
 
         <Link
+          href="/admin/reviews"
+          className="rounded-xl border border-adm-line bg-adm-panel px-4 py-3.5 text-sm"
+        >
+          الآراء، مراجعة ونشر
+        </Link>
+
+        <Link
           href="/admin/drafts"
           className="rounded-xl border border-adm-line bg-adm-panel px-4 py-3.5 text-sm"
         >

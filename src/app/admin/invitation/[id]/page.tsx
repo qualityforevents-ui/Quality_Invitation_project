@@ -10,7 +10,8 @@ import { AdminHeader, StatusPill } from '@/components/admin/AdminChrome';
 import { MiniInvitation } from '@/components/invitation/MiniInvitation';
 import { requireOperator } from '@/lib/admin-auth';
 import { getById } from '@/lib/admin-queries';
-import { editUrl, publicInvitationUrl, PRICE_EGP } from '@/lib/constants';
+import { editUrl, publicInvitationUrl } from '@/lib/constants';
+import { packageName, packagePrice } from '@/lib/packages';
 import { formatEventDate, formatEventTime, formatShortDateTime } from '@/lib/format';
 import { getTrack, trackName } from '@/lib/music';
 import { customerWhatsappLink } from '@/lib/whatsapp';
@@ -61,6 +62,14 @@ export default async function ApprovalPage({ params, searchParams }: Props) {
         </div>
 
         <dl className="divide-y divide-adm-line overflow-hidden rounded-xl border border-adm-line bg-adm-panel text-sm">
+          <Row label="الباقة">
+            <span className="font-semibold text-adm-accent">
+              {packageName(invitation.package, 'AR')}
+            </span>
+            <span className="ms-2 numeric text-adm-muted">
+              {packagePrice(invitation.package)} ج
+            </span>
+          </Row>
           <Row label="التاريخ">
             {formatEventDate(invitation.eventDate, 'AR')} ·{' '}
             {formatEventTime(invitation.eventTime, 'AR')}
@@ -96,6 +105,15 @@ export default async function ApprovalPage({ params, searchParams }: Props) {
             <span className="numeric">{invitation.viewCount}</span>
           </Row>
         </dl>
+
+        {invitation.customRequest ? (
+          <section className="rounded-xl border border-adm-accent/30 bg-adm-accent/5 px-4 py-3">
+            <h2 className="text-xs font-semibold text-adm-accent">طلب التصميم الخاص</h2>
+            <p className="mt-2 text-sm leading-relaxed whitespace-pre-wrap text-adm-text">
+              {invitation.customRequest}
+            </p>
+          </section>
+        ) : null}
 
         {invitation.rejectReason ? (
           <p className="rounded-xl border border-adm-danger/30 bg-adm-danger/10 px-4 py-3 text-sm text-adm-danger">
@@ -141,7 +159,7 @@ export default async function ApprovalPage({ params, searchParams }: Props) {
 
               <label className="flex flex-col gap-1.5">
                 <span className="text-xs text-adm-muted">
-                  مرجع التحويل من إنستاباي، المبلغ {PRICE_EGP} جنيه
+                  مرجع التحويل من إنستاباي، المبلغ {packagePrice(invitation.package)} جنيه
                 </span>
                 <input
                   name="paymentNote"

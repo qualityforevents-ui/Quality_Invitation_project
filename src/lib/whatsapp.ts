@@ -1,5 +1,6 @@
-import { PRICE_EGP, whatsappLink } from './constants';
-import type { Lang } from '@/generated/prisma/enums';
+import { whatsappLink } from './constants';
+import { getPackage } from './packages';
+import type { Lang, Package } from '@/generated/prisma/enums';
 
 /**
  * The message the customer sends the operator alongside their transfer.
@@ -17,18 +18,25 @@ export function buildPaymentMessage({
   requestId,
   name1,
   name2,
+  packageId,
 }: {
   lang: Lang;
   requestId: string;
   name1: string;
   name2: string;
+  packageId: Package;
 }): string {
+  // Named as well as priced. The operator is matching a transfer against a tier, and
+  // "500" alone does not say which package was bought.
+  const tier = getPackage(packageId);
+
   if (lang === 'AR') {
     return [
       'السلام عليكم',
       `رقم الطلب: ${requestId}`,
       `دعوة: ${name1} و ${name2}`,
-      `المبلغ: ${PRICE_EGP} جنيه`,
+      `الباقة: ${tier.nameAr}`,
+      `المبلغ: ${tier.price} جنيه`,
       '',
       'برجاء إرفاق صورة التحويل مع الرسالة',
     ].join('\n');
@@ -38,7 +46,8 @@ export function buildPaymentMessage({
     'Hello',
     `Request ID: ${requestId}`,
     `Invitation: ${name1} & ${name2}`,
-    `Amount: ${PRICE_EGP} EGP`,
+    `Package: ${tier.nameEn}`,
+    `Amount: ${tier.price} EGP`,
     '',
     'Please attach the transfer screenshot with this message',
   ].join('\n');
@@ -49,6 +58,7 @@ export function buildPaymentLink(args: {
   requestId: string;
   name1: string;
   name2: string;
+  packageId: Package;
 }): string {
   return whatsappLink(buildPaymentMessage(args));
 }

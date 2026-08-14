@@ -6,6 +6,7 @@ import { assertOperator } from '@/lib/admin-auth';
 import { prisma } from '@/lib/db';
 import { DEFAULT_EXPIRY_DAYS_AFTER_EVENT } from '@/lib/constants';
 import { isValidSlug } from '@/lib/slug';
+import { getPackage } from '@/lib/packages';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -31,13 +32,26 @@ export async function activateInvitation(formData: FormData): Promise<void> {
   const invitation = await prisma.invitation.findUnique({ where: { id } });
   if (!invitation) throw new Error('Invitation not found');
 
+  /*
+   * The expiry is the difference the customer paid for, so it is derived from the
+   * package rather than applied uniformly.
+   *
+   * Basic still gets a month past the event rather than being cut off at midnight on
+   * the day. Guests reopen these for a while afterwards to look at the photo, and
+   * killing a link the morning after a wedding to enforce a price tier would be a
+   * miserable thing to do to somebody. The paid tiers simply never expire.
+   */
+  const tier = getPackage(invitation.package);
+  const expiresAt = tier.permanent
+    ? null
+    : new Date(invitation.eventDate.getTime() + DEFAULT_EXPIRY_DAYS_AFTER_EVENT * DAY_MS);
+
   const updated = await prisma.invitation.update({
     where: { id },
     data: {
       status: 'ACTIVE',
       activatedAt: invitation.activatedAt ?? new Date(),
-      // Guests reopen these for a while after the event to look back at them.
-      expiresAt: new Date(invitation.eventDate.getTime() + DEFAULT_EXPIRY_DAYS_AFTER_EVENT * DAY_MS),
+      expiresAt,
       paymentNote,
       rejectReason: null,
     },

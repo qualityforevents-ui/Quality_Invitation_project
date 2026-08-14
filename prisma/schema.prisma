@@ -26,6 +26,14 @@ model Invitation {
   requestId String @unique // short human readable, e.g. "QLT-7K4M9P"
   status    Status @default(DRAFT)
 
+  // What they are paying for. Chosen on the landing page, changeable up to payment.
+  package Package @default(BASIC)
+
+  // Only the CUSTOM package collects this: what the couple want designed for them.
+  // Kept on the row rather than left in a WhatsApp thread, so the operator can see
+  // what was actually promised months later.
+  customRequest String?
+
   // language
   uiLang         Lang @default(AR) // builder UI + WhatsApp message
   invitationLang Lang @default(AR) // what guests see
@@ -73,6 +81,41 @@ enum Status {
 enum Lang {
   AR
   EN
+}
+
+/// Prices live in src/lib/packages.ts, not here, so changing one is not a migration.
+enum Package {
+  BASIC // 300 EGP, link expires a while after the event
+  UNLIMITED // 500 EGP, link never expires
+  CUSTOM // 1000 EGP, never expires, and the couple describe a design they want
+}
+
+enum ReviewStatus {
+  PENDING // written by a customer, not yet read by the operator
+  APPROVED // visible on the landing page
+  HIDDEN // read and rejected, kept rather than deleted
+}
+
+/// What customers say, shown on the landing page.
+///
+/// Nothing appears publicly until the operator approves it. An open form writing
+/// straight to a public page is a spam target, and the people reading these are
+/// deciding whether to trust the product with their wedding.
+model Review {
+  id     String       @id @default(cuid())
+  status ReviewStatus @default(PENDING)
+
+  name String // how they want to be credited, e.g. "مروة و أحمد"
+  city String? // optional, e.g. "القاهرة"
+  body String // the review itself
+
+  /// Set when the review came from a customer following the link on their own
+  /// success screen, which is the operator's evidence that it is genuine.
+  invitationId String?
+
+  createdAt DateTime @default(now())
+
+  @@index([status, createdAt])
 }
 
 enum EventType {

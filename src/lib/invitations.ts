@@ -3,6 +3,7 @@ import { prisma } from './db';
 import { buildSlugBase } from './slug';
 import { generateEditToken, generateRequestId, generateSlugSuffix, withUniqueRetry } from './tokens';
 import { DEFAULT_THEME_ID } from './constants';
+import { DEFAULT_PACKAGE } from './packages';
 import { fromDateInputValue } from './format';
 import { getTheme } from '@/themes/registry';
 import type { InvitationPatch } from './validation';
@@ -89,6 +90,9 @@ export async function createDraft(patch: InvitationPatch, uiLang: Lang): Promise
         venueMapUrl: patch.venueMapUrl ?? null,
         customMessage: patch.customMessage ?? null,
 
+        package: patch.package ?? DEFAULT_PACKAGE,
+        customRequest: patch.customRequest ?? null,
+
         themeId: theme.id,
         musicTrackId: patch.musicTrackId ?? theme.defaultMusicTrackId,
 
@@ -121,6 +125,8 @@ export async function applyPatch(invitation: Invitation, patch: InvitationPatch)
     ...(patch.venueName !== undefined ? { venueName: patch.venueName } : {}),
     ...(patch.venueMapUrl !== undefined ? { venueMapUrl: patch.venueMapUrl } : {}),
     ...(patch.customMessage !== undefined ? { customMessage: patch.customMessage } : {}),
+    ...(patch.package !== undefined ? { package: patch.package } : {}),
+    ...(patch.customRequest !== undefined ? { customRequest: patch.customRequest } : {}),
     ...(patch.themeId !== undefined ? { themeId: getTheme(patch.themeId).id } : {}),
     ...(patch.musicTrackId !== undefined ? { musicTrackId: patch.musicTrackId } : {}),
     ...(patch.photoFileId !== undefined ? { photoFileId: patch.photoFileId } : {}),

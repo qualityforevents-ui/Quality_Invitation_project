@@ -48,3 +48,14 @@ export function editUrl(editToken: string): string {
 export function statusUrl(editToken: string): string {
   return `${SITE_URL}/build/status/${editToken}`;
 }
+
+/**
+ * Review length limits.
+ *
+ * Here rather than in lib/reviews because the submission form is a client component,
+ * and importing them from a module that touches Prisma drags the Postgres driver into
+ * the browser bundle. The build fails on dns, fs and net, which is a confusing way to
+ * discover you crossed the server boundary for two numbers.
+ */
+export const REVIEW_MAX_BODY = 400;
+export const REVIEW_MAX_NAME = 60;
