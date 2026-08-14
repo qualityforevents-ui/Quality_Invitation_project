@@ -56,7 +56,7 @@ export function MiniInvitation({
         {name1 || copy.roleGroom}
       </p>
       <p className="font-inv-display text-[0.6875rem] text-inv-accent" aria-hidden="true">
-        &amp;
+        {copy.nameSeparator}
       </p>
       <p className="font-inv-display text-lg leading-snug text-inv-ink text-balance">
         {name2 || copy.roleBride}

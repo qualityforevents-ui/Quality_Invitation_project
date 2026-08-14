@@ -35,6 +35,11 @@ export type InvitationCopy = {
    * for it.
    */
   familiesPrefix: string | null;
+  /**
+   * What sits between the two names. Arabic invitations join them with و; an ampersand
+   * is a Latin mark and reads as a foreign object on an otherwise Arabic card.
+   */
+  nameSeparator: string;
   roleGroom: string;
   roleBride: string;
   openButton: string;
@@ -71,6 +76,7 @@ const AR: InvitationCopy = {
     KATB_KETAB: 'عقد قران',
   },
   familiesPrefix: null,
+  nameSeparator: 'و',
   roleGroom: 'العريس',
   roleBride: 'العروس',
   openButton: 'افتح الدعوة',
@@ -106,6 +112,7 @@ const EN: InvitationCopy = {
     KATB_KETAB: 'Katb Ketab',
   },
   familiesPrefix: 'Together with their families',
+  nameSeparator: '&',
   roleGroom: 'The Groom',
   roleBride: 'The Bride',
   openButton: 'Open invitation',

@@ -67,7 +67,7 @@ export function MidnightCover({
         <h1 className="font-inv-display text-inv-ink">
           <span className="block text-[2.375rem] leading-[1.45] text-balance">{view.name1}</span>
           <span className="my-1 block text-lg text-inv-accent" aria-hidden="true">
-            &amp;
+            {copy.nameSeparator}
           </span>
           <span className="block text-[2.375rem] leading-[1.45] text-balance">{view.name2}</span>
         </h1>

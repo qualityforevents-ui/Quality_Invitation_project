@@ -37,7 +37,7 @@ export function FloralInvitation({ view, copy }: { view: InvitationView; copy: I
             nameClassName="text-[2.375rem] leading-[1.4]"
             separator={
               <span className="my-1 block text-xl text-inv-accent" aria-hidden="true">
-                &amp;
+                {copy.nameSeparator}
               </span>
             }
           />

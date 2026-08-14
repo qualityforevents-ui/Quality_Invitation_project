@@ -10,6 +10,7 @@ import type { PhotoCrop } from '@/lib/imagekit';
 import { buttonClass } from '@/components/ui/Button';
 import { useAutosave } from '@/lib/useAutosave';
 import { cn } from '@/lib/cn';
+import { hasArabicLetters } from '@/lib/script';
 import { getTheme, THEMES } from '@/themes/registry';
 import type { Dictionary } from '@/i18n/ui';
 import type { EventType, Lang } from '@/generated/prisma/enums';
@@ -73,6 +74,17 @@ export function ThemeStep({
     }
   }
 
+  /*
+   * True when the card's language and the names' script disagree in either direction.
+   * Recomputed as the language toggle changes, so switching to Arabic surfaces it
+   * immediately rather than at the preview.
+   */
+  const names = `${name1} ${name2}`;
+  const namesAreArabic = hasArabicLetters(names);
+  const scriptMismatch =
+    names.trim().length > 0 &&
+    (invitationLang === 'AR' ? !namesAreArabic : namesAreArabic);
+
   const languageOptions: Array<{ value: Lang; label: string }> = [
     { value: 'AR', label: 'العربية' },
     { value: 'EN', label: 'English' },
@@ -117,6 +129,34 @@ export function ThemeStep({
         <p className="mt-2 text-xs leading-relaxed text-ink-faint">{t.theme.invitationLangHint}</p>
       </section>
 
+      {/*
+        The names are shown in whatever script they were typed in, which the spec
+        requires and which is right: a couple may genuinely want Latin names on an
+        Arabic card. But it is more often a mismatch nobody noticed, and it is most
+        visible here, where four miniatures are showing it.
+
+        Deliberately a question and a link back, not an automatic conversion.
+        Transliterating "mariam" could produce مريم or ماريام, and quietly printing the
+        wrong spelling of somebody's name on their wedding invitation is not a risk
+        worth taking on their behalf.
+      */}
+      {scriptMismatch ? (
+        <div className="rounded-xl border border-gold/40 bg-gold-wash px-4 py-3">
+          <p className="text-xs leading-relaxed text-ink">{t.theme.scriptMismatch}</p>
+          <button
+            type="button"
+            onClick={async () => {
+              await flush();
+              router.refresh();
+              router.push('/build');
+            }}
+            className="mt-2 text-xs font-semibold text-gold-deep underline underline-offset-4"
+          >
+            {t.theme.scriptMismatchCta}
+          </button>
+        </div>
+      ) : null}
+
       <section>
         <h2 className="mb-3 text-sm font-medium text-ink">{t.theme.themeGrid}</h2>
         <div className="grid grid-cols-1 gap-3">
@@ -132,6 +172,7 @@ export function ThemeStep({
               eventDate={eventDate}
               eventType={eventType}
               onSelect={() => selectTheme(theme.id)}
+              viewLabel={t.theme.themeView}
             />
           ))}
         </div>

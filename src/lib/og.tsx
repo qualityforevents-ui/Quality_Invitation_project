@@ -166,7 +166,7 @@ export async function renderOgImage(input: OgInput): Promise<ImageResponse> {
         <div style={{ fontSize: 92, fontWeight: 700, lineHeight: 1.25 }}>
           {satoriText(input.name1, input.lang)}
         </div>
-        <div style={{ fontSize: 44, color: accent, lineHeight: 1.2 }}>&amp;</div>
+        <div style={{ fontSize: 44, color: accent, lineHeight: 1.2 }}>{copy.nameSeparator}</div>
         <div style={{ fontSize: 92, fontWeight: 700, lineHeight: 1.25 }}>
           {satoriText(input.name2, input.lang)}
         </div>

@@ -126,7 +126,7 @@ export function PhotoUpload({
               disabled={busy}
               className={buttonClass('primary', 'flex-[1.4]')}
             >
-              {stage === 'uploading' ? t.theme.photoUploading : t.common.next}
+              {stage === 'uploading' ? t.theme.photoUploading : t.theme.photoUpload}
             </button>
           </div>
         </>

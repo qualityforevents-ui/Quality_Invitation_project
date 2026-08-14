@@ -77,7 +77,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const copy = getInvitationCopy(invitation.invitationLang);
   const isArabic = invitation.invitationLang === 'AR';
 
-  const title = `${invitation.name1} & ${invitation.name2} | ${copy.eventName[invitation.eventType]}`;
+  const title = `${invitation.name1} ${copy.nameSeparator} ${invitation.name2} | ${copy.eventName[invitation.eventType]}`;
   const date = formatEventDate(invitation.eventDate, invitation.invitationLang);
   const description = isArabic
     ? `${date} | ${invitation.venueName}`

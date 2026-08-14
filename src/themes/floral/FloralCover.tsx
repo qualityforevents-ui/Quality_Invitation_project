@@ -64,7 +64,7 @@ export function FloralCover({
         <h1 className="font-inv-display text-inv-ink">
           <span className="block text-[2.5rem] leading-[1.4] text-balance">{view.name1}</span>
           <span className="my-1 block text-xl text-inv-accent" aria-hidden="true">
-            &amp;
+            {copy.nameSeparator}
           </span>
           <span className="block text-[2.5rem] leading-[1.4] text-balance">{view.name2}</span>
         </h1>
