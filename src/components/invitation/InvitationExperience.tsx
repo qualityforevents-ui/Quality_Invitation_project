@@ -2,9 +2,11 @@
 
 import { AnimatePresence, MotionConfig } from 'framer-motion';
 import { useState } from 'react';
+import { ConfettiBurst } from './ConfettiBurst';
 import { MuteToggle } from './MuteToggle';
 import { getInvitationCopy } from '@/i18n/invitation';
 import { getThemeComponents } from '@/themes/components';
+import { getTheme } from '@/themes/registry';
 import { useInvitationAudio } from '@/lib/useInvitationAudio';
 import type { InvitationView } from '@/lib/invitation-view';
 
@@ -22,8 +24,11 @@ export function InvitationExperience({ view }: { view: InvitationView }) {
   const audio = useInvitationAudio(view.musicUrl);
   const copy = getInvitationCopy(view.lang);
   const { Cover, Card } = getThemeComponents(view.themeId);
+  const theme = getTheme(view.themeId);
 
   function open() {
+    // Must stay first and synchronous: this call is what Safari accepts as the user
+    // gesture that unlocks audio, and anything before it forfeits that.
     audio.start();
     setOpened(true);
   }
@@ -37,6 +42,14 @@ export function InvitationExperience({ view }: { view: InvitationView }) {
           <Cover key="cover" view={view} copy={copy} onOpen={open} />
         )}
       </AnimatePresence>
+
+      {/*
+        Mounted the instant the tap lands rather than when the card finishes entering,
+        so the paper erupts over the cover as it dissolves and the reveal arrives
+        through it. The burst runs once, in the theme's own colours, and the component
+        goes quiet on its own when the last piece falls.
+      */}
+      {opened ? <ConfettiBurst recipe={theme.confetti} /> : null}
 
       {opened && audio.available ? (
         <MuteToggle

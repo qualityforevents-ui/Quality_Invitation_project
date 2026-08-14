@@ -16,6 +16,24 @@ export type ThemeFontPair = {
   body: string;
 };
 
+/** The kinds of paper the opening burst can throw. */
+export type ConfettiShape = 'strip' | 'square' | 'petal' | 'circle';
+
+/**
+ * What rains down when the invitation opens.
+ *
+ * Art directed per theme rather than one generic burst, because confetti in the wrong
+ * colours reads as something pasted over the card instead of part of it. Floral throws
+ * petals, midnight throws gold on its dark ground, modern throws very little because
+ * restraint is its whole character.
+ */
+export type ConfettiRecipe = {
+  colors: string[];
+  shapes: ConfettiShape[];
+  /** Roughly how many pieces the burst throws in total. */
+  count: number;
+};
+
 export type ThemeDefinition = {
   id: string;
   nameAr: string;
@@ -27,6 +45,7 @@ export type ThemeDefinition = {
   fonts: Record<Lang, ThemeFontPair>;
   /** Colour used for the browser chrome and the Open Graph card background. */
   themeColor: string;
+  confetti: ConfettiRecipe;
 };
 
 const classic: ThemeDefinition = {
@@ -43,6 +62,11 @@ const classic: ThemeDefinition = {
     '--inv-accent': '#b18b47',
     '--inv-accent-soft': '#d9c08a',
     '--inv-line': 'rgba(177, 139, 71, 0.32)',
+  },
+  confetti: {
+    colors: ['#b18b47', '#d9c08a', '#e9dcc0', '#fdfaf3', '#8a6a32'],
+    shapes: ['strip', 'square'],
+    count: 130,
   },
   fonts: {
     // Aref Ruqaa is a Ruqaa style calligraphic face, right for the names on a formal
@@ -76,6 +100,11 @@ const modern: ThemeDefinition = {
     '--inv-accent-soft': '#cfcfc8',
     '--inv-line': 'rgba(28, 28, 26, 0.14)',
   },
+  confetti: {
+    colors: ['#1c1c1a', '#9a9a92', '#cfcfc8', '#b18b47'],
+    shapes: ['strip'],
+    count: 55,
+  },
   fonts: {
     // Cairo has an even, upright rhythm that suits generous whitespace, and Jost is
     // its geometric counterpart in Latin. Neither draws attention to itself, which is
@@ -107,6 +136,11 @@ const floral: ThemeDefinition = {
     '--inv-accent-soft': '#9fae94',
     '--inv-line': 'rgba(201, 139, 134, 0.32)',
   },
+  confetti: {
+    colors: ['#c98b86', '#e7bcb7', '#9fae94', '#f6dfdb', '#fdfaf3'],
+    shapes: ['petal', 'circle', 'strip'],
+    count: 140,
+  },
   fonts: {
     AR: {
       display: 'var(--font-el-messiri), Georgia, serif',
@@ -133,6 +167,11 @@ const midnight: ThemeDefinition = {
     '--inv-accent': '#d4b169',
     '--inv-accent-soft': '#e8d3a0',
     '--inv-line': 'rgba(212, 177, 105, 0.34)',
+  },
+  confetti: {
+    colors: ['#d4b169', '#e8d3a0', '#f2ece0', '#ffffff'],
+    shapes: ['strip', 'circle'],
+    count: 120,
   },
   fonts: {
     // Reem Kufi is geometric rather than cursive, which is what holds up when it is
