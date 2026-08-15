@@ -22,6 +22,12 @@ const AR = {
     egp: 'جنيه',
     langName: 'العربية',
     switchTo: 'English',
+    step: 'خطوة',
+    of: 'من',
+    stepData: 'البيانات',
+    stepDesign: 'التصميم',
+    stepPreview: 'المعاينة',
+    stepPayment: 'الدفع',
   },
 
   landing: {
@@ -30,6 +36,9 @@ const AR = {
       'اعمل دعوة إلكترونية لخطوبتك أو فرحك في دقايق، وابعتها لضيوفك على واتساب برابط واحد.',
     cta: 'ابدأ دعوتك',
     sample: 'شوف نموذج دعوة',
+    sampleNote: 'دي دعوة نموذجية عشان تشوف الشكل والحركة.',
+    sampleCta: 'اعمل دعوتك انت كمان',
+    sampleBack: 'رجوع للموقع',
     priceLabel: 'السعر',
     priceNote: 'دفعة واحدة، من غير اشتراك',
     howTitle: 'بتشتغل إزاي',
@@ -130,6 +139,9 @@ const AR = {
     phoneError: 'اكتب رقم موبايل مصري صحيح',
     whatsappCta: 'ابعت صورة التحويل على واتساب',
     attachReminder: 'مهم: ارفق صورة التحويل مع الرسالة.',
+    afterTitle: 'وبعد ما تبعت؟',
+    afterBody:
+      'بنراجع التحويل بإيدينا، وأول ما يتأكد بنفعّل رابط دعوتك وبنبعتهولك على الواتساب. لو في أي تأخير كلمنا على نفس الرقم.',
     desktopTitle: 'انت على الكمبيوتر',
     desktopNote:
       'واتساب من الكمبيوتر ممكن يطلب منك مسح كود. الأسهل انك تنسخ الرسالة دي وتبعتها من موبايلك.',
@@ -149,6 +161,10 @@ const AR = {
     trouble: 'في مشكلة؟ كلمنا على واتساب',
     troubleMessage: 'السلام عليكم، عندي استفسار عن طلب رقم ',
     checking: 'بنتابع حالة الطلب',
+    pendingBanner: 'طلبك وصلنا وبنراجعه.',
+    pendingCta: 'شوف حالة الطلب',
+    activeBanner: 'دعوتك مفعّلة.',
+    activeCta: 'شوف دعوتك',
   },
 
   success: {
@@ -208,6 +224,12 @@ const EN: Dictionary = {
     egp: 'EGP',
     langName: 'English',
     switchTo: 'العربية',
+    step: 'Step',
+    of: 'of',
+    stepData: 'Details',
+    stepDesign: 'Design',
+    stepPreview: 'Preview',
+    stepPayment: 'Payment',
   },
 
   landing: {
@@ -216,6 +238,9 @@ const EN: Dictionary = {
       'Build a digital invitation for your engagement or wedding in minutes, then send it to your guests on WhatsApp as a single link.',
     cta: 'Build your invitation',
     sample: 'See a sample invitation',
+    sampleNote: 'A sample invitation, so you can see how it looks and moves.',
+    sampleCta: 'Make yours',
+    sampleBack: 'Back to the site',
     priceLabel: 'Price',
     priceNote: 'One payment, no subscription',
     howTitle: 'How it works',
@@ -317,6 +342,9 @@ const EN: Dictionary = {
     phoneError: 'Enter a valid Egyptian mobile number',
     whatsappCta: 'Send the screenshot on WhatsApp',
     attachReminder: 'Important: attach the transfer screenshot to your message.',
+    afterTitle: 'What happens next',
+    afterBody:
+      'We check the transfer by hand. Once it clears we activate your invitation link and send it to you on WhatsApp. If it takes longer than you expect, message us on the same number.',
     desktopTitle: 'You are on a computer',
     desktopNote:
       'WhatsApp on a computer may ask you to scan a code. It is easier to copy this message and send it from your phone.',
@@ -336,6 +364,10 @@ const EN: Dictionary = {
     trouble: 'Something wrong? Message us on WhatsApp',
     troubleMessage: 'Hello, I have a question about request ',
     checking: 'Checking your request',
+    pendingBanner: 'We have your request and are reviewing it.',
+    pendingCta: 'See its status',
+    activeBanner: 'Your invitation is live.',
+    activeCta: 'See your invitation',
   },
 
   success: {

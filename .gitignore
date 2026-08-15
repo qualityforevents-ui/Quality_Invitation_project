@@ -1,7 +1,12 @@
 node_modules
 .next
 out
-build
+# Anchored to the repository root deliberately. A bare `build` matches a directory of
+# that name at any depth, and this project has one: src/app/(site)/build is the customer
+# facing builder route. That single unanchored word kept the entire flow, the form, the
+# theme picker, the preview, the payment screen and the status screen, out of every
+# commit this repository has ever had.
+/build
 .DS_Store
 *.pem
 

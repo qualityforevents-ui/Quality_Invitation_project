@@ -274,6 +274,20 @@ export function PaymentStep({
         </section>
       ) : null}
 
+      {/*
+        What happens after the money leaves.
+
+        This screen asks somebody to transfer real money to an account they have never
+        heard of and then message a stranger on WhatsApp, and until now it never said
+        what came next. That explanation existed only on the screen after payment, which
+        is the wrong side of the leap: reassurance is worth nothing once the risk has
+        already been taken.
+      */}
+      <section className="mt-8 rounded-2xl border border-line bg-white/60 px-5 py-4">
+        <h2 className="text-sm font-medium text-ink">{t.payment.afterTitle}</h2>
+        <p className="mt-1.5 text-xs leading-relaxed text-ink-soft">{t.payment.afterBody}</p>
+      </section>
+
       <div className="fixed inset-x-0 bottom-0 z-20 border-t border-line bg-cream/95 backdrop-blur">
         <div className="mx-auto w-full max-w-md px-5 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
           <p className="mb-2 text-center text-xs text-ink-soft">{t.payment.attachReminder}</p>
