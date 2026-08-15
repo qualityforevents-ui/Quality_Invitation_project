@@ -14,6 +14,31 @@ export const INSTAPAY_ADDRESS = process.env.NEXT_PUBLIC_INSTAPAY_ADDRESS || 'qlt
 export const INSTAPAY_NAME = process.env.NEXT_PUBLIC_INSTAPAY_NAME || 'QLTY EVENTS';
 
 /**
+ * What the two pay buttons open.
+ *
+ * Both are configuration rather than constants, and that is the whole point. Neither
+ * InstaPay nor Vodafone Cash publishes a documented link that opens their app with a
+ * recipient and an amount already filled in, so what actually works has to be found on a
+ * real phone and pasted in here rather than guessed at in the source. The defaults open
+ * each app and nothing more.
+ *
+ * Because that is all they can be relied on to do, every pay button copies the recipient
+ * to the clipboard as it opens the app. If the app lands on its own home screen, the
+ * address is already waiting to be pasted, which is the difference between an awkward
+ * payment and an impossible one.
+ *
+ * Vodafone Cash is off unless a number is set. A payment method that has not been
+ * configured is worse than one that is missing: it takes the customer into an app with
+ * nowhere to send the money.
+ */
+export const INSTAPAY_APP_LINK = process.env.NEXT_PUBLIC_INSTAPAY_LINK || 'instapay://';
+
+export const VODAFONE_CASH_NUMBER = process.env.NEXT_PUBLIC_VODAFONE_CASH_NUMBER || '';
+
+/** `*9#` opens the Vodafone Cash menu in the dialer. `#` has to be percent encoded. */
+export const VODAFONE_CASH_LINK = process.env.NEXT_PUBLIC_VODAFONE_CASH_LINK || 'tel:*9%23';
+
+/**
  * Holds the editToken. httpOnly, so only the server reads it. This is the whole of
  * the "returning visitor resumes automatically" mechanism, and the reason there is
  * no customer login anywhere in this product.

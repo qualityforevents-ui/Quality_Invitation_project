@@ -244,6 +244,11 @@ const AR = {
     customRequestLabel: 'اكتبلنا التصميم اللي في بالك',
     customRequestHint:
       'الألوان، الاستايل، أي حاجة شوفتها وعجبتك. كل ما تكتب أكتر كل ما التصميم يطلع أقرب لتخيلك.',
+    methodsLabel: 'ادفع من هنا، الزرار هيفتحلك التطبيق وينسخلك العنوان',
+    payInstapay: 'ادفع بإنستاباي',
+    payVodafone: 'ادفع بفودافون كاش',
+    addressCopied: 'العنوان اتنسخ. الصقه في التطبيق وحوّل المبلغ.',
+    afterPayLabel: 'بعد ما تحوّل، ابعتلنا صورة التحويل على الرقم ده',
     instapayTitle: 'حوّل على إنستاباي',
     instapayAddress: 'عنوان إنستاباي',
     instapayName: 'اسم المستلم',
@@ -258,8 +263,7 @@ const AR = {
     afterBody:
       'بنراجع التحويل بإيدينا، وأول ما يتأكد بنفعّل رابط دعوتك وبنبعتهولك على الواتساب. لو في أي تأخير كلمنا على نفس الرقم.',
     desktopTitle: 'انت على الكمبيوتر',
-    desktopNote:
-      'واتساب من الكمبيوتر ممكن يطلب منك مسح كود. الأسهل انك تنسخ الرسالة دي وتبعتها من موبايلك.',
+    desktopNote: 'انت على الكمبيوتر. افتح الصفحة دي من موبايلك عشان أزرار الدفع والواتساب تشتغل.',
     copyMessage: 'انسخ الرسالة',
     notSaved:
       'مقدرناش نحفظ دعوتك، فمفيش رقم طلب لسه. متحوّلش دلوقتي، لأن من غير الرقم مش هنعرف نربط تحويلك بدعوتك. اتأكد من النت وجرب تاني.',
@@ -548,6 +552,11 @@ const EN: Dictionary = {
     customRequestLabel: 'Tell us about the design you want',
     customRequestHint:
       'Colours, style, anything you have seen and liked. The more you tell us, the closer the result will be to what you pictured.',
+    methodsLabel: 'Pay here. The button opens the app and copies the address for you',
+    payInstapay: 'Pay with InstaPay',
+    payVodafone: 'Pay with Vodafone Cash',
+    addressCopied: 'Address copied. Paste it in the app and send the amount.',
+    afterPayLabel: 'Once you have paid, send us the transfer screenshot on this number',
     instapayTitle: 'Pay with InstaPay',
     instapayAddress: 'InstaPay address',
     instapayName: 'Recipient name',
@@ -562,8 +571,7 @@ const EN: Dictionary = {
     afterBody:
       'We check the transfer by hand. Once it clears we activate your invitation link and send it to you on WhatsApp. If it takes longer than you expect, message us on the same number.',
     desktopTitle: 'You are on a computer',
-    desktopNote:
-      'WhatsApp on a computer may ask you to scan a code. It is easier to copy this message and send it from your phone.',
+    desktopNote: 'You are on a computer. Open this page on your phone so the pay and WhatsApp buttons work.',
     copyMessage: 'Copy the message',
     notSaved:
       'We could not save your invitation, so it has no request number yet. Please do not transfer anything: without that number we cannot match your payment to your invitation. Check your connection and try again.',

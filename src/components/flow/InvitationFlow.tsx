@@ -31,7 +31,7 @@ import { Button } from '@/components/ui/button';
 import { useAutosave } from '@/lib/useAutosave';
 import { COOKIE_MAX_AGE_SECONDS, FLOW_STEP_COOKIE } from '@/lib/constants';
 import { formatEventDate, formatEventTimeParts, fromDateInputValue } from '@/lib/format';
-import { getPackage, packageName } from '@/lib/packages';
+import { packageName } from '@/lib/packages';
 import { getTheme, themeName } from '@/themes/registry';
 import { getTrack, trackName } from '@/lib/music';
 import { normaliseEgyptianPhone } from '@/lib/validation';
@@ -40,7 +40,7 @@ import { clampFurthest, isAnswered, toPatch, type FlowValues } from '@/lib/flow/
 import { viewFromValues } from '@/lib/flow/preview-view';
 import type { Dictionary } from '@/i18n/ui';
 import type { Invitation } from '@/generated/prisma/client';
-import type { EventType, Lang, Package } from '@/generated/prisma/enums';
+import type { EventType, Lang } from '@/generated/prisma/enums';
 
 type FlowState = {
   values: FlowValues;
@@ -467,7 +467,6 @@ export function InvitationFlow({
             name2={values.name2}
             packageId={values.package}
             statusPath={invitation ? `/build/status/${invitation.editToken}` : null}
-            onPackageChange={(next: Package) => set({ package: next })}
             onHandoff={() => {
               void flush();
               void fetch('/api/invitation/confirm', { method: 'POST', keepalive: true }).catch(
