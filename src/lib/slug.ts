@@ -254,7 +254,7 @@ function repairOpeningCluster(word: string): string {
   return word;
 }
 
-function romaniseWord(word: string): string {
+export function romaniseWord(word: string): string {
   const bare = stripMarks(word);
   if (!bare) return '';
 

@@ -10,7 +10,7 @@ import type { PhotoCrop } from '@/lib/imagekit';
 import { buttonClass } from '@/components/ui/Button';
 import { useAutosave } from '@/lib/useAutosave';
 import { cn } from '@/lib/cn';
-import { suggestArabicName } from '@/lib/arabic-suggest';
+import { suggestArabicName, suggestLatinName } from '@/lib/arabic-suggest';
 import { getTheme, THEMES } from '@/themes/registry';
 import type { Dictionary } from '@/i18n/ui';
 import type { EventType, Lang } from '@/generated/prisma/enums';
@@ -81,20 +81,18 @@ export function ThemeStep({
   }
 
   /*
-   * Offered, never imposed. When the card is Arabic and a name was typed in Latin, a
-   * candidate Arabic spelling sits one tap away. The customer accepting it is what
-   * makes the conversion safe: the same Latin spelling is written differently by
-   * different families, and only its owner knows which is theirs, so the machine
-   * proposes and the person decides. Nothing blocks: a couple who want Latin names on
-   * an Arabic card can walk straight past.
+   * Offered, never imposed, and in both directions. An Arabic card with Latin names
+   * offers Arabic spellings; an English card with Arabic names offers Latin ones,
+   * which is also the road back for somebody who converted and then changed language.
+   * The customer accepting is what makes conversion safe: the same name is spelled
+   * differently by different families, and only its owner knows which is theirs, so
+   * the machine proposes and the person decides. Nothing blocks either way.
    */
-  const suggestions =
-    invitationLang === 'AR'
-      ? [
-          { key: 'name1' as const, current: names.name1, arabic: suggestArabicName(names.name1) },
-          { key: 'name2' as const, current: names.name2, arabic: suggestArabicName(names.name2) },
-        ].filter((entry) => entry.arabic !== null)
-      : [];
+  const suggest = invitationLang === 'AR' ? suggestArabicName : suggestLatinName;
+  const suggestions = [
+    { key: 'name1' as const, current: names.name1, next: suggest(names.name1) },
+    { key: 'name2' as const, current: names.name2, next: suggest(names.name2) },
+  ].filter((entry) => entry.next !== null);
 
   const languageOptions: Array<{ value: Lang; label: string }> = [
     { value: 'AR', label: 'العربية' },
@@ -142,19 +140,21 @@ export function ThemeStep({
 
       {suggestions.length > 0 ? (
         <div className="rounded-xl border border-gold/40 bg-gold-wash px-4 py-3">
-          <p className="text-xs leading-relaxed text-ink">{t.theme.convertOffer}</p>
+          <p className="text-xs leading-relaxed text-ink">
+            {invitationLang === 'AR' ? t.theme.convertOffer : t.theme.convertOfferLatin}
+          </p>
 
           <div className="mt-2.5 flex flex-wrap gap-2">
             {suggestions.map((entry) => (
               <button
                 key={entry.key}
                 type="button"
-                onClick={() => setNames((current) => ({ ...current, [entry.key]: entry.arabic! }))}
+                onClick={() => setNames((current) => ({ ...current, [entry.key]: entry.next! }))}
                 className="tap-target rounded-full border border-gold/60 bg-white px-4 py-2 text-sm font-medium text-gold-deep transition active:scale-95"
               >
                 <span className="text-xs text-ink-faint">{entry.current}</span>
                 <span className="mx-1.5 text-gold" aria-hidden="true">{'\u2190'}</span>
-                {entry.arabic}
+                {entry.next}
               </button>
             ))}
           </div>

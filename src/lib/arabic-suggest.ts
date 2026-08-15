@@ -1,4 +1,4 @@
-import { NAME_DICTIONARY } from './slug';
+import { NAME_DICTIONARY, romaniseWord } from './slug';
 import { hasArabicLetters } from './script';
 
 /**
@@ -142,4 +142,30 @@ export function suggestArabicName(input: string): string | null {
 
   // A candidate that lost most of its letters is worse than no candidate.
   return suggestion.length >= 2 ? suggestion : null;
+}
+
+/**
+ * The mirror: a Latin spelling for a name written in Arabic, offered when the card is
+ * English. Same contract as the Arabic direction, a tap to accept and never automatic.
+ *
+ * This is also the road back. Somebody who accepted زياد and then switches the card to
+ * English gets Ziad offered rather than being stranded with Arabic names on an English
+ * card and no way to undo their earlier choice. For common names the two directions
+ * round trip exactly, because both run through the same dictionary.
+ */
+export function suggestLatinName(input: string): string | null {
+  const cleaned = input.trim();
+
+  if (cleaned.length < 2) return null;
+  if (!hasArabicLetters(cleaned)) return null;
+
+  const words = cleaned.split(/\s+/).map((word) => {
+    const romanised = hasArabicLetters(word) ? romaniseWord(word) : word;
+    // Names, not slugs, so each word carries a capital.
+    return romanised ? romanised[0].toUpperCase() + romanised.slice(1) : '';
+  });
+
+  const suggestion = words.filter(Boolean).join(' ');
+
+  return suggestion.length >= 2 && !hasArabicLetters(suggestion) ? suggestion : null;
 }

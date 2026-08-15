@@ -51,11 +51,11 @@ export function ThemeCard({
       */}
       <button type="button" onClick={onSelect} aria-pressed={selected} className="block w-full text-start">
         <MiniInvitation
-        themeId={theme.id}
-        lang={lang}
-        name1={name1}
-        name2={name2}
-        eventDate={eventDate}
+          themeId={theme.id}
+          lang={lang}
+          name1={name1}
+          name2={name2}
+          eventDate={eventDate}
           eventType={eventType}
         />
       </button>
@@ -65,11 +65,27 @@ export function ThemeCard({
           <span className="text-sm font-medium text-ink">{themeName(theme, uiLang)}</span>
         </button>
 
+        {/*
+          An eye, not a word. The card already carries a name, a tick and a miniature,
+          and a fourth piece of text made the caption row read like a sentence. The
+          label survives for screen readers and as the hover title.
+        */}
         <Link
           href={`/build/preview?theme=${theme.id}`}
-          className="tap-target ms-auto rounded-full border border-line px-3.5 py-1.5 text-xs font-medium text-ink-soft"
+          aria-label={viewLabel}
+          title={viewLabel}
+          className="tap-target ms-auto flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-line text-ink-soft transition hover:border-gold/50 hover:text-gold-deep active:scale-95"
         >
-          {viewLabel}
+          <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5" aria-hidden="true">
+            <path
+              d="M2.75 12S6.25 5.75 12 5.75 21.25 12 21.25 12 17.75 18.25 12 18.25 2.75 12 2.75 12Z"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinejoin="round"
+            />
+            <circle cx="12" cy="12" r="2.9" stroke="currentColor" strokeWidth="1.5" />
+            <circle cx="13" cy="11" r="0.9" fill="currentColor" />
+          </svg>
         </Link>
         <span
           className={cn(
