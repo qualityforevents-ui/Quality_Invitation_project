@@ -22,6 +22,7 @@ export function MiniInvitation({
   name2,
   eventDate,
   eventType,
+  size = 'sm',
   className,
 }: {
   themeId: string;
@@ -30,8 +31,18 @@ export function MiniInvitation({
   name2: string;
   eventDate: Date;
   eventType: EventType;
+  /**
+   * `lg` is the same card at reading size, for the design question, where this is the
+   * main thing on screen rather than one of four thumbnails.
+   *
+   * Deliberately a size and nothing else. The content is identical at both sizes,
+   * because the operator approves an invitation through this component and it must not
+   * be able to show them something the customer was not shown.
+   */
+  size?: 'sm' | 'lg';
   className?: string;
 }) {
+  const large = size === 'lg';
   const theme = getTheme(themeId);
   const copy = getInvitationCopy(lang);
 
@@ -42,29 +53,53 @@ export function MiniInvitation({
       style={themeStyle(theme, lang)}
       className={cn(
         invitationFontVariables,
-        'flex flex-col items-center bg-inv-bg px-5 py-7 text-center',
+        'flex flex-col items-center bg-inv-bg text-center',
+        large ? 'px-6 py-12' : 'px-5 py-7',
         className,
       )}
     >
-      <p className="font-inv-body text-[0.5625rem] tracking-[0.3em] text-inv-muted">
+      <p
+        className={cn(
+          'font-inv-body text-inv-muted',
+          large ? 'text-xs tracking-[0.35em]' : 'text-[0.5625rem] tracking-[0.3em]',
+        )}
+      >
         {copy.eventName[eventType]}
       </p>
 
-      <Divider className="my-3 scale-75" />
+      <Divider className={large ? 'my-5' : 'my-3 scale-75'} />
 
-      <p className="font-inv-display text-lg leading-snug text-inv-ink text-balance">
+      <p
+        className={cn(
+          'font-inv-display leading-snug text-inv-ink text-balance',
+          large ? 'text-3xl' : 'text-lg',
+        )}
+      >
         {name1 || copy.roleGroom}
       </p>
-      <p className="font-inv-display text-[0.6875rem] text-inv-accent" aria-hidden="true">
+      <p
+        className={cn('font-inv-display text-inv-accent', large ? 'text-base' : 'text-[0.6875rem]')}
+        aria-hidden="true"
+      >
         {copy.nameSeparator}
       </p>
-      <p className="font-inv-display text-lg leading-snug text-inv-ink text-balance">
+      <p
+        className={cn(
+          'font-inv-display leading-snug text-inv-ink text-balance',
+          large ? 'text-3xl' : 'text-lg',
+        )}
+      >
         {name2 || copy.roleBride}
       </p>
 
-      <Divider className="my-3 scale-75" />
+      <Divider className={large ? 'my-5' : 'my-3 scale-75'} />
 
-      <p className="font-inv-body text-[0.625rem] tracking-widest text-inv-accent">
+      <p
+        className={cn(
+          'font-inv-body tracking-widest text-inv-accent',
+          large ? 'text-sm' : 'text-[0.625rem]',
+        )}
+      >
         {formatEventDate(eventDate, lang)}
       </p>
     </div>

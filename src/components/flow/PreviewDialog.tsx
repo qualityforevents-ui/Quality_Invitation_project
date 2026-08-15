@@ -35,14 +35,11 @@ export function PreviewDialog({
   onOpenChange,
   view,
   t,
-  /** Set when the customer is looking at a design they have not chosen. */
-  tryingNote,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   view: InvitationView;
   t: Dictionary;
-  tryingNote?: string;
 }) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -72,16 +69,6 @@ export function PreviewDialog({
           <X aria-hidden="true" />
         </Button>
 
-        {/* Trying a design out is a different situation from previewing the finished
-            invitation, so it says so and offers only the way back. Paying from here
-            would buy a design that was never selected. */}
-        {tryingNote ? (
-          <div className="fixed inset-x-0 bottom-0 z-50 border-t bg-background/95 px-5 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] backdrop-blur">
-            <p className="mx-auto max-w-md text-center text-xs leading-relaxed text-muted-foreground">
-              {tryingNote}
-            </p>
-          </div>
-        ) : null}
       </DialogContent>
     </Dialog>
   );

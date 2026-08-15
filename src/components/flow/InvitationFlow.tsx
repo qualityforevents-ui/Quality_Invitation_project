@@ -123,7 +123,6 @@ export function InvitationFlow({
   });
 
   const [previewOpen, setPreviewOpen] = useState(false);
-  const [tryingTheme, setTryingTheme] = useState<string | null>(null);
   const [previewSeen, setPreviewSeen] = useState(false);
   /** Dismissed offers stay dismissed, so toggling language back and forth is quiet. */
   const [keptNames, setKeptNames] = useState(false);
@@ -396,10 +395,7 @@ export function InvitationFlow({
 
               set({ themeId, musicTrackId });
             }}
-            onTry={(themeId) => {
-              setTryingTheme(themeId);
-              setPreviewOpen(true);
-            }}
+            onTry={() => setPreviewOpen(true)}
             onNext={() => advance('theme')}
           />
         );
@@ -436,7 +432,6 @@ export function InvitationFlow({
             t={t}
             seen={previewSeen}
             onOpen={() => {
-              setTryingTheme(null);
               setPreviewOpen(true);
               setPreviewSeen(true);
             }}
@@ -569,15 +564,15 @@ export function InvitationFlow({
         </div>
       ) : null}
 
+      {/* One preview, always showing the design that is actually selected. The old
+          "try this one without choosing it" mode is gone with the thumbnail grid:
+          selecting is free and reversible now, and the card on the design question is
+          already live, so there is nothing left for a separate trying state to do. */}
       <PreviewDialog
         open={previewOpen}
-        onOpenChange={(next) => {
-          setPreviewOpen(next);
-          if (!next) setTryingTheme(null);
-        }}
-        view={viewFromValues(values, tryingTheme ?? undefined)}
+        onOpenChange={setPreviewOpen}
+        view={viewFromValues(values)}
         t={t}
-        tryingNote={tryingTheme ? t.theme.themePreviewNote : undefined}
       />
     </>
   );

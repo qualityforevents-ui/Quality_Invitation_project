@@ -1,15 +1,14 @@
 'use client';
 
-import { ArrowLeft, Check, Eye } from 'lucide-react';
+import { ArrowLeft, Eye } from 'lucide-react';
 import { SectionShell } from './SectionShell';
 import { MusicSelector } from './MusicSelector';
 import { PhotoUpload } from './PhotoUpload';
 import { MiniInvitation } from '@/components/invitation/MiniInvitation';
 import { Button } from '@/components/ui/button';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { cn } from '@/lib/cn';
 import { scriptSuggestions } from '@/lib/flow/values';
-import { getTheme, THEMES, themeName } from '@/themes/registry';
+import { getTheme, THEMES, themeName, themeStyle, type ThemeDefinition } from '@/themes/registry';
 import type { PhotoCrop } from '@/lib/photo-url';
 import type { Dictionary } from '@/i18n/ui';
 import type { EventType, Lang } from '@/generated/prisma/enums';
@@ -129,6 +128,31 @@ export function LanguageSection({
 
 /* -------------------------------------------------------------------- theme */
 
+/**
+ * A theme reduced to the two things that identify it at 60 pixels: its colours and the
+ * shape of a card.
+ *
+ * Not a rendering of the invitation. At this size real text is a grey smudge and four of
+ * them are four grey smudges, which tells a customer nothing and costs four more font
+ * loads. Two bars for the names with the accent between them is the actual structure of
+ * the card, and the ground, the ink and the accent come straight from the registry, so
+ * midnight arrives dark with gold on it and floral arrives blush without either being
+ * written down twice.
+ */
+function ThemeSwatch({ theme, lang }: { theme: ThemeDefinition; lang: Lang }) {
+  return (
+    <span
+      style={themeStyle(theme, lang)}
+      aria-hidden="true"
+      className="flex h-9 w-full flex-col items-center justify-center gap-[3px] rounded-md border border-inv-line bg-inv-bg"
+    >
+      <span className="h-[3px] w-7 rounded-full bg-inv-ink/75" />
+      <span className="h-[3px] w-2 rounded-full bg-inv-accent" />
+      <span className="h-[3px] w-7 rounded-full bg-inv-ink/75" />
+    </span>
+  );
+}
+
 export function ThemeSection({
   t,
   uiLang,
@@ -151,77 +175,68 @@ export function ThemeSection({
   eventType: EventType;
   value: string;
   onChange: (themeId: string) => void;
-  /** Opens the full screen preview on a design that has not been chosen. */
-  onTry: (themeId: string) => void;
+  /** Opens the full screen preview on the design currently showing. */
+  onTry: () => void;
   onNext: () => void;
 }) {
   return (
     <SectionShell title={t.flow.themeTitle} onNext={onNext} nextLabel={t.flow.next}>
-      <div role="radiogroup" aria-label={t.flow.themeTitle} className="flex flex-col gap-3">
-        {THEMES.map((theme) => {
-          const selected = theme.id === value;
+      {/*
+        One card, not four.
+        This question used to be a column of four thumbnails, which meant the design
+        being decided on was never bigger than a third of the screen and comparing two of
+        them was a scroll rather than a glance. The names are a row of buttons now and
+        the card below them is the answer: tapping a name re-typesets it in place, in the
+        customer's own names and date, at a size where the typography is actually
+        legible. Choosing a design is a typographic decision, and it cannot be made from
+        a thumbnail.
+      */}
+      <ToggleGroup
+        type="single"
+        value={value}
+        // Held at the current value when single mode hands back an empty string, so the
+        // card below can never be left with no design to draw.
+        onValueChange={(next) => onChange(next || value)}
+        variant="outline"
+        className="grid w-full grid-cols-4 gap-1.5"
+        aria-label={t.flow.themeTitle}
+      >
+        {THEMES.map((theme) => (
+          <ToggleGroupItem
+            key={theme.id}
+            value={theme.id}
+            className="tap-target h-auto flex-col gap-1 rounded-xl p-1.5 data-[state=on]:border-primary data-[state=on]:bg-secondary data-[state=on]:text-secondary-foreground"
+          >
+            <ThemeSwatch theme={theme} lang={invitationLang} />
+            <span className="text-[0.625rem] leading-none">{themeName(theme, uiLang)}</span>
+          </ToggleGroupItem>
+        ))}
+      </ToggleGroup>
 
-          return (
-            <div
-              key={theme.id}
-              className={cn(
-                'overflow-hidden rounded-xl border-2 transition',
-                selected ? 'border-primary' : 'border-border',
-              )}
-            >
-              {/*
-                The miniature selects the design, and the eye beside its name opens it
-                full screen. Kept as siblings rather than nesting one inside the other:
-                a control inside a control is invalid markup and browsers disagree about
-                which of the two a tap belongs to.
-              */}
-              <button
-                type="button"
-                role="radio"
-                aria-checked={selected}
-                aria-label={themeName(theme, uiLang)}
-                onClick={() => onChange(theme.id)}
-                className="press-soft block w-full text-start"
-              >
-                <MiniInvitation
-                  themeId={theme.id}
-                  lang={invitationLang}
-                  name1={name1}
-                  name2={name2}
-                  eventDate={eventDate}
-                  eventType={eventType}
-                />
-              </button>
-
-              <div className="flex items-center gap-2 bg-card px-3 py-2">
-                <span className="text-sm font-medium">{themeName(theme, uiLang)}</span>
-
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="icon"
-                  onClick={() => onTry(theme.id)}
-                  aria-label={t.theme.themeView}
-                  title={t.theme.themeView}
-                  className="ms-auto rounded-full"
-                >
-                  <Eye aria-hidden="true" />
-                </Button>
-
-                <span
-                  className={cn(
-                    'flex size-5 shrink-0 items-center justify-center rounded-full border',
-                    selected ? 'border-primary bg-primary' : 'border-border',
-                  )}
-                  aria-hidden="true"
-                >
-                  {selected ? <Check className="size-3 text-primary-foreground" /> : null}
-                </span>
-              </div>
-            </div>
-          );
-        })}
+      <div className="mt-3 overflow-hidden rounded-xl border-2 border-primary">
+        <MiniInvitation
+          themeId={value}
+          lang={invitationLang}
+          name1={name1}
+          name2={name2}
+          eventDate={eventDate}
+          eventType={eventType}
+          size="lg"
+        />
       </div>
+
+      {/* The miniature is the shape and the typography. This is the whole thing, with
+          its cover, its opening and its music, which is the only way to judge the two
+          dark themes fairly. */}
+      <Button
+        type="button"
+        variant="outline"
+        onClick={onTry}
+        className="mt-2 w-full rounded-full"
+      >
+        <Eye aria-hidden="true" />
+        {t.theme.themeView}
+      </Button>
     </SectionShell>
   );
 }
