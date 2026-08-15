@@ -9,26 +9,27 @@ import type { InvitationView } from '@/lib/invitation-view';
 import type { Dictionary } from '@/i18n/ui';
 
 /**
- * The invitation, exactly as a guest receives it.
+ * The invitation, as a panel over the flow rather than a screen replacing it.
  *
- * This is the screen the paywall sits behind rather than in front of, so it is
- * deliberately naked: the whole viewport, no header, no column, no support bubble, and
- * the real `InvitationShell` rather than a mockup of it. The old build had this as its
- * own route precisely so nothing could frame it; a full bleed dialog is that same
- * decision expressed on a page that no longer navigates.
+ * It used to take the whole viewport, on the reasoning that what is on screen should be
+ * exactly what a guest receives. The cost was that the customer lost the page: opening
+ * the preview felt like navigating away from a form they were halfway through, and
+ * closing it felt like starting again. A panel keeps the flow visible behind it, so the
+ * preview reads as a look at the card rather than a departure from the builder.
  *
- * Two things here are load bearing and easy to undo by accident:
+ * Two things are load bearing and easy to undo by accident.
  *
  * It mounts on the unopened cover and waits for the customer to tap it. `audio.start()`
- * runs synchronously inside that tap handler inside `InvitationExperience`, and it is
- * only accepted by Safari while the gesture is still on the stack. Anything that opens
- * the card automatically on mount forfeits the music, and the failure is silent and
- * invisible on a desktop.
+ * runs synchronously inside that tap handler inside `InvitationExperience`, and Safari
+ * only accepts it while the gesture is still on the stack. Anything that opens the card
+ * automatically on mount forfeits the music, silently, and invisibly on a desktop.
  *
- * The escape is a floating control rather than a bar along the bottom, so it sits over
- * the card instead of shortening it. `--inv-toggle-offset` lifts the invitation's own
- * mute toggle clear of nothing here, but the variable is still set so the toggle keeps
- * the same resting position it has on the sample screen.
+ * The panel is what the mute toggle and the confetti measure themselves against, and
+ * that is not a coincidence to be tidied away. Both are `position: fixed`, and a
+ * transformed ancestor becomes the containing block for fixed descendants. The centred
+ * dialog carries `translate-x-[-50%] translate-y-[-50%]`, so the toggle sits in the
+ * panel's own corner and the confetti falls inside the panel. Remove that transform and
+ * both escape onto the page behind.
  */
 export function PreviewDialog({
   open,
@@ -44,31 +45,36 @@ export function PreviewDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        fullBleed
         showCloseButton={false}
-        // Radix needs a title or it warns and hands screen readers an unnamed dialog.
-        // Visually hidden, because a heading over the card is chrome.
         aria-describedby={undefined}
-        className="border-0 p-0"
+        // Tall and narrow, close to the proportion of the phone a guest opens it on.
+        // Overflow is owned here and nowhere else: the shell keeps `min-h-full` and no
+        // scroller of its own, so there is exactly one scrolling box.
+        className="h-[85dvh] gap-0 overflow-hidden rounded-2xl p-0 sm:max-w-sm"
       >
+        {/* Radix needs a title or it warns and hands screen readers an unnamed dialog.
+            Visually hidden, because a heading over the card is chrome. */}
         <DialogTitle className="sr-only">{t.flow.previewTitle}</DialogTitle>
 
-        <div style={{ '--inv-toggle-offset': '5.5rem' } as CSSProperties}>
-          <InvitationShell view={view} />
+        <div
+          className="h-full overflow-y-auto overscroll-contain"
+          // The toggle sits above the panel's own bottom edge rather than the phone's.
+          style={{ '--inv-toggle-offset': '1rem' } as CSSProperties}
+        >
+          <InvitationShell view={view} contained />
         </div>
 
         <Button
           type="button"
           variant="outline"
-          size="icon-lg"
+          size="icon"
           onClick={() => onOpenChange(false)}
           aria-label={t.flow.previewClose}
           title={t.flow.previewClose}
-          className="fixed top-4 start-4 z-50 rounded-full bg-card/80 backdrop-blur"
+          className="absolute top-3 start-3 z-50 rounded-full bg-card/80 backdrop-blur"
         >
           <X aria-hidden="true" />
         </Button>
-
       </DialogContent>
     </Dialog>
   );

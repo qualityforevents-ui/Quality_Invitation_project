@@ -139,10 +139,25 @@ export function ConfettiBurst({ recipe }: { recipe: ConfettiRecipe }) {
 
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
 
+    /*
+     * The canvas measures itself, not the window.
+     *
+     * It used to read innerWidth and innerHeight, which was invisibly correct only
+     * while the invitation always filled the screen. The builder shows it in a panel
+     * now, and a canvas is a replaced element: given width and height attributes and no
+     * CSS size, it lays out at its intrinsic size, so it became a viewport sized sheet
+     * anchored to one edge of the panel and threw confetti across the page behind it.
+     * `size-full` in the class list is the other half of this fix and has to stay.
+     */
+    function measure() {
+      return { w: canvas?.clientWidth ?? 0, h: canvas?.clientHeight ?? 0 };
+    }
+
     function size() {
       if (!canvas || !ctx) return;
-      canvas.width = Math.floor(window.innerWidth * dpr);
-      canvas.height = Math.floor(window.innerHeight * dpr);
+      const { w, h } = measure();
+      canvas.width = Math.floor(w * dpr);
+      canvas.height = Math.floor(h * dpr);
       // setTransform rather than scale: resizing resets the context, and stacking
       // scale calls across resizes would compound.
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -165,8 +180,7 @@ export function ConfettiBurst({ recipe }: { recipe: ConfettiRecipe }) {
       speedMin: number,
       speedMax: number,
     ) {
-      const w = window.innerWidth;
-      const h = window.innerHeight;
+      const { w, h } = measure();
       for (let i = 0; i < count; i += 1) {
         particles.push(
           makeParticle(recipe, w * originXFraction, h * 0.92, baseAngle, 0.38, speedMin, speedMax),
@@ -180,8 +194,7 @@ export function ConfettiBurst({ recipe }: { recipe: ConfettiRecipe }) {
       const dt = Math.min(MAX_DT, (now - last) / 1000 || 0.016);
       last = now;
 
-      const w = window.innerWidth;
-      const h = window.innerHeight;
+      const { w, h } = measure();
       ctx.clearRect(0, 0, w, h);
 
       for (let i = particles.length - 1; i >= 0; i -= 1) {
@@ -250,7 +263,7 @@ export function ConfettiBurst({ recipe }: { recipe: ConfettiRecipe }) {
     <canvas
       ref={canvasRef}
       aria-hidden="true"
-      className="pointer-events-none fixed inset-0 z-[60]"
+      className="pointer-events-none fixed inset-0 z-[60] size-full"
     />
   );
 }
