@@ -29,9 +29,9 @@ export function ReviewForm({ lang, t }: { lang: Lang; t: Dictionary }) {
   const copy = isArabic
     ? {
         name: 'اسمك',
-        namePlaceholder: 'مروة و أحمد',
+        namePlaceholder: 'مثال: مروة و أحمد',
         city: 'المدينة',
-        cityPlaceholder: 'القاهرة',
+        cityPlaceholder: 'مثال: القاهرة',
         body: 'رأيك',
         bodyPlaceholder: 'احكيلنا تجربتك مع الدعوة',
         send: 'ابعت رأيك',
@@ -42,9 +42,9 @@ export function ReviewForm({ lang, t }: { lang: Lang; t: Dictionary }) {
       }
     : {
         name: 'Your name',
-        namePlaceholder: 'Marwa and Ahmed',
+        namePlaceholder: 'e.g. Marwa and Ahmed',
         city: 'City',
-        cityPlaceholder: 'Cairo',
+        cityPlaceholder: 'e.g. Cairo',
         body: 'Your review',
         bodyPlaceholder: 'Tell us how it went',
         send: 'Send review',

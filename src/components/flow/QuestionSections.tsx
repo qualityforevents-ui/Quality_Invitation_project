@@ -468,7 +468,7 @@ export function MapSection({
           dir="ltr"
           value={value}
           onChange={(event) => onChange(event.target.value)}
-          placeholder="https://maps.app.goo.gl/..."
+          placeholder={t.flow.mapPlaceholder}
           enterKeyHint="next"
           aria-label={t.flow.mapTitle}
           aria-invalid={invalid ? true : undefined}
