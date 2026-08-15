@@ -21,3 +21,10 @@ public/music/*.mp3
 # Temporary probe scripts. Never meant to be kept.
 /probe*.cjs
 /*.probe.ts
+
+# Third party agent skills, installed per developer rather than committed.
+# They live in the user profile now (npx skills add Leonxlnx/taste-skill --global),
+# so a copy here would be duplicate weight in a repo that ships an invitation app.
+/.agents
+/.claude/skills
+/skills-lock.json
