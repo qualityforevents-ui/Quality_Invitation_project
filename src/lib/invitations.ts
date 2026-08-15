@@ -79,7 +79,12 @@ export async function createDraft(patch: InvitationPatch, uiLang: Lang): Promise
         slug: desiredSlug(name1, name2, attemptIndex),
 
         uiLang: patch.uiLang ?? uiLang,
-        invitationLang: patch.invitationLang ?? patch.uiLang ?? uiLang,
+        // Deliberately not seeded from uiLang. Which language somebody reads the
+        // builder in says nothing about which language their guests should read the
+        // card in, and inheriting it quietly made the choice for them. Arabic is the
+        // default because it is the primary market, and the real decision is made on
+        // the theme step where the toggle redraws every miniature.
+        invitationLang: patch.invitationLang ?? 'AR',
 
         eventType: patch.eventType ?? 'ENGAGEMENT',
         name1,

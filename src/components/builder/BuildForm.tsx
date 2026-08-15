@@ -6,7 +6,6 @@ import { SaveIndicator, SegmentedField, TextAreaField, TextField } from './Field
 import { buttonClass } from '@/components/ui/Button';
 import { useAutosave } from '@/lib/useAutosave';
 import { isGoogleMapsUrl } from '@/lib/validation';
-import { nameFitsLanguage } from '@/lib/script';
 import type { Dictionary } from '@/i18n/ui';
 import type { EventType, Lang, Package } from '@/generated/prisma/enums';
 
@@ -42,7 +41,6 @@ export function BuildForm({
   t,
   today,
   packageId,
-  invitationLang,
 }: {
   initial: BuilderValues;
   lang: Lang;
@@ -51,8 +49,6 @@ export function BuildForm({
   today: string;
   /** Chosen on the landing page. Stored with the first save so it is never lost. */
   packageId: Package;
-  /** The language the card renders in, which decides what script the names must be. */
-  invitationLang: Lang;
 }) {
   const router = useRouter();
   const formRef = useRef<HTMLDivElement>(null);
@@ -73,18 +69,15 @@ export function BuildForm({
       : undefined;
 
   /*
-   * An Arabic card must carry Arabic names. Enforced here, at the point of entry, so the
-   * couple write their own spelling rather than having one guessed for them further
-   * down the flow.
+   * Names are free text in any script, deliberately. The invitation language is chosen
+   * on the theme step, after this form, so nothing here can know what script the card
+   * will want, and punishing input against a decision the customer has not made yet was
+   * a mistake this form used to make. The offer to rewrite Latin names in Arabic lives
+   * on the theme step, beside the language choice that makes it relevant.
    */
-  const wrongScript = {
-    name1: !nameFitsLanguage(values.name1, invitationLang),
-    name2: !nameFitsLanguage(values.name2, invitationLang),
-  };
-
   const missing = {
-    name1: values.name1.trim().length === 0 || wrongScript.name1,
-    name2: values.name2.trim().length === 0 || wrongScript.name2,
+    name1: values.name1.trim().length === 0,
+    name2: values.name2.trim().length === 0,
     venueName: values.venueName.trim().length === 0,
     eventDate: !DATE_PATTERN.test(values.eventDate),
     eventTime: !TIME_PATTERN.test(values.eventTime),
@@ -184,13 +177,7 @@ export function BuildForm({
           placeholder={t.build.name1Placeholder}
           value={values.name1}
           onChange={(event) => set('name1', event.target.value)}
-          error={
-            wrongScript.name1
-              ? t.errors.nameMustBeArabic
-              : showMissing && missing.name1
-                ? t.errors.required
-                : undefined
-          }
+          error={showMissing && missing.name1 ? t.errors.required : undefined}
           autoComplete="off"
           maxLength={60}
         />
@@ -199,13 +186,7 @@ export function BuildForm({
           placeholder={t.build.name2Placeholder}
           value={values.name2}
           onChange={(event) => set('name2', event.target.value)}
-          error={
-            wrongScript.name2
-              ? t.errors.nameMustBeArabic
-              : showMissing && missing.name2
-                ? t.errors.required
-                : undefined
-          }
+          error={showMissing && missing.name2 ? t.errors.required : undefined}
           hint={t.build.namesHint}
           autoComplete="off"
           maxLength={60}

@@ -10,7 +10,7 @@ import type { PhotoCrop } from '@/lib/imagekit';
 import { buttonClass } from '@/components/ui/Button';
 import { useAutosave } from '@/lib/useAutosave';
 import { cn } from '@/lib/cn';
-import { nameFitsLanguage } from '@/lib/script';
+import { suggestArabicName } from '@/lib/arabic-suggest';
 import { getTheme, THEMES } from '@/themes/registry';
 import type { Dictionary } from '@/i18n/ui';
 import type { EventType, Lang } from '@/generated/prisma/enums';
@@ -46,6 +46,12 @@ export function ThemeStep({
   const router = useRouter();
 
   const [invitationLang, setInvitationLang] = useState<Lang>(initialInvitationLang);
+  /*
+   * Local copies of the names, because this step can now rewrite them: accepting an
+   * Arabic suggestion updates these, the autosave patch carries them, and the four
+   * miniatures below redraw with the new spelling in the same frame.
+   */
+  const [names, setNames] = useState({ name1, name2 });
   const [themeId, setThemeId] = useState(initialThemeId);
   const [musicTrackId, setMusicTrackId] = useState(initialMusicTrackId);
   const [photoFileId, setPhotoFileId] = useState<string | null>(initialPhotoPath);
@@ -55,8 +61,8 @@ export function ThemeStep({
   const [photoCrop, setPhotoCrop] = useState<PhotoCrop | null>(initialPhotoCrop);
 
   const patch = useMemo(
-    () => ({ invitationLang, themeId, musicTrackId, photoFileId, photoCrop }),
-    [invitationLang, themeId, musicTrackId, photoFileId, photoCrop],
+    () => ({ invitationLang, themeId, musicTrackId, photoFileId, photoCrop, ...names }),
+    [invitationLang, themeId, musicTrackId, photoFileId, photoCrop, names],
   );
 
   const { status: saveStatus, flush } = useAutosave(patch);
@@ -75,13 +81,20 @@ export function ThemeStep({
   }
 
   /*
-   * An Arabic card must show Arabic names, so switching the language to Arabic while the
-   * names are in Latin blocks the way forward rather than merely warning. Recomputed as
-   * the toggle changes, so the consequence appears the moment the choice is made rather
-   * than two screens later.
+   * Offered, never imposed. When the card is Arabic and a name was typed in Latin, a
+   * candidate Arabic spelling sits one tap away. The customer accepting it is what
+   * makes the conversion safe: the same Latin spelling is written differently by
+   * different families, and only its owner knows which is theirs, so the machine
+   * proposes and the person decides. Nothing blocks: a couple who want Latin names on
+   * an Arabic card can walk straight past.
    */
-  const scriptMismatch =
-    !nameFitsLanguage(name1, invitationLang) || !nameFitsLanguage(name2, invitationLang);
+  const suggestions =
+    invitationLang === 'AR'
+      ? [
+          { key: 'name1' as const, current: names.name1, arabic: suggestArabicName(names.name1) },
+          { key: 'name2' as const, current: names.name2, arabic: suggestArabicName(names.name2) },
+        ].filter((entry) => entry.arabic !== null)
+      : [];
 
   const languageOptions: Array<{ value: Lang; label: string }> = [
     { value: 'AR', label: 'العربية' },
@@ -127,20 +140,25 @@ export function ThemeStep({
         <p className="mt-2 text-xs leading-relaxed text-ink-faint">{t.theme.invitationLangHint}</p>
       </section>
 
-      {/*
-        The names are shown in whatever script they were typed in, which the spec
-        requires and which is right: a couple may genuinely want Latin names on an
-        Arabic card. But it is more often a mismatch nobody noticed, and it is most
-        visible here, where four miniatures are showing it.
+      {suggestions.length > 0 ? (
+        <div className="rounded-xl border border-gold/40 bg-gold-wash px-4 py-3">
+          <p className="text-xs leading-relaxed text-ink">{t.theme.convertOffer}</p>
 
-        Deliberately a question and a link back, not an automatic conversion.
-        Transliterating "mariam" could produce مريم or ماريام, and quietly printing the
-        wrong spelling of somebody's name on their wedding invitation is not a risk
-        worth taking on their behalf.
-      */}
-      {scriptMismatch ? (
-        <div className="rounded-xl border border-danger/40 bg-danger/5 px-4 py-3">
-          <p className="text-xs leading-relaxed text-danger">{t.theme.scriptMismatch}</p>
+          <div className="mt-2.5 flex flex-wrap gap-2">
+            {suggestions.map((entry) => (
+              <button
+                key={entry.key}
+                type="button"
+                onClick={() => setNames((current) => ({ ...current, [entry.key]: entry.arabic! }))}
+                className="tap-target rounded-full border border-gold/60 bg-white px-4 py-2 text-sm font-medium text-gold-deep transition active:scale-95"
+              >
+                <span className="text-xs text-ink-faint">{entry.current}</span>
+                <span className="mx-1.5 text-gold" aria-hidden="true">{'\u2190'}</span>
+                {entry.arabic}
+              </button>
+            ))}
+          </div>
+
           <button
             type="button"
             onClick={async () => {
@@ -148,7 +166,7 @@ export function ThemeStep({
               router.refresh();
               router.push('/build');
             }}
-            className="mt-2 text-xs font-semibold text-danger underline underline-offset-4"
+            className="mt-2.5 text-xs text-ink-faint underline underline-offset-4"
           >
             {t.theme.scriptMismatchCta}
           </button>
@@ -165,8 +183,8 @@ export function ThemeStep({
               lang={invitationLang}
               uiLang={uiLang}
               selected={theme.id === themeId}
-              name1={name1}
-              name2={name2}
+              name1={names.name1}
+              name2={names.name2}
               eventDate={eventDate}
               eventType={eventType}
               onSelect={() => selectTheme(theme.id)}
@@ -218,9 +236,7 @@ export function ThemeStep({
           */}
           <button
             type="button"
-            disabled={scriptMismatch}
             onClick={async () => {
-              if (scriptMismatch) return;
               await flush();
               router.refresh();
               router.push('/build/preview');
@@ -229,12 +245,6 @@ export function ThemeStep({
           >
             {t.theme.toPreview}
           </button>
-
-          {/* Repeated down here because the notice above may be scrolled off screen by
-              the time somebody reaches for this button. */}
-          {scriptMismatch ? (
-            <p className="mt-2 text-center text-xs text-danger">{t.theme.scriptMismatch}</p>
-          ) : null}
         </div>
       </div>
     </div>

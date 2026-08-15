@@ -19,7 +19,7 @@
  */
 
 /** Common Egyptian given names, mapped to the spelling people actually use. */
-const NAME_DICTIONARY: Record<string, string> = {
+export const NAME_DICTIONARY: Record<string, string> = {
   محمد: 'mohamed',
   احمد: 'ahmed',
   محمود: 'mahmoud',
