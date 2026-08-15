@@ -144,20 +144,32 @@ export function ThemeStep({
             {invitationLang === 'AR' ? t.theme.convertOffer : t.theme.convertOfferLatin}
           </p>
 
-          <div className="mt-2.5 flex flex-wrap gap-2">
+          {/*
+            One button for the pair, carrying both spellings on its face. Seeing the
+            exact result before tapping is what makes the conversion the customer's
+            decision rather than the machine's, so the preview stays even though the
+            action collapsed to a single tap. When only one name needs converting the
+            button naturally shows and converts just that one.
+          */}
+          <button
+            type="button"
+            onClick={() =>
+              setNames((current) => {
+                const next = { ...current };
+                for (const entry of suggestions) next[entry.key] = entry.next!;
+                return next;
+              })
+            }
+            className="tap-target mt-2.5 w-full rounded-xl border border-gold/60 bg-white px-4 py-2.5 transition active:scale-[0.98]"
+          >
             {suggestions.map((entry) => (
-              <button
-                key={entry.key}
-                type="button"
-                onClick={() => setNames((current) => ({ ...current, [entry.key]: entry.next! }))}
-                className="tap-target rounded-full border border-gold/60 bg-white px-4 py-2 text-sm font-medium text-gold-deep transition active:scale-95"
-              >
+              <span key={entry.key} className="flex items-baseline justify-center gap-1.5 py-0.5">
                 <span className="text-xs text-ink-faint">{entry.current}</span>
-                <span className="mx-1.5 text-gold" aria-hidden="true">{'\u2190'}</span>
-                {entry.next}
-              </button>
+                <span className="text-gold" aria-hidden="true">{'\u2190'}</span>
+                <span className="text-sm font-semibold text-gold-deep">{entry.next}</span>
+              </span>
             ))}
-          </div>
+          </button>
 
           <button
             type="button"
