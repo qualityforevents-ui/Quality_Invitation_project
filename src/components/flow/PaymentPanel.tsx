@@ -104,7 +104,7 @@ export function PaymentPanel({
   }
 
   return (
-    <section className="rise scroll-mt-24 rounded-2xl border bg-card px-5 py-5 shadow-[0_10px_30px_-24px_rgba(35,32,27,0.55)]">
+    <section className="rise rounded-2xl border bg-card px-5 py-5 shadow-[0_10px_30px_-24px_rgba(35,32,27,0.55)]">
       <h2 className="text-xl font-bold">{t.flow.payTitle}</h2>
 
       <div className="mt-4 flex items-baseline justify-center gap-2 rounded-2xl border border-primary/30 bg-secondary px-4 py-4">

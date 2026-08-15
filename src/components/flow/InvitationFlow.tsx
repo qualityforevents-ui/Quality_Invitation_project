@@ -528,7 +528,15 @@ export function InvitationFlow({
 
             if (isActive) {
               return (
-                <div key={id} ref={activeRef}>
+                /*
+                 * The scroll margin belongs here, on the element scrollIntoView is
+                 * actually called on, and not on the card inside it. It spent a while on
+                 * the inner section, where scroll-margin means nothing, so every reveal
+                 * parked the question flush against the top of the window with its
+                 * heading behind the sticky header. Sized to clear that header, 56px of
+                 * bar plus the 4px progress rail, with room to breathe under it.
+                 */
+                <div key={id} ref={activeRef} className="scroll-mt-20">
                   {renderSection(id)}
                 </div>
               );

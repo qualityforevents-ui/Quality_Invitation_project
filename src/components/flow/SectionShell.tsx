@@ -42,7 +42,7 @@ export function SectionShell({
   return (
     <section
       className={cn(
-        'rise scroll-mt-24 rounded-2xl border bg-card px-5 py-5 shadow-[0_10px_30px_-24px_rgba(35,32,27,0.55)]',
+        'rise rounded-2xl border bg-card px-5 py-5 shadow-[0_10px_30px_-24px_rgba(35,32,27,0.55)]',
         className,
       )}
     >
