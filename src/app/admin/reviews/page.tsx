@@ -100,7 +100,7 @@ export default async function AdminReviewsPage() {
                     <input type="hidden" name="status" value="APPROVED" />
                     <button
                       type="submit"
-                      className="tap-target w-full rounded-lg bg-adm-accent px-3 py-2 text-xs font-semibold text-adm-bg"
+                      className="press tap-target w-full rounded-lg bg-adm-accent px-3 py-2 text-xs font-semibold text-adm-bg"
                     >
                       انشر
                     </button>
@@ -113,7 +113,7 @@ export default async function AdminReviewsPage() {
                     <input type="hidden" name="status" value="HIDDEN" />
                     <button
                       type="submit"
-                      className="tap-target w-full rounded-lg border border-adm-line px-3 py-2 text-xs text-adm-muted"
+                      className="press tap-target w-full rounded-lg border border-adm-line px-3 py-2 text-xs text-adm-muted"
                     >
                       اخفي
                     </button>

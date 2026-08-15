@@ -149,7 +149,7 @@ export function PhotoUpload({
             <button
               type="button"
               onClick={handleRemove}
-              className="tap-target rounded-full px-4 text-sm text-danger underline underline-offset-4"
+              className="press tap-target rounded-full px-4 text-sm text-danger underline underline-offset-4"
             >
               {t.theme.photoRemove}
             </button>

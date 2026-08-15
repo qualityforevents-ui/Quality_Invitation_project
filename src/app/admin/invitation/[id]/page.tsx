@@ -142,7 +142,7 @@ export default async function ApprovalPage({ params, searchParams }: Props) {
               <input type="hidden" name="id" value={invitation.id} />
               <button
                 type="submit"
-                className="tap-target w-full rounded-xl border border-adm-danger/40 px-5 py-3 text-sm text-adm-danger"
+                className="press tap-target w-full rounded-xl border border-adm-danger/40 px-5 py-3 text-sm text-adm-danger"
               >
                 إيقاف الرابط
               </button>
@@ -187,7 +187,7 @@ export default async function ApprovalPage({ params, searchParams }: Props) {
               />
               <button
                 type="submit"
-                className="tap-target w-full rounded-xl border border-adm-danger/40 px-5 py-3 text-sm text-adm-danger"
+                className="press tap-target w-full rounded-xl border border-adm-danger/40 px-5 py-3 text-sm text-adm-danger"
               >
                 رفض
               </button>

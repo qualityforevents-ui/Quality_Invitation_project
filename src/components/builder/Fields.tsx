@@ -153,7 +153,7 @@ export function SegmentedField<T extends string>({
               onClick={() => onChange(option.value)}
               aria-pressed={selected}
               className={cn(
-                'tap-target rounded-xl border px-2 py-3 text-sm font-medium transition',
+                'press tap-target rounded-xl border px-2 py-3 text-sm font-medium',
                 selected
                   ? 'border-gold bg-gold-wash text-gold-deep'
                   : 'border-line bg-white text-ink-soft hover:border-gold/40',

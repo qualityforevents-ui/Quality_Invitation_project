@@ -6,7 +6,17 @@
   --color-cream-deep: #f4ebdc;
   --color-ink: #23201b;
   --color-ink-soft: #6b6355;
-  --color-ink-faint: #9a9184;
+  /*
+   * Darkened from #9a9184, which failed WCAG AA everywhere it was used: 2.91:1 on the
+   * cream page and 2.72:1 inside a gold wash panel, against a 4.5:1 requirement. It
+   * carries hints, placeholders and captions, which is ordinary body copy that somebody
+   * has to read on a phone in Egyptian daylight, so there was no tier here that could
+   * afford to be decorative. This value clears 4.5:1 on all four of our backgrounds.
+   *
+   * The cost is that it now sits closer to ink-soft than it used to. Hierarchy between
+   * the two is carried by size and weight instead of by one of them being hard to read.
+   */
+  --color-ink-faint: #726855;
   --color-gold: #b18b47;
   --color-gold-deep: #8a6a32;
   --color-gold-wash: #f6efe1;
@@ -67,6 +77,22 @@
  * Classic values as the defaults, so anything drawn outside a theme wrapper still has
  * colours rather than collapsing to transparent.
  */
+/*
+ * Motion tokens. The TypeScript mirror lives in src/lib/motion.ts, for the places that
+ * animate through framer-motion rather than CSS.
+ *
+ * The browser's built in easings barely bend, and Tailwind's bare `transition` uses one
+ * at a duration nobody chose. These are the strong curves, and having them here means a
+ * transition can be described by intent rather than by a number guessed at the call site.
+ */
+:root {
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --duration-press: 160ms;
+  --duration-quick: 180ms;
+  --duration-panel: 240ms;
+}
+
 :root {
   --inv-bg: #faf5ec;
   --inv-panel: #f3e9d8;
@@ -130,9 +156,48 @@
     outline-offset: 2px;
   }
 
+  /*
+   * Arabic needs more room between lines than Latin does. Its letters carry dots below
+   * the baseline and its tashkeel sit above it, so a line height tuned for Latin lets
+   * one line's marks collide with the next line's descenders. This is the interface
+   * default; the invitation sets its own, tighter, on display type where the names are
+   * large enough not to touch.
+   */
+  :lang(ar) {
+    line-height: 1.6;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     html {
       scroll-behavior: auto;
+    }
+
+    /*
+     * Reduced motion means less movement, not a dead interface, so this removes the
+     * things that travel and keeps the things that inform. Colour and opacity still
+     * transition everywhere, because a notice fading in is telling somebody it arrived,
+     * and taking that away costs comprehension without sparing anyone discomfort.
+     *
+     * Deliberately not the blanket `* { animation: none }` reset. That switch turns off
+     * meaning along with movement.
+     */
+    .press:active,
+    .press-soft:active {
+      transform: none;
+    }
+
+    .rise {
+      animation: reduced-fade var(--duration-quick) ease both;
+    }
+  }
+
+  /* The entrance, with the travel taken out and only the fade left. */
+  @keyframes reduced-fade {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
     }
   }
 }
@@ -141,6 +206,68 @@
   /* Thumb sized. The whole product is used one handed on a phone. */
   min-height: 44px;
   min-width: 44px;
+}
+
+/*
+ * The press.
+ *
+ * A phone gives no physical feedback, so without this a tap is a moment of silence in
+ * which the customer wonders whether the app heard them. Scaling the element scales its
+ * label and icon with it, which is what makes it read as something being pushed rather
+ * than something being redrawn.
+ *
+ * One utility rather than the same three declarations copied across every button,
+ * because a press that is 0.97 in one place and 0.95 in another is a product that feels
+ * assembled from parts.
+ */
+@utility press {
+  /*
+   * Colour is listed here rather than left to a `transition-colors` alongside it,
+   * because that utility sets transition-property outright and silently drops the
+   * transform, which leaves the press snapping instead of moving. One utility owning
+   * the whole transition is the only version of this that cannot be broken by the
+   * class next to it.
+   */
+  transition-property: transform, color, background-color, border-color, box-shadow, opacity;
+  transition-duration: var(--duration-press);
+  transition-timing-function: var(--ease-out);
+
+  &:active {
+    transform: scale(0.97);
+  }
+}
+
+/** Gentler, for large surfaces where a full press reads as the whole page flinching. */
+@utility press-soft {
+  transition-property: transform, color, background-color, border-color, box-shadow, opacity;
+  transition-duration: var(--duration-press);
+  transition-timing-function: var(--ease-out);
+
+  &:active {
+    transform: scale(0.99);
+  }
+}
+
+/*
+ * Panels and notices arriving.
+ *
+ * Starts a few pixels high and fractionally small rather than from nothing, because
+ * nothing in the physical world appears out of thin air, and a panel that scales up from
+ * a point reads as a special effect instead of a thing that arrived.
+ */
+@utility rise {
+  animation: rise var(--duration-panel) var(--ease-out) both;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 /*

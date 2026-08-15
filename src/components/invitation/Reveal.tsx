@@ -2,9 +2,9 @@
 
 import { motion } from 'framer-motion';
 import type { ReactNode } from 'react';
+import { EASE_OUT as EASE } from '@/lib/motion';
 
 /** Slow and unhurried. A card that snaps into place reads as a web page, not a card. */
-const EASE = [0.22, 1, 0.36, 1] as const;
 
 export function Reveal({
   children,

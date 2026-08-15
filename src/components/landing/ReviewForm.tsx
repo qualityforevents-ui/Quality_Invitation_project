@@ -68,7 +68,7 @@ export function ReviewForm({ lang, t }: { lang: Lang; t: Dictionary }) {
 
   if (state === 'done') {
     return (
-      <p className="mt-6 rounded-xl border border-success/30 bg-success/5 px-4 py-4 text-sm text-success">
+      <p className="rise mt-6 rounded-xl border border-success/30 bg-success/5 px-4 py-4 text-sm text-success">
         {copy.done}
       </p>
     );
@@ -128,7 +128,7 @@ export function ReviewForm({ lang, t }: { lang: Lang; t: Dictionary }) {
         />
       </label>
 
-      {state === 'error' ? <p className="text-xs text-danger">{copy.error}</p> : null}
+      {state === 'error' ? <p className="rise text-xs text-danger">{copy.error}</p> : null}
 
       <p className="text-xs text-ink-faint">{copy.note}</p>
 

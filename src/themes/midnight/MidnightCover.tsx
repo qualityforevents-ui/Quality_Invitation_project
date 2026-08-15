@@ -5,8 +5,7 @@ import { Monogram } from '@/components/invitation/Monogram';
 import { formatEventDate } from '@/lib/format';
 import type { InvitationCopy } from '@/i18n/invitation';
 import type { InvitationView } from '@/lib/invitation-view';
-
-const EASE = [0.22, 1, 0.36, 1] as const;
+import { EASE_OUT as EASE } from '@/lib/motion';
 
 /**
  * Dark elegant, closed.
@@ -56,10 +55,16 @@ export function MidnightCover({
           {copy.eventName[view.eventType]}
         </p>
 
+        {/*
+          Drawn at full width and revealed by scaling, rather than animated from width 0.
+          Width is a layout property, so the previous version asked the browser to reflow
+          the cover on every frame of a 1.3 second animation. scaleX is composited and
+          costs nothing, and the centre origin keeps the line growing out from the middle.
+        */}
         <motion.span
-          className="my-7 block h-px bg-inv-accent"
-          initial={{ width: 0, opacity: 0 }}
-          animate={{ width: 130, opacity: 0.6 }}
+          className="my-7 mx-auto block h-px w-[130px] origin-center bg-inv-accent"
+          initial={{ transform: 'scaleX(0)', opacity: 0 }}
+          animate={{ transform: 'scaleX(1)', opacity: 0.6 }}
           transition={{ duration: 1.3, delay: 0.4, ease: EASE }}
           aria-hidden="true"
         />

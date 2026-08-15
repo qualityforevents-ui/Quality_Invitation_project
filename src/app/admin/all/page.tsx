@@ -36,7 +36,7 @@ export default async function AllInvitationsPage({ searchParams }: Props) {
               key={filter.value}
               href={filter.value === 'ALL' ? '/admin/all' : `/admin/all?status=${filter.value}`}
               className={cn(
-                'shrink-0 rounded-full border px-3.5 py-2 text-xs font-medium',
+                'press tap-target inline-flex shrink-0 items-center rounded-full border px-4 py-2 text-xs font-medium',
                 active === filter.value
                   ? 'border-adm-accent bg-adm-accent/15 text-adm-accent'
                   : 'border-adm-line text-adm-muted',

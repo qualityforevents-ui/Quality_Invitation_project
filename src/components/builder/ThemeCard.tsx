@@ -49,7 +49,7 @@ export function ThemeCard({
         Kept as siblings rather than nesting the link inside the button: a link inside a
         button is invalid markup and browsers disagree about which one a tap belongs to.
       */}
-      <button type="button" onClick={onSelect} aria-pressed={selected} className="block w-full text-start">
+      <button type="button" onClick={onSelect} aria-pressed={selected} className="press-soft block w-full text-start">
         <MiniInvitation
           themeId={theme.id}
           lang={lang}
@@ -61,7 +61,7 @@ export function ThemeCard({
       </button>
 
       <div className="flex items-center justify-between gap-3 bg-white px-4 py-3">
-        <button type="button" onClick={onSelect} className="flex items-center gap-2 text-start">
+        <button type="button" onClick={onSelect} className="press flex items-center gap-2 text-start">
           <span className="text-sm font-medium text-ink">{themeName(theme, uiLang)}</span>
         </button>
 
@@ -74,7 +74,7 @@ export function ThemeCard({
           href={`/build/preview?theme=${theme.id}`}
           aria-label={viewLabel}
           title={viewLabel}
-          className="tap-target ms-auto flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-line text-ink-soft transition hover:border-gold/50 hover:text-gold-deep active:scale-95"
+          className="press tap-target ms-auto flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-line text-ink-soft hover:border-gold/50 hover:text-gold-deep"
         >
           <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5" aria-hidden="true">
             <path

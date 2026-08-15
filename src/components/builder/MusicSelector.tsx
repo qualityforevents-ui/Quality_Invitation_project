@@ -102,7 +102,7 @@ export function MusicSelector({
             <button
               type="button"
               onClick={() => onSelect(track.id)}
-              className="flex-1 text-start"
+              className="press tap-target flex flex-1 flex-col justify-center text-start"
               aria-pressed={selected}
             >
               <span className="block text-sm font-medium text-ink">{trackName(track, lang)}</span>

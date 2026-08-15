@@ -41,7 +41,7 @@ export function AdminHeader({ title, back }: { title: string; back?: string }) {
         <Link
           href={back}
           aria-label="رجوع"
-          className="tap-target -ms-2 flex items-center justify-center rounded-lg px-2 text-adm-muted"
+          className="press tap-target -ms-2 flex items-center justify-center rounded-lg px-2 text-adm-muted"
         >
           <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5 rtl:rotate-180">
             <path

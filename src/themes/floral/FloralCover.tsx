@@ -5,8 +5,7 @@ import { FloralDivider, Sprig } from './FloralOrnaments';
 import { formatEventDate } from '@/lib/format';
 import type { InvitationCopy } from '@/i18n/invitation';
 import type { InvitationView } from '@/lib/invitation-view';
-
-const EASE = [0.22, 1, 0.36, 1] as const;
+import { EASE_OUT as EASE } from '@/lib/motion';
 
 /**
  * Floral soft, closed.

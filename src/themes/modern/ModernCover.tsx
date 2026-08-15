@@ -4,8 +4,7 @@ import { motion } from 'framer-motion';
 import { formatEventDate } from '@/lib/format';
 import type { InvitationCopy } from '@/i18n/invitation';
 import type { InvitationView } from '@/lib/invitation-view';
-
-const EASE = [0.22, 1, 0.36, 1] as const;
+import { EASE_OUT as EASE } from '@/lib/motion';
 
 /**
  * Modern minimal, closed.
@@ -38,10 +37,11 @@ export function ModernCover({
         {copy.eventName[view.eventType]}
       </motion.p>
 
+      {/* Scaled rather than widened, so the reveal never touches layout. */}
       <motion.span
-        className="my-10 block h-px bg-inv-line"
-        initial={{ width: 0 }}
-        animate={{ width: 72 }}
+        className="my-10 mx-auto block h-px w-[72px] origin-center bg-inv-line"
+        initial={{ transform: 'scaleX(0)' }}
+        animate={{ transform: 'scaleX(1)' }}
         transition={{ duration: 1.1, delay: 0.2, ease: EASE }}
         aria-hidden="true"
       />

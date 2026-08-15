@@ -254,7 +254,7 @@ export function BuildForm({
             {t.build.toTheme}
           </button>
           {showMissing && missingLabels.length > 0 ? (
-            <p className="mt-2 text-center text-xs leading-relaxed text-danger">
+            <p className="rise mt-2 text-center text-xs leading-relaxed text-danger">
               {t.errors.missingFields}: {missingLabels.join('، ')}
             </p>
           ) : null}

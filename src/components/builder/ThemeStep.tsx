@@ -125,7 +125,7 @@ export function ThemeStep({
               onClick={() => setInvitationLang(option.value)}
               aria-pressed={invitationLang === option.value}
               className={cn(
-                'tap-target rounded-xl border px-3 py-3 text-sm font-medium transition',
+                'press tap-target rounded-xl border px-3 py-3 text-sm font-medium',
                 invitationLang === option.value
                   ? 'border-gold bg-gold-wash text-gold-deep'
                   : 'border-line bg-white text-ink-soft',
@@ -139,7 +139,7 @@ export function ThemeStep({
       </section>
 
       {suggestions.length > 0 ? (
-        <div className="rounded-xl border border-gold/40 bg-gold-wash px-4 py-3">
+        <div className="rise rounded-xl border border-gold/40 bg-gold-wash px-4 py-3">
           <p className="text-xs leading-relaxed text-ink">
             {invitationLang === 'AR' ? t.theme.convertOffer : t.theme.convertOfferLatin}
           </p>
@@ -160,7 +160,7 @@ export function ThemeStep({
                 return next;
               })
             }
-            className="tap-target mt-2.5 w-full rounded-xl border border-gold/60 bg-white px-4 py-2.5 transition active:scale-[0.98]"
+            className="press tap-target mt-2.5 w-full rounded-xl border border-gold/60 bg-white px-4 py-2.5"
           >
             {suggestions.map((entry) => (
               <span key={entry.key} className="flex items-baseline justify-center gap-1.5 py-0.5">
@@ -178,7 +178,7 @@ export function ThemeStep({
               router.refresh();
               router.push('/build');
             }}
-            className="mt-2.5 text-xs text-ink-faint underline underline-offset-4"
+            className="press tap-target -mx-1 mt-1 inline-flex items-center px-1 text-xs text-ink-faint underline underline-offset-4"
           >
             {t.theme.scriptMismatchCta}
           </button>

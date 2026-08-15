@@ -2,13 +2,30 @@ import { cn } from '@/lib/cn';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'quiet';
 
+/*
+ * `leading-snug` rather than `leading-none`. A line height of exactly 1 crops Arabic:
+ * the descending tails of ج ح خ ع and the dots below ب ي get cut by the button's own
+ * box, which is invisible in English and wrong in the language most of these buttons
+ * are read in.
+ *
+ * The press comes from the shared `press` utility, so every pressable surface in the
+ * product uses one scale and one curve. `transition-colors` handles the hover and
+ * disabled tints separately, which keeps the transform on its own timing.
+ */
 const BASE =
-  'tap-target inline-flex items-center justify-center gap-2 rounded-full px-6 py-3.5 text-center font-medium leading-none transition active:scale-[0.98] disabled:pointer-events-none disabled:opacity-45';
+  'press tap-target inline-flex items-center justify-center gap-2 rounded-full px-6 py-3.5 text-center font-medium leading-snug disabled:pointer-events-none';
 
 const VARIANTS: Record<ButtonVariant, string> = {
-  primary: 'bg-gold text-white shadow-[0_6px_20px_-8px_rgba(138,106,50,0.75)] hover:bg-gold-deep',
-  secondary: 'border border-line bg-white/70 text-ink hover:bg-white',
-  quiet: 'text-ink-soft underline underline-offset-4 hover:text-ink',
+  /*
+   * Disabled is a change of substance rather than a blanket fade. At 45% opacity the
+   * old treatment left gold-on-white looking like a slightly tired button that was
+   * still worth tapping; flattening the shadow removes the lift that reads as pressable.
+   */
+  primary:
+    'bg-gold text-white shadow-[0_6px_20px_-8px_rgba(138,106,50,0.75)] hover:bg-gold-deep disabled:bg-gold/40 disabled:shadow-none',
+  secondary:
+    'border border-line bg-white/70 text-ink hover:bg-white disabled:bg-white/40 disabled:text-ink-faint',
+  quiet: 'text-ink-soft underline underline-offset-4 hover:text-ink disabled:no-underline disabled:text-ink-faint',
 };
 
 /**
