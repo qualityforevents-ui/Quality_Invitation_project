@@ -36,13 +36,7 @@ import { getTheme, themeName } from '@/themes/registry';
 import { getTrack, trackName } from '@/lib/music';
 import { normaliseEgyptianPhone } from '@/lib/validation';
 import { nextSection, progressPercent, type SectionId } from '@/lib/flow/sections';
-import {
-  clampFurthest,
-  isAnswered,
-  scriptSuggestions,
-  toPatch,
-  type FlowValues,
-} from '@/lib/flow/values';
+import { clampFurthest, isAnswered, toPatch, type FlowValues } from '@/lib/flow/values';
 import { viewFromValues } from '@/lib/flow/preview-view';
 import type { Dictionary } from '@/i18n/ui';
 import type { Invitation } from '@/generated/prisma/client';
@@ -277,7 +271,8 @@ export function InvitationFlow({
             t={t}
             lang={lang}
             value={values.package}
-            onChange={(next) => setAndAdvance('package', { package: next })}
+            onChange={(next) => set({ package: next })}
+            onNext={() => advance('package')}
           />
         );
       case 'name1':
@@ -309,7 +304,8 @@ export function InvitationFlow({
           <OccasionSection
             t={t}
             value={values.eventType}
-            onChange={(next: EventType) => setAndAdvance('occasion', { eventType: next })}
+            onChange={(next: EventType) => set({ eventType: next })}
+            onNext={() => advance('occasion')}
           />
         );
       case 'eventDate':
@@ -328,15 +324,7 @@ export function InvitationFlow({
             t={t}
             lang={lang}
             value={values.eventTime}
-            onChange={(next) => {
-              // A tap on one of the four common hours answers and advances together.
-              // Typing an unusual one only sets the value; its own Next moves on.
-              if (['18:00', '19:00', '20:00', '21:00'].includes(next)) {
-                setAndAdvance('eventTime', { eventTime: next });
-              } else {
-                set({ eventTime: next });
-              }
-            }}
+            onChange={(next) => set({ eventTime: next })}
             onNext={() => advance('eventTime')}
           />
         );
@@ -377,24 +365,12 @@ export function InvitationFlow({
             name1={values.name1}
             name2={values.name2}
             onChange={(next) => {
-              /*
-               * Held rather than advanced only when there is a spelling to offer, so the
-               * offer is not scrolled past before it is read. With nothing to offer,
-               * choosing the language is the whole question and it moves on, which also
-               * keeps the tap on the language already highlighted from being a dead end.
-               */
-              if (!keptNames && scriptSuggestions(next, values.name1, values.name2).length > 0) {
-                set({ invitationLang: next });
-                return;
-              }
-
-              setAndAdvance('language', { invitationLang: next });
+              set({ invitationLang: next });
+              setKeptNames(false);
             }}
-            onConvert={(names) => setAndAdvance('language', names)}
-            onKeepNames={() => {
-              setKeptNames(true);
-              advance('language');
-            }}
+            onConvert={(names) => set(names)}
+            onKeepNames={() => setKeptNames(true)}
+            onNext={() => advance('language')}
           />
         );
       case 'theme':
@@ -418,12 +394,13 @@ export function InvitationFlow({
                   ? getTheme(themeId).defaultMusicTrackId
                   : values.musicTrackId;
 
-              setAndAdvance('theme', { themeId, musicTrackId });
+              set({ themeId, musicTrackId });
             }}
             onTry={(themeId) => {
               setTryingTheme(themeId);
               setPreviewOpen(true);
             }}
+            onNext={() => advance('theme')}
           />
         );
       case 'music':

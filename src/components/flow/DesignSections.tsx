@@ -24,6 +24,7 @@ export function LanguageSection({
   onChange,
   onConvert,
   onKeepNames,
+  onNext,
 }: {
   t: Dictionary;
   value: Lang;
@@ -31,8 +32,9 @@ export function LanguageSection({
   name2: string;
   onChange: (next: Lang) => void;
   onConvert: (names: { name1: string; name2: string }) => void;
-  /** Dismisses the offer and moves on with the names exactly as they were typed. */
+  /** Dismisses the offer, keeping the names exactly as they were typed. */
   onKeepNames: () => void;
+  onNext: () => void;
 }) {
   /*
    * Offered, never imposed, and in both directions. An Arabic card with Latin names
@@ -46,12 +48,17 @@ export function LanguageSection({
   const suggestions = scriptSuggestions(value, name1, name2);
 
   return (
-    <SectionShell title={t.flow.langTitle} hint={t.theme.invitationLangHint}>
+    <SectionShell
+      title={t.flow.langTitle}
+      hint={t.theme.invitationLangHint}
+      onNext={onNext}
+      nextLabel={t.flow.next}
+    >
       <ToggleGroup
         type="single"
         value={value}
-        // Tapping the language already highlighted confirms it rather than clearing
-        // it. See the same note on the occasion question.
+        // Held at the current value when single mode hands back an empty string, so an
+        // answer can be changed but never un made. See the occasion question.
         onValueChange={(next) => onChange((next || value) as Lang)}
         variant="outline"
         className="grid w-full grid-cols-2 gap-2"
@@ -133,6 +140,7 @@ export function ThemeSection({
   value,
   onChange,
   onTry,
+  onNext,
 }: {
   t: Dictionary;
   uiLang: Lang;
@@ -145,9 +153,10 @@ export function ThemeSection({
   onChange: (themeId: string) => void;
   /** Opens the full screen preview on a design that has not been chosen. */
   onTry: (themeId: string) => void;
+  onNext: () => void;
 }) {
   return (
-    <SectionShell title={t.flow.themeTitle}>
+    <SectionShell title={t.flow.themeTitle} onNext={onNext} nextLabel={t.flow.next}>
       <div role="radiogroup" aria-label={t.flow.themeTitle} className="flex flex-col gap-3">
         {THEMES.map((theme) => {
           const selected = theme.id === value;

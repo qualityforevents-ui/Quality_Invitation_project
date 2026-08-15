@@ -40,16 +40,23 @@ export function PackageSection({
   lang,
   value,
   onChange,
+  onNext,
 }: {
   t: Dictionary;
   lang: Lang;
   value: Package;
   onChange: (next: Package) => void;
+  onNext: () => void;
 }) {
   const isArabic = lang === 'AR';
 
   return (
-    <SectionShell title={t.flow.packageTitle} hint={t.landing.packagesSub}>
+    <SectionShell
+      title={t.flow.packageTitle}
+      hint={t.landing.packagesSub}
+      onNext={onNext}
+      nextLabel={t.flow.next}
+    >
       <div role="radiogroup" aria-label={t.flow.packageTitle} className="flex flex-col gap-3">
         {PACKAGES.map((tier) => {
           const selected = tier.id === value;
@@ -63,18 +70,45 @@ export function PackageSection({
               aria-checked={selected}
               onClick={() => onChange(tier.id)}
               className={cn(
-                'press-soft relative rounded-xl border-2 px-4 py-4 text-start',
-                selected ? 'border-primary bg-secondary' : 'border-border bg-card hover:border-primary/40',
+                /*
+                 * Selection adds emphasis rather than tinting the card.
+                 *
+                 * It used to fill the chosen tier with the gold wash, which read as the
+                 * card dimming: on the white panel these sit on, the wash is the darkest
+                 * of the three surfaces, so choosing a plan made it look recessed while
+                 * the two you had not chosen stayed bright. It also cost the thing that
+                 * matters most on this card, the price, which fell from 5.1:1 on white to
+                 * 4.38:1 on the wash and stopped clearing AA. So the fill stays white, the
+                 * border and the lift carry the state, and the tick carries it again for
+                 * anyone who does not separate gold from grey.
+                 */
+                'press-soft relative rounded-xl border-2 bg-card px-4 py-4 text-start transition',
+                selected
+                  ? 'border-primary shadow-[0_8px_24px_-12px_rgba(138,106,50,0.6)]'
+                  : 'border-border hover:border-primary/50 hover:bg-secondary/40',
               )}
             >
               {highlighted ? (
-                <Badge className="absolute -top-2.5 end-3 bg-primary text-primary-foreground">
+                /* Gold deep rather than gold: white on the lighter gold is 3.16:1, and
+                   this is 12px bold text, which needs 4.5:1. This clears it at 5:1. */
+                <Badge className="absolute -top-2.5 end-3 bg-gold-deep text-white">
                   {t.landing.packagesPopular}
                 </Badge>
               ) : null}
 
               <div className="flex items-baseline justify-between gap-3">
-                <span className="text-base font-bold">{isArabic ? tier.nameAr : tier.nameEn}</span>
+                <span className="flex items-center gap-2 text-base font-bold">
+                  <span
+                    className={cn(
+                      'flex size-5 shrink-0 items-center justify-center rounded-full border transition',
+                      selected ? 'border-primary bg-primary' : 'border-border',
+                    )}
+                    aria-hidden="true"
+                  >
+                    {selected ? <Check className="size-3 text-primary-foreground" /> : null}
+                  </span>
+                  {isArabic ? tier.nameAr : tier.nameEn}
+                </span>
                 <span className="shrink-0">
                   <span className="numeric text-xl font-bold text-secondary-foreground">{tier.price}</span>
                   <span className="ms-1 text-xs font-medium text-secondary-foreground">{t.common.egp}</span>
@@ -163,10 +197,12 @@ export function OccasionSection({
   t,
   value,
   onChange,
+  onNext,
 }: {
   t: Dictionary;
   value: EventType;
   onChange: (next: EventType) => void;
+  onNext: () => void;
 }) {
   const options: Array<{ value: EventType; label: string }> = [
     { value: 'ENGAGEMENT', label: t.build.eventTypeEngagement },
@@ -175,18 +211,13 @@ export function OccasionSection({
   ];
 
   return (
-    <SectionShell title={t.flow.occasionTitle}>
+    <SectionShell title={t.flow.occasionTitle} onNext={onNext} nextLabel={t.flow.next}>
       <ToggleGroup
         type="single"
         value={value}
-        /*
-         * A second tap on the chosen item deselects in single mode and hands back an
-         * empty string. Read as a confirmation of the current answer rather than
-         * discarded, which matters more than it looks: this question opens with an
-         * option already highlighted, so somebody who wants that option taps it, and
-         * treating that tap as nothing leaves them on a question with no way out of it.
-         * Tapping any option, including the one already lit, answers and advances.
-         */
+        // Single mode hands back an empty string when the chosen item is tapped again.
+        // Held at the current value rather than cleared, so an answer can be changed but
+        // never un made: there is no such thing as no occasion.
         onValueChange={(next) => onChange((next || value) as EventType)}
         variant="outline"
         className="grid w-full grid-cols-3 gap-2"
@@ -290,11 +321,9 @@ export function TimeSection({
   return (
     <SectionShell
       title={t.flow.timeTitle}
-      // A tap on one of the four common hours is the answer and the advance together.
-      // Only the fallback, where somebody types an unusual time, needs a button.
-      onNext={custom ? onNext : undefined}
-      nextLabel={custom ? t.flow.next : undefined}
-      blockedReason={custom && !TIME_PATTERN.test(value) ? t.errors.required : undefined}
+      onNext={onNext}
+      nextLabel={t.flow.next}
+      blockedReason={!TIME_PATTERN.test(value) ? t.errors.required : undefined}
     >
       <div className="grid grid-cols-2 gap-2">
         {COMMON_TIMES.map((time) => {

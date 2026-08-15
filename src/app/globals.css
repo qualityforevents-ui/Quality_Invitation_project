@@ -113,6 +113,7 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-placeholder: var(--placeholder);
 
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -175,6 +176,24 @@
   --muted: var(--color-cream-deep);
   --muted-foreground: var(--color-ink-faint);
 
+  /*
+   * Placeholders, and only placeholders.
+   *
+   * They cannot use --muted-foreground. That value is the darkened ink-faint, chosen
+   * because it carries hints and captions, which are text somebody has to be able to
+   * read: it clears 4.5:1 everywhere it is used and lands at 5.49:1 inside a white
+   * input. That is body copy contrast, and a placeholder at body copy contrast stops
+   * looking like an example and starts looking like an answer. With one question alone
+   * on screen in a 48px field, "معاذ" sitting there in near ink read as a name the app
+   * had already filled in.
+   *
+   * 3.55:1 on white. Deliberately below the text threshold, because a placeholder is
+   * not content: the question above the field carries the meaning, and this is only an
+   * illustration of the shape of an answer. Light enough to never be mistaken for one,
+   * dark enough to actually read on a phone in daylight.
+   */
+  --placeholder: #8f8779;
+
   --accent: var(--color-gold-wash);
   --accent-foreground: var(--color-gold-deep);
 
@@ -208,6 +227,7 @@
   --border: var(--color-adm-line);
   --input: var(--color-adm-line);
   --ring: var(--color-adm-accent);
+  --placeholder: #6b7385;
 }
 
 :root {
