@@ -3,6 +3,7 @@ import { revalidatePath } from 'next/cache';
 import { applyPatch, createDraft, getByEditToken, isEditable } from '@/lib/invitations';
 import { getEditToken, getUiLang, setEditToken } from '@/lib/session';
 import { invitationPatchSchema, isReadyForPreview, type InvitationPatch } from '@/lib/validation';
+import { todayInCairo } from '@/lib/format';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -87,7 +88,7 @@ export async function POST(request: Request) {
         requestId: created.requestId,
         slug: created.slug,
         status: created.status,
-        ready: isReadyForPreview(created),
+        ready: isReadyForPreview(created, todayInCairo()),
       });
     }
 
@@ -113,7 +114,7 @@ export async function POST(request: Request) {
       requestId: updated.requestId,
       slug: updated.slug,
       status: updated.status,
-      ready: isReadyForPreview(updated),
+      ready: isReadyForPreview(updated, todayInCairo()),
     });
   } catch (error) {
     console.error('[api/invitation] save failed', error);

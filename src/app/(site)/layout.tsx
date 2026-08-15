@@ -1,5 +1,7 @@
 import type { ReactNode } from 'react';
+import { DirectionProvider } from '@/components/DirectionProvider';
 import { SyncDocumentLang } from '@/components/SyncDocumentLang';
+import { Toaster } from '@/components/ui/sonner';
 import { uiFontVariables } from '@/lib/fonts';
 import { dirFor, htmlLangFor } from '@/i18n/ui';
 import { getUiLang } from '@/lib/session';
@@ -13,15 +15,20 @@ import { getUiLang } from '@/lib/session';
  */
 export default async function SiteLayout({ children }: { children: ReactNode }) {
   const lang = await getUiLang();
+  const dir = dirFor(lang);
 
   return (
-    <div
-      lang={htmlLangFor(lang)}
-      dir={dirFor(lang)}
-      className={`${uiFontVariables} min-h-dvh bg-cream text-ink`}
-    >
+    <div lang={htmlLangFor(lang)} dir={dir} className={`${uiFontVariables} min-h-dvh bg-background text-foreground`}>
       <SyncDocumentLang lang={lang} />
-      {children}
+      {/* Radix reads direction from context rather than from the dir attribute beside
+          it, so the same value has to be handed over explicitly. See the component. */}
+      <DirectionProvider dir={dir}>{children}</DirectionProvider>
+      {/*
+        Top centre, not sonner's default bottom right. Bottom right is where the
+        WhatsApp support bubble lives, and it is pinned to the physical right precisely
+        so it does not move between languages, so a toast there covers it in both.
+      */}
+      <Toaster position="top-center" />
     </div>
   );
 }

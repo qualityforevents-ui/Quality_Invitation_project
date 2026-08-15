@@ -27,7 +27,8 @@ src/i18n/invitation.ts    copy inside the card, written twice not translated
 src/themes/registry.ts    theme colours, font pairs, defaults
 src/themes/classic/       the one theme built so far
 src/components/invitation/  cover, reveal, countdown, audio, ornaments
-src/components/builder/     the four builder steps
+src/lib/flow/               section order, values, the autosave patch
+src/components/flow/        the one page flow and its questions
 ```
 
 ## Running it
@@ -47,6 +48,49 @@ npm run build         # production build
 npm run check:music   # which audio files are still missing
 npm run backup        # dump every row to backups/
 ```
+
+---
+
+## The one page flow
+
+The customer product used to be four routes: `/build`, `/build/theme`, `/build/preview`
+and `/build/payment`. It is now one page at `/` that asks one question at a time. Every
+answered question collapses to a single tappable row above the live one, so the whole of
+what somebody has told us stays on screen and any of it can be corrected in one tap
+without rewinding anything after it.
+
+The interface is built from [shadcn/ui](https://ui.shadcn.com) components in
+`src/components/ui`. They are not themed at the call site: the shadcn token slots in
+`globals.css` are pointed at the existing brand values, so `--primary` *is* the gold the
+invitation uses as its accent and a plain `<Button>` comes out gold on cream.
+
+```
+src/lib/flow/sections.ts     the order, as data, plus which questions apply
+src/lib/flow/values.ts       FlowValues, seeding, and toPatch
+src/lib/flow/preview-view.ts builds an InvitationView from local state
+src/components/flow/         the orchestrator, the shell, and the questions
+```
+
+Four things about it are load bearing:
+
+- **`toPatch` owns the all or nothing rule.** A patch is rejected whole by the server, so
+  a half typed Google Maps link is left out of it rather than sent and refused. Every
+  field that can be invalid is excluded there and nowhere else.
+- **The date and the time start empty.** The old form pre filled a date sixty days out,
+  which is indistinguishable from a chosen one the moment it is stored. `createDraft`
+  still writes that default, so the flow, not the database, is what stops somebody paying
+  for a day they never picked.
+- **Where a customer got to is a cookie, not a column.** `qlty_step` holds the furthest
+  section, and `clampFurthest` refuses to trust it past the first unanswered question. A
+  lost cookie costs a few taps; it can never skip one.
+- **The preview is a full bleed dialog that mounts on the unopened cover.** It has to be
+  tapped open, because `audio.start()` is only accepted by Safari while that tap is still
+  on the stack.
+
+The four old paths redirect to `/` and carry their query string, so
+`/build?package=UNLIMITED` still arrives with that tier selected.
+`/build/status/<editToken>` was deliberately **not** moved: it is where every paying
+customer lands and it is inside messages already sent.
 
 ---
 
@@ -111,7 +155,7 @@ than the site's gold: it has to read as WhatsApp at a glance. It is pinned to th
 physical right, not the logical end, so it does not swap corners when somebody changes
 language.
 
-It appears on the landing page, the three builder steps, and the waiting screen, where
+It appears on the one page flow and on the waiting screen, where
 it carries the request id into the prefilled message. Pass `raised` on any screen with a
 fixed bottom bar so the bubble clears it.
 
@@ -268,7 +312,7 @@ The code is complete. What remains is everything only you can do.
 
 1. **Provision Supabase and run the migration.** SETUP.md steps 1 to 3. Disable public
    signup while you are in there. Nothing that writes has ever run.
-2. **Walk the whole customer path on a real phone.** Build, theme, preview, pay, hand
+2. **Walk the whole customer path on a real phone.** Every question, preview, pay, hand
    off to WhatsApp, then activate it from the admin and watch the waiting screen flip.
    That is the first time most of this code will have executed.
 3. **Add the eight music files.** `npm run check:music` tells you what is missing.

@@ -1,4 +1,13 @@
 @import 'tailwindcss';
+/* Supplies animate-in, animate-out, fade-in-0, zoom-in-95 and the slide-in-from-*
+   families that every shadcn overlay (dialog, sheet, select, popover) animates with. */
+@import 'tw-animate-css';
+
+/* shadcn's components are written against this variant. Nothing in the customer facing
+   site turns it on: the brand is a warm light one and has no dark mode. It exists so a
+   shadcn control dropped into the dark admin renders in the admin's own palette rather
+   than glowing cream in the middle of it. */
+@custom-variant dark (&:is(.dark *));
 
 @theme {
   /* Customer facing site: landing, builder, payment. Warm, light, calm. */
@@ -71,6 +80,44 @@
   --color-inv-accent: var(--inv-accent);
   --color-inv-accent-soft: var(--inv-accent-soft);
   --color-inv-line: var(--inv-line);
+
+  /*
+   * The shadcn slots.
+   *
+   * Every generated component in src/components/ui is written against these names and
+   * nothing else, which is what makes the whole set take a palette rather than carry
+   * one. They are pointed at the qlty values in the :root block below, so a shadcn
+   * Button is gold on cream out of the box and no component needs overriding at the
+   * call site to stop looking like the shadcn documentation.
+   *
+   * `inline` for the same reason the invitation slots above need it: a plain @theme
+   * block is resolved at build time, which would bake the light values into the
+   * utilities and leave the dark variant with nothing to switch.
+   */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
 }
 
 /*
@@ -93,6 +140,76 @@
   --duration-panel: 240ms;
 }
 
+/*
+ * What the shadcn slots actually hold.
+ *
+ * These are the existing brand colours under shadcn's names, not a second palette
+ * living beside the first. --primary is the same gold the invitation uses as its
+ * accent, --background is the same cream the site has always been, and
+ * --muted-foreground is the darkened ink-faint that was chosen because the original
+ * failed WCAG AA on every surface it appeared on. Changing a brand colour is still one
+ * edit in the @theme block above, and this maps rather than repeats it.
+ *
+ * The radius is larger than shadcn's 0.625rem default. This interface is a stack of
+ * soft cards read on a phone, and the tighter corner reads as a dashboard.
+ */
+:root {
+  --radius: 0.875rem;
+
+  --background: var(--color-cream);
+  --foreground: var(--color-ink);
+
+  /* Cards sit on cream and have to separate from it, so they are white rather than a
+     tint of the page. This is the one place the palette gains a value. */
+  --card: #ffffff;
+  --card-foreground: var(--color-ink);
+  --popover: #ffffff;
+  --popover-foreground: var(--color-ink);
+
+  --primary: var(--color-gold);
+  --primary-foreground: #ffffff;
+
+  --secondary: var(--color-gold-wash);
+  --secondary-foreground: var(--color-gold-deep);
+
+  --muted: var(--color-cream-deep);
+  --muted-foreground: var(--color-ink-faint);
+
+  --accent: var(--color-gold-wash);
+  --accent-foreground: var(--color-gold-deep);
+
+  --destructive: var(--color-danger);
+  --destructive-foreground: #ffffff;
+
+  --border: var(--color-line);
+  --input: var(--color-line);
+  --ring: var(--color-gold);
+}
+
+/* The admin palette, for shadcn controls used on that surface. The customer site never
+   sets this class. */
+.dark {
+  --background: var(--color-adm-bg);
+  --foreground: var(--color-adm-text);
+  --card: var(--color-adm-panel);
+  --card-foreground: var(--color-adm-text);
+  --popover: var(--color-adm-raised);
+  --popover-foreground: var(--color-adm-text);
+  --primary: var(--color-adm-accent);
+  --primary-foreground: var(--color-adm-bg);
+  --secondary: var(--color-adm-raised);
+  --secondary-foreground: var(--color-adm-text);
+  --muted: var(--color-adm-raised);
+  --muted-foreground: var(--color-adm-muted);
+  --accent: var(--color-adm-raised);
+  --accent-foreground: var(--color-adm-text);
+  --destructive: var(--color-adm-danger);
+  --destructive-foreground: var(--color-adm-bg);
+  --border: var(--color-adm-line);
+  --input: var(--color-adm-line);
+  --ring: var(--color-adm-accent);
+}
+
 :root {
   --inv-bg: #faf5ec;
   --inv-panel: #f3e9d8;
@@ -104,6 +221,19 @@
 }
 
 @layer base {
+  /*
+   * shadcn's components write `border` with no colour and expect the default to be the
+   * themed one. Without this they draw Tailwind's grey hairline on a warm cream page,
+   * which is the single most obvious tell that a set of components was pasted in rather
+   * than dressed. Harmless for the rest of the codebase, which already names
+   * `border-line` explicitly, and that resolves to this same value.
+   */
+  *,
+  ::after,
+  ::before {
+    border-color: var(--color-border);
+  }
+
   /*
    * Language drives typography through :lang rather than a class, so the invitation
    * can sit inside an Arabic page while rendering in English, or the reverse, and

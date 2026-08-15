@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Divider } from './Ornaments';
-import { buttonClass } from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 import { uiFontVariables } from '@/lib/fonts';
 
 /**
@@ -30,9 +30,9 @@ export function NotAvailable() {
         This invitation is not available. The link may have changed, or it is not live yet.
       </p>
 
-      <Link href="/" className={buttonClass('secondary', 'mt-10')}>
-        qlty.events
-      </Link>
+      <Button asChild variant="outline" size="lg" className="mt-10 rounded-full">
+        <Link href="/">qlty.events</Link>
+      </Button>
     </div>
   );
 }

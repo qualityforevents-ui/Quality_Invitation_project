@@ -1,67 +1,108 @@
-import Link from 'next/link';
-import { LanguageToggle } from '@/components/LanguageToggle';
+import { cookies } from 'next/headers';
+import { InvitationFlow } from '@/components/flow/InvitationFlow';
 import { SupportButton } from '@/components/SupportButton';
-import { Flow } from '@/components/landing/Flow';
-import { Packages } from '@/components/landing/Packages';
+import { HowItWorks } from '@/components/landing/HowItWorks';
 import { Reviews } from '@/components/landing/Reviews';
-import { buttonClass } from '@/components/ui/Button';
 import { getDictionary } from '@/i18n/ui';
+import { FLOW_STEP_COOKIE } from '@/lib/constants';
+import { loadDraft } from '@/lib/draft';
+import { todayInCairo } from '@/lib/format';
+import { clampFurthest, valuesFromInvitation } from '@/lib/flow/values';
+import { isValidSectionId, type SectionId } from '@/lib/flow/sections';
+import { isImageKitConfigured } from '@/lib/imagekit';
+import { isValidPackage } from '@/lib/packages';
 import { getApprovedReviews } from '@/lib/reviews';
-import { PACKAGES } from '@/lib/packages';
 import { getUiLang } from '@/lib/session';
 
 export const dynamic = 'force-dynamic';
 
-export default async function LandingPage() {
+/**
+ * The whole customer product, on one page.
+ *
+ * There were four routes here until this rebuild: details, design, preview, payment.
+ * They are gone, and what replaced them is a single sequence of questions that reveal
+ * themselves one at a time. That is a change of shape rather than of scope, so
+ * everything the four steps knew has to be assembled here instead and handed to the
+ * client in one go.
+ *
+ * Three of those things are the reason this stays a server component rather than
+ * becoming a client page that fetches:
+ *
+ * The editToken cookie is httpOnly, so only the server can read it, and it is the
+ * entire mechanism by which somebody comes back tomorrow and finds their draft where
+ * they left it. There are no accounts anywhere in this product.
+ *
+ * `todayInCairo()` must be resolved here. Asking the browser what day it is gets a
+ * different answer from the one the server gives for the last three hours of every
+ * Egyptian evening, and a date input whose `min` differs between the two renders is a
+ * hydration mismatch, which can cost the whole tree its event handlers. That failure
+ * looks exactly like a page where nothing responds to a tap.
+ *
+ * And a returning customer's position in the flow is read here too, so they land on
+ * their unanswered question on first paint rather than watching the page rearrange
+ * itself after hydration.
+ */
+export default async function HomePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ package?: string }>;
+}) {
   const lang = await getUiLang();
   const t = getDictionary(lang);
 
-  const reviews = await getApprovedReviews();
+  const [{ invitation, unavailable }, reviews, store, { package: requestedPackage }] =
+    await Promise.all([loadDraft(), getApprovedReviews(), cookies(), searchParams]);
 
-  // The headline price is the cheapest way in, so the number people see first is the
-  // smallest true one rather than an average nobody pays.
-  const lowestPrice = Math.min(...PACKAGES.map((p) => p.price));
+  /*
+   * `?package=` survives the deleted /build route, which redirects here carrying its
+   * query string. An explicit choice still beats whatever the draft was beginning to
+   * hold: arriving through a package link is somebody deciding, just now, and ignoring
+   * that because they started a draft last week would be the app arguing with them.
+   */
+  const chosenPackage =
+    requestedPackage && isValidPackage(requestedPackage) ? requestedPackage : null;
+
+  const values = valuesFromInvitation(invitation, chosenPackage);
+
+  const rememberedRaw = store.get(FLOW_STEP_COOKIE)?.value;
+  const remembered: SectionId | null =
+    rememberedRaw && isValidSectionId(rememberedRaw) ? rememberedRaw : null;
+
+  // Never trusted as given. A cookie outlives the draft it describes and can be edited
+  // by hand, so it is clamped against what is actually stored and can never open the
+  // payment panel on an invitation with no bride's name in it.
+  const furthest = invitation ? clampFurthest(remembered, values) : null;
 
   return (
     <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col px-5 pb-16">
-      <header className="flex items-center justify-between py-5">
-        <span className="text-sm font-semibold tracking-wide text-gold-deep">qlty.events</span>
-        <LanguageToggle lang={lang} label={t.common.switchTo} />
-      </header>
+      <InvitationFlow
+        lang={lang}
+        t={t}
+        initialValues={values}
+        initialFurthest={furthest}
+        today={todayInCairo()}
+        photoEnabled={isImageKitConfigured()}
+        invitation={
+          invitation
+            ? {
+                requestId: invitation.requestId,
+                editToken: invitation.editToken,
+                status: invitation.status,
+                slug: invitation.slug,
+              }
+            : null
+        }
+        databaseUnavailable={unavailable}
+      />
 
-      <section className="pt-6 pb-10">
-        <Ornament />
-
-        <h1 className="mt-6 text-[2rem] leading-[1.25] font-bold text-balance">{t.landing.title}</h1>
-
-        <p className="mt-4 text-[1.0625rem] leading-relaxed text-ink-soft text-pretty">
-          {t.landing.subtitle}
-        </p>
-
-        <div className="mt-8 flex flex-col gap-3">
-          <Link href="#packages" className={buttonClass('primary', 'w-full text-lg')}>
-            {t.landing.cta}
-          </Link>
-          <Link href="/sample" className={buttonClass('secondary', 'w-full')}>
-            {t.landing.sample}
-          </Link>
-        </div>
-
-        <div className="mt-6 rounded-2xl border border-line bg-gold-wash px-4 py-4 text-center">
-          <div className="flex items-baseline justify-center gap-2">
-            <span className="text-sm text-ink-soft">{t.landing.priceLabel}</span>
-            <span className="text-sm text-ink-soft">{lang === 'AR' ? 'يبدأ من' : 'from'}</span>
-            <span className="numeric text-2xl font-bold text-gold-deep">{lowestPrice}</span>
-            <span className="text-sm font-medium text-gold-deep">{t.common.egp}</span>
-          </div>
-          <p className="mt-1 text-xs text-ink-faint">{t.landing.priceNote}</p>
-        </div>
-      </section>
-
-      <Packages lang={lang} t={t} />
-
-      <div className="mt-10">
-        <Flow lang={lang} t={t} />
+      {/*
+        Below the fold, and mounted the whole time rather than only before the flow
+        starts. Somebody halfway through, about to be asked for money by a business they
+        have never heard of, is exactly who needs to be able to scroll down and read how
+        this works and what other couples said.
+      */}
+      <div className="mt-12">
+        <HowItWorks t={t} />
       </div>
 
       <div className="mt-10">
@@ -70,23 +111,5 @@ export default async function LandingPage() {
 
       <SupportButton message={t.landing.supportMessage} label={t.landing.support} />
     </main>
-  );
-}
-
-function Ornament() {
-  return (
-    <div className="flex items-center justify-center gap-3 text-gold" aria-hidden="true">
-      <span className="h-px w-16 bg-gradient-to-l from-gold/60 to-transparent" />
-      <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-        <path
-          d="M14 2.5 16.4 9.8 23.9 12.2 16.4 14.6 14 21.9 11.6 14.6 4.1 12.2 11.6 9.8Z"
-          stroke="currentColor"
-          strokeWidth="1"
-          strokeLinejoin="round"
-        />
-        <circle cx="14" cy="24.5" r="1.4" fill="currentColor" />
-      </svg>
-      <span className="h-px w-16 bg-gradient-to-r from-gold/60 to-transparent" />
-    </div>
   );
 }

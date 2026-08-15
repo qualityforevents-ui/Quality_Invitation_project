@@ -25,23 +25,23 @@ export function Reviews({
   t: Dictionary;
 }) {
   return (
-    <section className="border-t border-line pt-10">
+    <section className="border-t border-border pt-10">
       <h2 className="text-xl font-bold">{t.landing.reviewsTitle}</h2>
 
       {reviews.length === 0 ? (
-        <p className="mt-4 rounded-2xl border border-dashed border-line bg-white/60 px-4 py-6 text-center text-sm leading-relaxed text-ink-faint">
+        <p className="mt-4 rounded-2xl border border-dashed border-border bg-card/60 px-4 py-6 text-center text-sm leading-relaxed text-muted-foreground">
           {t.landing.reviewsEmpty}
         </p>
       ) : (
         <div className="mt-5 flex flex-col gap-3">
           {reviews.map((review) => (
-            <figure key={review.id} className="rounded-2xl border border-line bg-white px-4 py-4">
-              <blockquote className="text-sm leading-relaxed text-ink text-pretty">
+            <figure key={review.id} className="rounded-2xl border border-border bg-card px-4 py-4">
+              <blockquote className="text-sm leading-relaxed text-foreground text-pretty">
                 {review.body}
               </blockquote>
 
-              <figcaption className="mt-3 flex items-baseline gap-2 text-xs text-ink-faint">
-                <span className="font-medium text-ink-soft">{review.name}</span>
+              <figcaption className="mt-3 flex items-baseline gap-2 text-xs text-muted-foreground">
+                <span className="font-medium text-muted-foreground">{review.name}</span>
                 {review.city ? <span>· {review.city}</span> : null}
                 <span className="ms-auto">{formatShortDateTime(review.createdAt, lang)}</span>
               </figcaption>

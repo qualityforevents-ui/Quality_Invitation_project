@@ -1,7 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { buttonClass } from '@/components/ui/Button';
+import { CheckCircle2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { REVIEW_MAX_BODY, REVIEW_MAX_NAME } from '@/lib/constants';
 import type { Dictionary } from '@/i18n/ui';
 import type { Lang } from '@/generated/prisma/enums';
@@ -68,7 +72,8 @@ export function ReviewForm({ lang, t }: { lang: Lang; t: Dictionary }) {
 
   if (state === 'done') {
     return (
-      <p className="rise mt-6 rounded-xl border border-success/30 bg-success/5 px-4 py-4 text-sm text-success">
+      <p className="rise mt-6 flex items-start gap-2.5 rounded-xl border border-success/30 bg-success/5 px-4 py-4 text-sm text-success">
+        <CheckCircle2 className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
         {copy.done}
       </p>
     );
@@ -76,70 +81,76 @@ export function ReviewForm({ lang, t }: { lang: Lang; t: Dictionary }) {
 
   if (!open) {
     return (
-      <button type="button" onClick={() => setOpen(true)} className={buttonClass('secondary', 'mt-6 w-full')}>
+      <Button
+        type="button"
+        variant="outline"
+        size="lg"
+        onClick={() => setOpen(true)}
+        className="mt-6 w-full rounded-full"
+      >
         {t.landing.reviewsCta}
-      </button>
+      </Button>
     );
   }
 
-  const field =
-    'w-full rounded-xl border border-line bg-white px-4 py-3 text-ink placeholder:text-ink-faint focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/25';
-
   return (
-    <div className="mt-6 flex flex-col gap-3 rounded-2xl border border-line bg-white px-4 py-4">
-      <label className="flex flex-col gap-1.5">
-        <span className="text-sm font-medium text-ink">{copy.name}</span>
-        <input
+    <div className="rise mt-6 flex flex-col gap-4 rounded-2xl border bg-card px-4 py-4">
+      <div className="flex flex-col gap-1.5">
+        <Label htmlFor="review-name">{copy.name}</Label>
+        <Input
+          id="review-name"
           value={name}
           onChange={(event) => setName(event.target.value)}
           maxLength={REVIEW_MAX_NAME}
           placeholder={copy.namePlaceholder}
-          className={field}
         />
-      </label>
+      </div>
 
-      <label className="flex flex-col gap-1.5">
-        <span className="text-sm font-medium text-ink">
-          {copy.city} <span className="text-xs font-normal text-ink-faint">{t.common.optional}</span>
-        </span>
-        <input
+      <div className="flex flex-col gap-1.5">
+        <Label htmlFor="review-city">
+          {copy.city}
+          <span className="ms-2 text-xs font-normal text-muted-foreground">{t.common.optional}</span>
+        </Label>
+        <Input
+          id="review-city"
           value={city}
           onChange={(event) => setCity(event.target.value)}
           maxLength={60}
           placeholder={copy.cityPlaceholder}
-          className={field}
         />
-      </label>
+      </div>
 
-      <label className="flex flex-col gap-1.5">
-        <span className="flex items-baseline justify-between text-sm font-medium text-ink">
-          {copy.body}
-          <span className="text-xs font-normal text-ink-faint">
+      <div className="flex flex-col gap-1.5">
+        <div className="flex items-baseline justify-between gap-2">
+          <Label htmlFor="review-body">{copy.body}</Label>
+          <span className="text-xs text-muted-foreground">
             <span className="numeric">{REVIEW_MAX_BODY - body.length}</span> {t.build.charactersLeft}
           </span>
-        </span>
-        <textarea
+        </div>
+        <Textarea
+          id="review-body"
           value={body}
           onChange={(event) => setBody(event.target.value)}
           maxLength={REVIEW_MAX_BODY}
           rows={4}
           placeholder={copy.bodyPlaceholder}
-          className={`${field} resize-none`}
+          className="resize-none"
         />
-      </label>
+      </div>
 
-      {state === 'error' ? <p className="rise text-xs text-danger">{copy.error}</p> : null}
+      {state === 'error' ? <p className="rise text-xs text-destructive">{copy.error}</p> : null}
 
-      <p className="text-xs text-ink-faint">{copy.note}</p>
+      <p className="text-xs text-muted-foreground">{copy.note}</p>
 
-      <button
+      <Button
         type="button"
+        size="lg"
         onClick={submit}
         disabled={state === 'sending' || name.trim().length < 2 || body.trim().length < 10}
-        className={buttonClass('primary', 'w-full')}
+        className="w-full rounded-full"
       >
         {state === 'sending' ? copy.sending : copy.send}
-      </button>
+      </Button>
     </div>
   );
 }

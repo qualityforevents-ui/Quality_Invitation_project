@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 import type { CSSProperties } from 'react';
 import Link from 'next/link';
-import { BackButton } from '@/components/builder/BuildNav';
+import { BackLink } from '@/components/site/BackLink';
 import { InvitationShell } from '@/components/invitation/InvitationShell';
-import { buttonClass } from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 import { getDictionary } from '@/i18n/ui';
 import { buildSampleView } from '@/lib/sample';
 import { getUiLang } from '@/lib/session';
@@ -48,7 +48,7 @@ export default async function SamplePage({
       </div>
 
       <div className="fixed top-4 start-4 z-50">
-        <BackButton href="/" label={t.landing.sampleBack} />
+        <BackLink href="/" label={t.landing.sampleBack} />
       </div>
 
       <div className="fixed inset-x-0 bottom-0 z-50 border-t border-line bg-cream/95 backdrop-blur">
@@ -58,9 +58,9 @@ export default async function SamplePage({
           <p className="mb-2 text-center text-xs leading-relaxed text-ink-soft">
             {t.landing.sampleNote}
           </p>
-          <Link href="/#packages" className={buttonClass('primary', 'w-full')}>
-            {t.landing.sampleCta}
-          </Link>
+          <Button asChild size="lg" className="w-full rounded-full text-base">
+            <Link href="/#packages">{t.landing.sampleCta}</Link>
+          </Button>
         </div>
       </div>
     </>

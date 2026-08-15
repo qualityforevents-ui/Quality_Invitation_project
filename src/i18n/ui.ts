@@ -54,11 +54,125 @@ const AR = {
     packagesPopular: 'الأكثر طلباً',
     flowTitle: 'الرحلة من الأول للآخر',
     flowSub: 'من غير حساب ولا تسجيل. كل حاجة بتتحفظ لوحدها.',
+    /*
+     * Lived inline in the component until the rebuild, which is how it came to describe
+     * a four screen journey that no longer exists. Here it is covered by the type that
+     * makes a missing English key a compile error.
+     */
+    howSteps: [
+      {
+        title: 'جاوب سؤال سؤال',
+        body: 'اسم العريس، اسم العروسة، التاريخ، المكان. سؤال واحد في المرة، وكل إجابة بتتحفظ لوحدها. من غير حساب ولا باسورد، وتقدر تقفل الصفحة وترجع تكمل من نفس الموبايل.',
+      },
+      {
+        title: 'اختار الشكل والموسيقى',
+        body: 'أربع تصاميم، وبتشوف اسمك انت وشريكتك جوه كل واحد قبل ما تختار. تسمع الموسيقى قبل ما تحطها، وترفع صورة وتحركها جوه الإطار زي ما يعجبك.',
+      },
+      {
+        title: 'شوف الدعوة كاملة',
+        body: 'الدعوة بتفتح قدامك بالظبط زي ما الضيف هيشوفها، بالحركة والموسيقى. ده قبل ما تدفع، مش بعده.',
+      },
+      {
+        title: 'حوّل وابعتلنا',
+        body: 'تحوّل على إنستاباي، وتضغط زرار واحد يفتحلك واتساب برسالة فيها رقم طلبك جاهزة. ترفق صورة التحويل وتبعت.',
+      },
+      {
+        title: 'نفعّل الرابط',
+        body: 'بنراجع التحويل بنفسنا وبنفعّل الدعوة. الصفحة اللي انت عليها بتتحول لوحدها أول ما تتفعّل، وبيوصلك رابطين: واحد تبعته لضيوفك، وواحد للتعديل تحتفظ بيه لنفسك.',
+      },
+    ],
     reviewsTitle: 'آراء العرسان',
     reviewsEmpty: 'لسه مفيش آراء منشورة. كن أول واحد يكتب رأيه بعد فرحك.',
     reviewsCta: 'اكتب رأيك',
     support: 'محتاج مساعدة؟ كلمنا على واتساب',
     supportMessage: 'السلام عليكم، عندي سؤال عن الدعوات الإلكترونية',
+  },
+
+  /**
+   * The one page flow.
+   *
+   * Written as questions rather than as field labels, because the flow asks one thing at
+   * a time and a bare noun over a lone input reads as a form that has been chopped up.
+   * "اسم العريس إيه؟" is somebody asking; "اسم العريس" is a spreadsheet column.
+   *
+   * The `Summary` keys are the short label each answered question collapses to, and
+   * those stay nouns: a stack of ten questions with their question marks still attached
+   * is unreadable, and by then the customer is scanning for the thing they want to fix.
+   */
+  flow: {
+    start: 'يلا نبدأ',
+    resume: 'كمل دعوتك',
+    resumeHint: 'لقينا دعوة بدأتها قبل كده، كمّل من مكانك.',
+    next: 'كمل',
+    skip: 'عدّيها',
+    edit: 'تعديل',
+    change: 'غيّر',
+    progressLabel: 'اللي خلصته',
+
+    packageTitle: 'اختار باقتك',
+    packageSummary: 'الباقة',
+
+    name1Title: 'اسم العريس إيه؟',
+    name1Hint: 'هيظهر في الدعوة بالظبط زي ما هتكتبه.',
+    name1Summary: 'العريس',
+    name2Title: 'وعروستك اسمها إيه؟',
+    name2Hint: 'تقدر تعدّل أي اسم بعدين من فوق.',
+    name2Summary: 'العروسة',
+
+    occasionTitle: 'المناسبة إيه؟',
+    occasionSummary: 'المناسبة',
+
+    dateTitle: 'الفرح إمتى؟',
+    dateSummary: 'التاريخ',
+
+    timeTitle: 'الساعة كام؟',
+    timeSummary: 'الساعة',
+    timeOther: 'ميعاد تاني',
+
+    venueTitle: 'الفرح فين؟',
+    venueSummary: 'المكان',
+
+    mapTitle: 'تحب تحط لينك المكان؟',
+    mapSkip: 'مش معايا لينك',
+    mapSummary: 'لينك المكان',
+    mapNone: 'من غير لينك',
+
+    messageTitle: 'تحب تكتب كلمة لضيوفك؟',
+    messageSkip: 'من غير كلمة',
+    messageSummary: 'كلمتك',
+    messageNone: 'من غير كلمة',
+
+    langTitle: 'الدعوة تطلع بأي لغة؟',
+    langSummary: 'لغة الدعوة',
+
+    themeTitle: 'اختار شكل دعوتك',
+    themeSummary: 'التصميم',
+
+    musicTitle: 'اختار الموسيقى',
+    musicSummary: 'الموسيقى',
+
+    photoTitle: 'تحب تحطوا صورتكم؟',
+    photoSkip: 'من غير صورة',
+    photoSummary: 'الصورة',
+    photoAdded: 'الصورة اتحطت',
+    photoNone: 'من غير صورة',
+
+    previewTitle: 'دعوتك خلصت',
+    previewBody: 'افتحها وشوفها بالظبط زي ما ضيوفك هيشوفوها، بالحركة والموسيقى.',
+    previewOpen: 'افتح دعوتك',
+    previewClose: 'اقفل المعاينة',
+    previewNext: 'عجبتني، كمل',
+    previewSummary: 'المعاينة',
+    previewSeen: 'شوفتها',
+
+    briefTitle: 'احكيلنا التصميم اللي في بالك',
+    briefSummary: 'التصميم الخاص',
+
+    phoneTitle: 'رقم الواتساب بتاعك',
+    phoneHint: 'عشان نبعتلك رابط دعوتك أول ما يتفعّل.',
+    phoneSummary: 'رقم الواتساب',
+
+    payTitle: 'فاضل الدفع بس',
   },
 
   build: {
@@ -146,6 +260,8 @@ const AR = {
     desktopNote:
       'واتساب من الكمبيوتر ممكن يطلب منك مسح كود. الأسهل انك تنسخ الرسالة دي وتبعتها من موبايلك.',
     copyMessage: 'انسخ الرسالة',
+    notSaved:
+      'مقدرناش نحفظ دعوتك، فمفيش رقم طلب لسه. متحوّلش دلوقتي، لأن من غير الرقم مش هنعرف نربط تحويلك بدعوتك. اتأكد من النت وجرب تاني.',
     openAnyway: 'افتح واتساب ويب برضه',
   },
 
@@ -256,11 +372,109 @@ const EN: Dictionary = {
     packagesPopular: 'Most chosen',
     flowTitle: 'How it works, start to finish',
     flowSub: 'No account, no signup. Everything saves as you go.',
+    howSteps: [
+      {
+        title: 'Answer one question at a time',
+        body: 'The two names, the date, the venue. One question on screen at a time, and every answer saves itself. No account and no password, so you can close the page and come back later on the same phone.',
+      },
+      {
+        title: 'Choose a design and music',
+        body: 'Four designs, each with its own typography, and you see your own names inside every one before choosing. Listen to the music before you pick it, and drag a photo into the frame until it sits right.',
+      },
+      {
+        title: 'See the whole thing',
+        body: 'The invitation opens exactly as a guest will see it, animation and music included. Before you pay, not after.',
+      },
+      {
+        title: 'Pay and send',
+        body: 'Transfer over InstaPay, then one button opens WhatsApp with your request number already written. Attach the screenshot and send.',
+      },
+      {
+        title: 'We make it live',
+        body: 'A person checks the transfer and activates it. The page you are on updates by itself, and you get two links: one to send your guests, one to edit, which you keep to yourself.',
+      },
+    ],
     reviewsTitle: 'What couples say',
     reviewsEmpty: 'No reviews published yet. Be the first to write one after your event.',
     reviewsCta: 'Write a review',
     support: 'Need help? Message us on WhatsApp',
     supportMessage: 'Hello, I have a question about the digital invitations',
+  },
+
+  flow: {
+    start: 'Start',
+    resume: 'Carry on',
+    resumeHint: 'You started an invitation before. Pick it up where you left it.',
+    next: 'Next',
+    skip: 'Skip this',
+    edit: 'Edit',
+    change: 'Change',
+    progressLabel: 'Done so far',
+
+    packageTitle: 'Choose your package',
+    packageSummary: 'Package',
+
+    name1Title: "What is the groom's name?",
+    name1Hint: 'It appears on the invitation exactly as you type it.',
+    name1Summary: 'Groom',
+    name2Title: "And the bride's name?",
+    name2Hint: 'You can change either name later from above.',
+    name2Summary: 'Bride',
+
+    occasionTitle: 'What is the occasion?',
+    occasionSummary: 'Occasion',
+
+    dateTitle: 'When is it?',
+    dateSummary: 'Date',
+
+    timeTitle: 'What time does it start?',
+    timeSummary: 'Time',
+    timeOther: 'Another time',
+
+    venueTitle: 'Where is it?',
+    venueSummary: 'Venue',
+
+    mapTitle: 'Add a Google Maps link?',
+    mapSkip: 'I do not have one',
+    mapSummary: 'Map link',
+    mapNone: 'No link',
+
+    messageTitle: 'A message for your guests?',
+    messageSkip: 'No message',
+    messageSummary: 'Your message',
+    messageNone: 'No message',
+
+    langTitle: 'Which language should the invitation be in?',
+    langSummary: 'Invitation language',
+
+    themeTitle: 'Choose a design',
+    themeSummary: 'Design',
+
+    musicTitle: 'Choose the music',
+    musicSummary: 'Music',
+
+    photoTitle: 'Add a photo of the two of you?',
+    photoSkip: 'No photo',
+    photoSummary: 'Photo',
+    photoAdded: 'Photo added',
+    photoNone: 'No photo',
+
+    previewTitle: 'Your invitation is ready',
+    previewBody: 'Open it and see exactly what your guests will see, animation and music included.',
+    previewOpen: 'Open your invitation',
+    previewClose: 'Close the preview',
+    previewNext: 'Looks right, continue',
+    previewSummary: 'Preview',
+    previewSeen: 'Seen',
+
+    briefTitle: 'Tell us about the design you want',
+    briefSummary: 'Your design brief',
+
+    phoneTitle: 'Your WhatsApp number',
+    phoneHint: 'So we can send you your link the moment it goes live.',
+    phoneSummary: 'WhatsApp number',
+
+    payTitle: 'One last step',
   },
 
   build: {
@@ -349,6 +563,8 @@ const EN: Dictionary = {
     desktopNote:
       'WhatsApp on a computer may ask you to scan a code. It is easier to copy this message and send it from your phone.',
     copyMessage: 'Copy the message',
+    notSaved:
+      'We could not save your invitation, so it has no request number yet. Please do not transfer anything: without that number we cannot match your payment to your invitation. Check your connection and try again.',
     openAnyway: 'Open WhatsApp Web anyway',
   },
 

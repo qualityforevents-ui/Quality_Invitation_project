@@ -33,7 +33,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ edi
   // it is also how the admin reuses the builder rather than growing a second editor.
   // Only a rejected or expired invitation has nothing to edit, so it goes to the screen
   // that explains why.
-  const destination = isEditable(invitation) ? '/build' : `/build/status/${invitation.editToken}`;
+  const destination = isEditable(invitation) ? '/' : `/build/status/${invitation.editToken}`;
 
   return NextResponse.redirect(new URL(destination, SITE_URL), { status: 302 });
 }

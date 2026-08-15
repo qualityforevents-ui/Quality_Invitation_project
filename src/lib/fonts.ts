@@ -38,12 +38,25 @@ export const inter = Inter({
   display: 'swap',
 });
 
+/*
+ * The classic theme's three faces.
+ *
+ * These carried `preload: true` while the invitation only ever rendered on its own
+ * route. The builder is one page now and the theme miniatures render on the site's
+ * only entry page, so preloading here would push three invitation faces at every
+ * visitor who lands on the home page, including the majority who never tap Start.
+ * The reasoning under the theme faces below now applies to every face in this file:
+ * with preloading off the browser fetches only the pair the rendered card actually
+ * uses, and that is one pair.
+ */
+
 /** Classic theme display face. Calligraphic, used for the couple's names only. */
 export const arefRuqaa = Aref_Ruqaa({
   subsets: ['arabic', 'latin'],
   weight: ['400', '700'],
   variable: '--font-aref',
   display: 'swap',
+  preload: false,
 });
 
 /** Classic theme body face. A Naskh revival that sets tashkeel properly. */
@@ -53,6 +66,7 @@ export const amiri = Amiri({
   style: ['normal', 'italic'],
   variable: '--font-amiri',
   display: 'swap',
+  preload: false,
 });
 
 /** Latin counterpart for the classic theme, paired to sit beside Amiri. */
@@ -62,6 +76,7 @@ export const cormorant = Cormorant_Garamond({
   style: ['normal', 'italic'],
   variable: '--font-cormorant',
   display: 'swap',
+  preload: false,
 });
 
 /*

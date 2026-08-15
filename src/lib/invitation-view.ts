@@ -1,6 +1,6 @@
 import { getEventInstant } from './format';
 import { getTrack, trackName, trackUrl } from './music';
-import { buildPhotoUrl, parseCrop } from './imagekit';
+import { buildPhotoUrl, parseCrop } from './photo-url';
 import type { Invitation } from '@/generated/prisma/client';
 import type { EventType, Lang } from '@/generated/prisma/enums';
 

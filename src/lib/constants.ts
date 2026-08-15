@@ -23,6 +23,26 @@ export const EDIT_TOKEN_COOKIE = 'qlty_edit';
 /** Remembers the builder language across visits. Readable by the client. */
 export const UI_LANG_COOKIE = 'qlty_lang';
 
+/**
+ * How far through the flow this device got, as a section id.
+ *
+ * The flow is one page now, so "where was I" is no longer answerable from the URL, and
+ * it cannot be inferred from the row either: createDraft writes a default event date and
+ * a default time into every draft it creates, so a stored date is not evidence that
+ * anybody chose one. Guessing wrong is not a small cost, it means a returning customer
+ * either gets asked again for what they already answered or, worse, sees a date they
+ * never picked sitting in their answers as though they had.
+ *
+ * A cookie rather than a column, deliberately. The database is shared by three people
+ * and a migration alters the live schema for all of them, which is not a thing to spend
+ * on a resume hint. It is also the same shape of state as the language cookie beside it:
+ * per device, not per customer, and losing it costs a few taps and nothing else.
+ *
+ * Readable by the client so the flow can write it without a round trip. It holds no
+ * secret; the editToken beside it is the thing that is httpOnly.
+ */
+export const FLOW_STEP_COOKIE = 'qlty_step';
+
 export const COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 180; // 180 days
 
 export const DEFAULT_THEME_ID = 'classic';

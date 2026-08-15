@@ -143,17 +143,44 @@ export type RequiredForPreview = {
   name2: string;
   venueName: string;
   eventTime: string;
+  eventDate: Date;
 };
 
-export function missingRequiredFields(invitation: RequiredForPreview): string[] {
+/**
+ * `eventDate` is checked against today rather than against emptiness, because it can
+ * never be empty: it is a non-null column and `createDraft` writes today plus sixty days
+ * into every row it creates. That default is indistinguishable from a chosen date on the
+ * server, and no validation fixes that without a schema change.
+ *
+ * What this does catch is the case that is actually reachable: a draft created in
+ * January carrying a March placeholder, abandoned, and resumed in June would otherwise
+ * report itself ready with a date that has already been and gone.
+ *
+ * The thing that keeps a customer from buying a date they never chose is the flow, not
+ * this function. `eventDate` starts empty in `emptyValues`, the date question is not
+ * answered until it matches the date pattern, and a resumed session is never let past an
+ * unanswered date. Those three are the guard; this is the backstop.
+ */
+export function missingRequiredFields(
+  invitation: RequiredForPreview,
+  /** Today in Cairo as "YYYY-MM-DD". ISO date strings compare correctly as strings. */
+  todayIso: string,
+): string[] {
   const missing: string[] = [];
   if (!invitation.name1.trim()) missing.push('name1');
   if (!invitation.name2.trim()) missing.push('name2');
   if (!invitation.venueName.trim()) missing.push('venueName');
   if (!invitation.eventTime.trim()) missing.push('eventTime');
+
+  const stored = invitation.eventDate;
+  const iso = `${stored.getUTCFullYear().toString().padStart(4, '0')}-${(stored.getUTCMonth() + 1)
+    .toString()
+    .padStart(2, '0')}-${stored.getUTCDate().toString().padStart(2, '0')}`;
+  if (iso < todayIso) missing.push('eventDate');
+
   return missing;
 }
 
-export function isReadyForPreview(invitation: RequiredForPreview): boolean {
-  return missingRequiredFields(invitation).length === 0;
+export function isReadyForPreview(invitation: RequiredForPreview, todayIso: string): boolean {
+  return missingRequiredFields(invitation, todayIso).length === 0;
 }

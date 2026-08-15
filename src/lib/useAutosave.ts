@@ -101,13 +101,40 @@ export function useAutosave(
   /**
    * Last chance for anything still on the debounce. keepalive lets the request outlive
    * the component, which is the whole point: by the time this runs the customer is
-   * already on their way to the next screen.
+   * already on their way somewhere else.
+   *
+   * Unmount alone used to be enough, because moving between builder steps unmounted the
+   * form. The flow is one page now and nothing unmounts until the tab is gone, so the
+   * unmount handler stopped covering the case it was written for. `pagehide` and a
+   * `visibilitychange` to hidden are what actually fire when somebody switches to
+   * Google Maps to copy a venue link, or to their banking app to make the transfer, and
+   * on iOS that tab is often discarded rather than resumed. Without these, the last
+   * thing typed before leaving is lost, which is precisely the moment it matters most.
+   *
+   * `pagehide` rather than `beforeunload`: Safari on iOS frequently never fires
+   * `beforeunload` at all, and registering one disqualifies the page from the back
+   * forward cache.
    */
   useEffect(() => {
+    const saveOutstanding = () => {
+      if (!outstanding.current) return;
+      void post(outstanding.current, true).catch(() => {});
+      // Cleared so a hide, a return, and a second hide with nothing typed in between
+      // does not send the same body twice.
+      outstanding.current = null;
+    };
+
+    const onVisibilityChange = () => {
+      if (document.visibilityState === 'hidden') saveOutstanding();
+    };
+
+    window.addEventListener('pagehide', saveOutstanding);
+    document.addEventListener('visibilitychange', onVisibilityChange);
+
     return () => {
-      if (outstanding.current) {
-        void post(outstanding.current, true).catch(() => {});
-      }
+      window.removeEventListener('pagehide', saveOutstanding);
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+      saveOutstanding();
     };
   }, []);
 
