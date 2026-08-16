@@ -101,11 +101,11 @@ export default async function HomePage({
         have never heard of, is exactly who needs to be able to scroll down and read how
         this works and what other couples said.
       */}
-      <div className="mt-12">
+      <div className="mt-8">
         <HowItWorks t={t} />
       </div>
 
-      <div className="mt-10">
+      <div className="mt-8">
         <Reviews reviews={reviews} lang={lang} t={t} />
       </div>
 

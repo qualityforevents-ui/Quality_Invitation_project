@@ -601,7 +601,7 @@ function Hero({
   hasDraft: boolean;
 }) {
   return (
-    <section className="pt-8 pb-10">
+    <section className="pt-8 pb-3">
       <div className="flex items-center justify-center gap-3 text-primary" aria-hidden="true">
         <span className="h-px w-16 bg-gradient-to-l from-primary/60 to-transparent" />
         <svg width="28" height="28" viewBox="0 0 28 28" fill="none">

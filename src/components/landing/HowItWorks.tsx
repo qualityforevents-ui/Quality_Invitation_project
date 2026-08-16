@@ -14,7 +14,7 @@ import type { Dictionary } from '@/i18n/ui';
  */
 export function HowItWorks({ t }: { t: Dictionary }) {
   return (
-    <section className="border-t pt-10">
+    <section className="border-t pt-7">
       <h2 className="text-xl font-bold">{t.landing.flowTitle}</h2>
       <p className="mt-2 text-sm text-muted-foreground">{t.landing.flowSub}</p>
 
