@@ -35,7 +35,13 @@ import { packageName } from '@/lib/packages';
 import { getTheme, themeName } from '@/themes/registry';
 import { getTrack, trackName } from '@/lib/music';
 import { normaliseEgyptianPhone } from '@/lib/validation';
-import { nextSection, progressPercent, type SectionId } from '@/lib/flow/sections';
+import {
+  FIRST_SECTION,
+  isSectionActive,
+  nextSection,
+  progressPercent,
+  type SectionId,
+} from '@/lib/flow/sections';
 import { clampFurthest, isAnswered, toPatch, type FlowValues } from '@/lib/flow/values';
 import { viewFromValues } from '@/lib/flow/preview-view';
 import type { Dictionary } from '@/i18n/ui';
@@ -60,7 +66,9 @@ type Action =
 function reducer(state: FlowState, action: Action): FlowState {
   switch (action.type) {
     case 'start':
-      return state.furthest ? state : { ...state, furthest: 'package', active: 'package' };
+      return state.furthest
+        ? state
+        : { ...state, furthest: FIRST_SECTION, active: FIRST_SECTION };
 
     case 'set':
       return { ...state, values: { ...state.values, ...action.patch } };
@@ -74,17 +82,29 @@ function reducer(state: FlowState, action: Action): FlowState {
         action.type === 'setAndAdvance' ? { ...state.values, ...action.patch } : state.values;
 
       /*
-       * Correcting an earlier answer never rewinds the flow. Somebody fixing a
-       * misspelled bride's name at question three keeps the design they chose at
-       * question eleven, and lands back where they were rather than being walked
-       * forward through everything again.
+       * A question can stop existing under you. The brief is only asked on the bespoke
+       * tier, and the tier is now the question immediately before it, so choosing
+       * bespoke, then reopening the tier and choosing basic, leaves the flow pointing at
+       * a section that no longer applies and nothing renders. Anything pointing at a
+       * dropped question is walked forward to the next one that survives.
        */
-      if (state.furthest && action.from !== state.furthest) {
-        return { ...state, values, active: state.furthest };
+      const keep = (id: SectionId | null): SectionId | null =>
+        !id || isSectionActive(id, values.package) ? id : nextSection(id, values.package);
+
+      const furthest = keep(state.furthest);
+
+      /*
+       * Correcting an earlier answer never rewinds the flow. Somebody fixing a
+       * misspelled bride's name at question two keeps the design they chose at question
+       * ten, and lands back where they were rather than being walked forward through
+       * everything again.
+       */
+      if (furthest && action.from !== furthest) {
+        return { ...state, values, furthest, active: furthest };
       }
 
       const next = nextSection(action.from, values.package);
-      return { ...state, values, furthest: next ?? state.furthest, active: next ?? state.furthest };
+      return { ...state, values, furthest: next ?? furthest, active: next ?? furthest };
     }
 
     default:
@@ -489,7 +509,7 @@ export function InvitationFlow({
     if (!furthest) return [] as SectionId[];
 
     const list: SectionId[] = [];
-    let cursor: SectionId | null = 'package';
+    let cursor: SectionId | null = FIRST_SECTION;
 
     while (cursor) {
       list.push(cursor);

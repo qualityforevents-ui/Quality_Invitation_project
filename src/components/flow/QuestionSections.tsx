@@ -312,18 +312,31 @@ export function TimeSection({
 }) {
   const isCommon = COMMON_TIMES.includes(value);
   const [custom, setCustom] = useState(!isCommon && value.length > 0);
+  const [touched, setTouched] = useState(false);
 
   function label(time: string): string {
     const { clock, period } = formatEventTimeParts(time, lang);
     return `${clock} ${period}`;
   }
 
+  const missing = !TIME_PATTERN.test(value);
+
   return (
     <SectionShell
       title={t.flow.timeTitle}
-      onNext={onNext}
+      /*
+       * Guarded, not merely warned about. Next used to advance whatever the field held
+       * and only print the reason underneath, which let somebody walk straight past this
+       * question, and `createDraft` writes 20:00 into every row it creates. The result
+       * was a wedding invitation carrying eight in the evening that nobody had chosen and
+       * that nothing downstream could tell apart from a real answer.
+       */
+      onNext={() => {
+        setTouched(true);
+        if (!missing) onNext();
+      }}
       nextLabel={t.flow.next}
-      blockedReason={!TIME_PATTERN.test(value) ? t.errors.required : undefined}
+      blockedReason={touched && missing ? t.errors.required : undefined}
     >
       <div className="grid grid-cols-2 gap-2">
         {COMMON_TIMES.map((time) => {

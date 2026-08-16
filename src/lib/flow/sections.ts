@@ -12,7 +12,6 @@ import type { Package } from '@/generated/prisma/enums';
  * and tapping Start is what reveals the first real section.
  */
 export const SECTION_ORDER = [
-  'package',
   'name1',
   'name2',
   'occasion',
@@ -26,12 +25,19 @@ export const SECTION_ORDER = [
   'music',
   'photo',
   'preview',
+  // The tier is asked here, after the card has been seen and before the brief that only
+  // the bespoke tier collects. Asking it first meant quoting a price to somebody who had
+  // not yet seen a single thing they were buying.
+  'package',
   'brief',
   'phone',
   'payment',
 ] as const;
 
 export type SectionId = (typeof SECTION_ORDER)[number];
+
+/** Where Start opens. Derived, so reordering the array is the only edit reordering needs. */
+export const FIRST_SECTION: SectionId = SECTION_ORDER[0];
 
 /**
  * Sections that can be passed over without an answer.
