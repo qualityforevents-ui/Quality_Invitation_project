@@ -66,7 +66,7 @@ const AR = {
       },
       {
         title: 'اختار الشكل والموسيقى',
-        body: 'أربع تصاميم، وبتشوف اسمك انت وشريكتك جوه كل واحد قبل ما تختار. تسمع الموسيقى قبل ما تحطها، وترفع صورة وتحركها جوه الإطار زي ما يعجبك.',
+        body: 'اتناشر تصميم، وبتشوف اسمك انت وشريكتك جوه كل واحد قبل ما تختار. تسمع الموسيقى قبل ما تحطها، وترفع صورة وتحركها جوه الإطار زي ما يعجبك.',
       },
       {
         title: 'شوف الدعوة كاملة',
@@ -384,7 +384,7 @@ const EN: Dictionary = {
       },
       {
         title: 'Choose a design and music',
-        body: 'Four designs, each with its own typography, and you see your own names inside every one before choosing. Listen to the music before you pick it, and drag a photo into the frame until it sits right.',
+        body: 'Twelve designs, each with its own typography and its own shape, and you see your own names inside every one before choosing. Listen to the music before you pick it, and drag a photo into the frame until it sits right.',
       },
       {
         title: 'See the whole thing',

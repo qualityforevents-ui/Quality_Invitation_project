@@ -35,14 +35,14 @@ export const PACKAGES: PackageDefinition[] = [
     taglineAr: 'كل اللي محتاجه لفرحك',
     taglineEn: 'Everything you need for the day',
     featuresAr: [
-      'كل التصاميم الأربعة',
+      'كل التصاميم الاتناشر',
       'مكتبة الموسيقى كاملة',
       'صورة العروسين',
       'عربي أو إنجليزي',
       'الرابط شغال لحد شهر بعد الفرح',
     ],
     featuresEn: [
-      'All four designs',
+      'All twelve designs',
       'The full music library',
       'A photo of the couple',
       'Arabic or English',

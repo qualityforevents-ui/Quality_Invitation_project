@@ -60,13 +60,13 @@ export function ClassicInvitation({ view, copy }: { view: InvitationView; copy: 
                 does not.
               */}
               <p
-                className="font-inv-body text-[length:min(2rem,8cqw)] leading-none text-inv-accent"
+                className="font-inv-verse text-[length:min(2rem,8cqw)] leading-none text-inv-accent"
                 aria-label="بسم الله الرحمن الرحيم"
               >
                 {copy.bismillah}
               </p>
 
-              <p className="mt-7 font-inv-body text-[1.0625rem] leading-[2.1] text-inv-ink text-pretty">
+              <p className="mt-7 font-inv-verse text-[1.0625rem] leading-[2.1] text-inv-ink text-pretty">
                 {copy.verse}
               </p>
 

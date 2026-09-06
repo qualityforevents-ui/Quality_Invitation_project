@@ -438,3 +438,15 @@
 @utility font-inv-body {
   font-family: var(--inv-body);
 }
+
+/*
+ * The Bismillah and the verse, and nothing else on the card.
+ *
+ * Separate from the body face because this one is a matter of correctness rather than
+ * of style: U+FDFD is a single ligature that most Arabic faces do not carry, so a theme
+ * whose body face lacks it was silently handing the most sacred element on the page to
+ * an OS fallback. See VERSE_FACE in src/themes/registry.ts.
+ */
+@utility font-inv-verse {
+  font-family: var(--inv-verse, var(--inv-body));
+}

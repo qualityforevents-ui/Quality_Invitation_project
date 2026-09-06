@@ -8,7 +8,7 @@ import { MiniInvitation } from '@/components/invitation/MiniInvitation';
 import { Button } from '@/components/ui/button';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { scriptSuggestions } from '@/lib/flow/values';
-import { getTheme, THEMES, themeName, themeStyle, type ThemeDefinition } from '@/themes/registry';
+import { getTheme, LISTED_THEMES, themeName, themeStyle, type ThemeDefinition } from '@/themes/registry';
 import type { PhotoCrop } from '@/lib/photo-url';
 import type { Dictionary } from '@/i18n/ui';
 import type { EventType, Lang } from '@/generated/prisma/enums';
@@ -129,26 +129,28 @@ export function LanguageSection({
 /* -------------------------------------------------------------------- theme */
 
 /**
- * A theme reduced to the two things that identify it at 60 pixels: its colours and the
- * shape of a card.
+ * A theme reduced to what identifies it at thumbnail size: its ground, its accent, and
+ * the weight of its ink.
  *
- * Not a rendering of the invitation. At this size real text is a grey smudge and four of
- * them are four grey smudges, which tells a customer nothing and costs four more font
- * loads. Two bars for the names with the accent between them is the actual structure of
- * the card, and the ground, the ink and the accent come straight from the registry, so
- * midnight arrives dark with gold on it and floral arrives blush without either being
- * written down twice.
+ * Not a rendering of the invitation. At this size real text is a grey smudge, twelve of
+ * them are twelve grey smudges, and it would cost twelve more font loads to say nothing.
+ *
+ * This used to be defensible only because there were four themes and they were four
+ * palettes. With twelve it earns its place for a different reason: the palettes are now
+ * genuinely far apart — walnut on pale sand, brick on warm stone, gold on deep teal,
+ * crimson appliqué, sunset, register blue — so the ground colour alone is enough to tell
+ * them apart in a grid, and the card underneath is where the actual choosing happens.
  */
 function ThemeSwatch({ theme, lang }: { theme: ThemeDefinition; lang: Lang }) {
   return (
     <span
       style={themeStyle(theme, lang)}
       aria-hidden="true"
-      className="flex h-9 w-full flex-col items-center justify-center gap-[3px] rounded-md border border-inv-line bg-inv-bg"
+      className="flex h-11 w-full flex-col items-center justify-center gap-[3px] rounded-md border border-inv-line bg-inv-bg"
     >
-      <span className="h-[3px] w-7 rounded-full bg-inv-ink/75" />
-      <span className="h-[3px] w-2 rounded-full bg-inv-accent" />
-      <span className="h-[3px] w-7 rounded-full bg-inv-ink/75" />
+      <span className="h-[3px] w-8 rounded-full bg-inv-ink/75" />
+      <span className="h-[3px] w-3 rounded-full bg-inv-accent" />
+      <span className="h-[3px] w-8 rounded-full bg-inv-ink/75" />
     </span>
   );
 }
@@ -179,11 +181,25 @@ export function ThemeSection({
   onTry: () => void;
   onNext: () => void;
 }) {
+  /*
+   * The designs on sale, plus the one already chosen if it is not among them.
+   *
+   * A retired theme stays renderable so that invitations sold under it keep working,
+   * which means a draft started before a design was retired can arrive here holding an
+   * id that is no longer offered. Dropping it from the list would leave the toggle group
+   * with no selected item and the customer looking at a card that matches none of the
+   * buttons above it, so the retired design is appended rather than hidden. It leaves
+   * the list the moment they choose something else.
+   */
+  const listed = LISTED_THEMES;
+  const current = getTheme(value);
+  const choices = listed.some((theme) => theme.id === current.id) ? listed : [...listed, current];
+
   return (
     <SectionShell title={t.flow.themeTitle} onNext={onNext} nextLabel={t.flow.next}>
       {/*
-        One card, not four.
-        This question used to be a column of four thumbnails, which meant the design
+        One card, not twelve.
+        This question used to be a column of thumbnails, which meant the design
         being decided on was never bigger than a third of the screen and comparing two of
         them was a scroll rather than a glance. The names are a row of buttons now and
         the card below them is the answer: tapping a name re-typesets it in place, in the
@@ -198,17 +214,17 @@ export function ThemeSection({
         // card below can never be left with no design to draw.
         onValueChange={(next) => onChange(next || value)}
         variant="outline"
-        className="grid w-full grid-cols-4 gap-1.5"
+        className="grid w-full grid-cols-3 gap-1.5"
         aria-label={t.flow.themeTitle}
       >
-        {THEMES.map((theme) => (
+        {choices.map((theme) => (
           <ToggleGroupItem
             key={theme.id}
             value={theme.id}
             className="tap-target h-auto flex-col gap-1 rounded-xl p-1.5 data-[state=on]:border-primary data-[state=on]:bg-secondary data-[state=on]:text-secondary-foreground"
           >
             <ThemeSwatch theme={theme} lang={invitationLang} />
-            <span className="text-[0.625rem] leading-none">{themeName(theme, uiLang)}</span>
+            <span className="text-[0.6875rem] leading-none">{themeName(theme, uiLang)}</span>
           </ToggleGroupItem>
         ))}
       </ToggleGroup>

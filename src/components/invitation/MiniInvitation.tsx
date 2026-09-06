@@ -1,4 +1,3 @@
-import { Divider } from './Ornaments';
 import { cn } from '@/lib/cn';
 import { formatEventDate } from '@/lib/format';
 import { invitationFontVariables } from '@/lib/fonts';
@@ -15,6 +14,24 @@ import type { EventType, Lang } from '@/generated/prisma/enums';
  * live. One component so the operator is never approving something that looks slightly
  * different from what was built.
  */
+/**
+ * A plain accent hairline, and deliberately not any theme's own divider.
+ *
+ * This used to draw the classic theme's ornamented Divider for every theme, which meant
+ * the picker showed twelve designs wearing one design's flourish — the miniature was
+ * quietly promising an ornament that eleven of them do not have. A neutral rule promises
+ * nothing, which is the only honest thing a miniature can do: what a theme's ornament
+ * actually looks like is a question for the full preview.
+ */
+function Rule({ large }: { large: boolean }) {
+  return (
+    <span
+      aria-hidden="true"
+      className={cn('block h-px bg-inv-accent/45', large ? 'my-5 w-16' : 'my-3 w-10')}
+    />
+  );
+}
+
 export function MiniInvitation({
   themeId,
   lang,
@@ -67,7 +84,7 @@ export function MiniInvitation({
         {copy.eventName[eventType]}
       </p>
 
-      <Divider className={large ? 'my-5' : 'my-3 scale-75'} />
+      <Rule large={large} />
 
       <p
         className={cn(
@@ -92,7 +109,7 @@ export function MiniInvitation({
         {name2 || copy.roleBride}
       </p>
 
-      <Divider className={large ? 'my-5' : 'my-3 scale-75'} />
+      <Rule large={large} />
 
       <p
         className={cn(

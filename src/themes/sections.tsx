@@ -67,13 +67,13 @@ export function VerseBlock({
       {/* U+FDFD is around eleven times wider than its font size, so it is sized against
           the column. See the note in the classic theme. */}
       <p
-        className={cn('font-inv-body leading-none text-inv-accent', bismillahClassName)}
+        className={cn('font-inv-verse leading-none text-inv-accent', bismillahClassName)}
         aria-label="بسم الله الرحمن الرحيم"
       >
         {copy.bismillah}
       </p>
 
-      <p className="mt-7 font-inv-body text-[1.0625rem] leading-[2.1] text-inv-ink text-pretty">
+      <p className="mt-7 font-inv-verse text-[1.0625rem] leading-[2.1] text-inv-ink text-pretty">
         {copy.verse}
       </p>
 

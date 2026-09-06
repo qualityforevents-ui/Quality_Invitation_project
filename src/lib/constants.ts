@@ -70,7 +70,7 @@ export const FLOW_STEP_COOKIE = 'qlty_step';
 
 export const COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 180; // 180 days
 
-export const DEFAULT_THEME_ID = 'classic';
+export const DEFAULT_THEME_ID = 'hadiqa';
 
 /**
  * How long a link stays live after the event. Guests reopen invitations for a while
