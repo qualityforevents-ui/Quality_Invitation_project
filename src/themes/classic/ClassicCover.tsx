@@ -34,7 +34,8 @@ export function ClassicCover({
 }) {
   return (
     <motion.div
-      className="relative flex min-h-dvh flex-col items-center justify-center overflow-hidden bg-inv-bg px-9 py-16 text-center"
+      className="relative flex h-full max-h-full w-full flex-col items-center justify-between overflow-hidden bg-inv-bg px-6 sm:px-9 pt-4 sm:pt-8 text-center"
+      style={{ paddingBottom: 'calc(1.5rem + var(--inv-toggle-offset, 0px))' }}
       exit={{ opacity: 0, scale: 1.04, filter: 'blur(6px)' }}
       transition={{ duration: 0.8, ease: EASE }}
     >
@@ -42,30 +43,30 @@ export function ClassicCover({
       <OrnateFrame />
 
       <motion.div
-        className="relative flex flex-col items-center"
+        className="relative my-auto flex flex-col items-center"
         initial={{ opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, ease: EASE }}
       >
-        <Monogram name1={view.name1} name2={view.name2} size="lg" />
+        <Monogram name1={view.name1} name2={view.name2} size="md" />
 
-        <p className="mt-6 font-inv-body text-[0.6875rem] tracking-[0.32em] text-inv-muted">
+        <p className="mt-4 sm:mt-5 font-inv-body text-[0.6875rem] tracking-[0.32em] text-inv-muted">
           {copy.eventName[view.eventType]}
         </p>
 
-        <Divider className="my-7 w-full" />
+        <Divider className="my-3 sm:my-5 w-full" />
 
         <h1 className="font-inv-display text-inv-ink">
-          <span className="block text-[2.5rem] leading-[1.45] text-balance">{view.name1}</span>
-          <span className="my-1.5 flex justify-center" aria-hidden="true">
-            <Pip className="scale-125" />
+          <span className="block text-3xl sm:text-4xl leading-[1.3] text-balance">{view.name1}</span>
+          <span className="my-1 flex justify-center" aria-hidden="true">
+            <Pip className="scale-110" />
           </span>
-          <span className="block text-[2.5rem] leading-[1.45] text-balance">{view.name2}</span>
+          <span className="block text-3xl sm:text-4xl leading-[1.3] text-balance">{view.name2}</span>
         </h1>
 
-        <Divider className="my-7 w-full" />
+        <Divider className="my-3 sm:my-5 w-full" />
 
-        <p className="font-inv-body text-[0.9375rem] leading-relaxed text-inv-muted text-pretty">
+        <p className="font-inv-body text-xs sm:text-[0.9375rem] leading-relaxed text-inv-muted text-pretty">
           {copy.inviteLine[view.eventType]}
         </p>
 
@@ -75,7 +76,7 @@ export function ClassicCover({
           Forcing a direction onto the whole line is what puts an Arabic date in the
           wrong order.
         */}
-        <p className="mt-4 font-inv-body text-sm tracking-[0.18em] text-inv-accent">
+        <p className="mt-2 sm:mt-3 font-inv-body text-xs sm:text-sm tracking-[0.18em] text-inv-accent">
           {formatEventDate(view.eventDate, view.lang)}
         </p>
       </motion.div>
@@ -83,7 +84,7 @@ export function ClassicCover({
       <motion.button
         type="button"
         onClick={onOpen}
-        className="tap-target relative mt-12 rounded-full border border-inv-accent/60 bg-inv-panel/40 px-9 py-4 font-inv-body text-base tracking-wide text-inv-ink backdrop-blur-[2px] transition active:scale-95"
+        className="tap-target relative mt-4 sm:mt-6 rounded-full border border-inv-accent/60 bg-inv-panel/40 px-8 py-3 sm:py-3.5 font-inv-body text-sm sm:text-base tracking-wide text-inv-ink backdrop-blur-[2px] transition active:scale-95"
         initial={{ opacity: 0, y: 10 }}
         animate={{
           opacity: 1,

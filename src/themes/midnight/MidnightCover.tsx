@@ -24,7 +24,8 @@ export function MidnightCover({
 }) {
   return (
     <motion.div
-      className="relative flex min-h-dvh flex-col items-center justify-center overflow-hidden bg-inv-bg px-10 py-16 text-center"
+      className="relative flex h-full max-h-full w-full flex-col items-center justify-between overflow-hidden bg-inv-bg px-6 sm:px-10 pt-4 sm:pt-8 text-center"
+      style={{ paddingBottom: 'calc(1.5rem + var(--inv-toggle-offset, 0px))' }}
       exit={{ opacity: 0, scale: 1.03 }}
       transition={{ duration: 0.8, ease: EASE }}
     >
@@ -41,17 +42,17 @@ export function MidnightCover({
         aria-hidden="true"
       />
 
-      <div className="pointer-events-none absolute inset-5 border border-inv-line" aria-hidden="true" />
+      <div className="pointer-events-none absolute inset-3 sm:inset-5 border border-inv-line" aria-hidden="true" />
 
       <motion.div
-        className="relative flex flex-col items-center"
+        className="relative my-auto flex flex-col items-center"
         initial={{ opacity: 0, y: 18 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1.2, ease: EASE }}
       >
-        <Monogram name1={view.name1} name2={view.name2} size="lg" />
+        <Monogram name1={view.name1} name2={view.name2} size="md" />
 
-        <p className="mt-7 font-inv-body text-[0.6875rem] tracking-[0.4em] text-inv-accent">
+        <p className="mt-4 sm:mt-5 font-inv-body text-[0.6875rem] tracking-[0.4em] text-inv-accent">
           {copy.eventName[view.eventType]}
         </p>
 
@@ -62,7 +63,7 @@ export function MidnightCover({
           costs nothing, and the centre origin keeps the line growing out from the middle.
         */}
         <motion.span
-          className="my-7 mx-auto block h-px w-[130px] origin-center bg-inv-accent"
+          className="my-4 sm:my-6 mx-auto block h-px w-[130px] origin-center bg-inv-accent"
           initial={{ transform: 'scaleX(0)', opacity: 0 }}
           animate={{ transform: 'scaleX(1)', opacity: 0.6 }}
           transition={{ duration: 1.3, delay: 0.4, ease: EASE }}
@@ -70,18 +71,18 @@ export function MidnightCover({
         />
 
         <h1 className="font-inv-display text-inv-ink">
-          <span className="block text-[2.375rem] leading-[1.45] text-balance">{view.name1}</span>
-          <span className="my-1 block text-lg text-inv-accent" aria-hidden="true">
+          <span className="block text-3xl sm:text-[2.375rem] leading-[1.3] text-balance">{view.name1}</span>
+          <span className="my-0.5 sm:my-1 block text-base sm:text-lg text-inv-accent" aria-hidden="true">
             {copy.nameSeparator}
           </span>
-          <span className="block text-[2.375rem] leading-[1.45] text-balance">{view.name2}</span>
+          <span className="block text-3xl sm:text-[2.375rem] leading-[1.3] text-balance">{view.name2}</span>
         </h1>
 
-        <p className="mt-7 font-inv-body text-[0.9375rem] leading-relaxed text-inv-muted text-pretty">
+        <p className="mt-4 sm:mt-6 font-inv-body text-xs sm:text-[0.9375rem] leading-relaxed text-inv-muted text-pretty">
           {copy.inviteLine[view.eventType]}
         </p>
 
-        <p className="mt-4 font-inv-body text-sm tracking-[0.2em] text-inv-accent">
+        <p className="mt-2 sm:mt-3 font-inv-body text-xs sm:text-sm tracking-[0.2em] text-inv-accent">
           {formatEventDate(view.eventDate, view.lang)}
         </p>
       </motion.div>
@@ -89,7 +90,7 @@ export function MidnightCover({
       <motion.button
         type="button"
         onClick={onOpen}
-        className="tap-target relative mt-12 rounded-full border border-inv-accent/70 px-9 py-4 font-inv-body text-base tracking-wide text-inv-accent transition active:scale-95"
+        className="tap-target relative mt-4 sm:mt-6 rounded-full border border-inv-accent/70 px-8 py-3 sm:py-3.5 font-inv-body text-sm sm:text-base tracking-wide text-inv-accent transition active:scale-95"
         initial={{ opacity: 0, y: 10 }}
         animate={{
           opacity: 1,

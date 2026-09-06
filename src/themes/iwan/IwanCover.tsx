@@ -120,8 +120,8 @@ export function IwanCover({
 
   return (
     <motion.div
-      className="flex min-h-dvh flex-col items-center justify-center overflow-hidden bg-inv-bg px-7 py-10"
-      style={FRAME_STYLE}
+      className="flex h-full max-h-full w-full flex-col items-center justify-center overflow-hidden bg-inv-bg px-4 sm:px-7 pt-4 sm:pt-8"
+      style={{ ...FRAME_STYLE, paddingBottom: 'calc(1.5rem + var(--inv-toggle-offset, 0px))' }}
       variants={PORTAL}
       initial="hidden"
       animate="closed"
@@ -239,10 +239,10 @@ export function IwanCover({
             nothing is allowed a width the stonework did not give it.
           */}
           <motion.div
-            className="relative z-20 pb-9 text-center"
+            className="relative z-20 pb-4 sm:pb-6 text-center"
             style={{
-              paddingTop: 'calc(var(--iwan-frame) * 0.47)',
-              paddingInline: `calc(${LEAF.inset} + 20px)`,
+              paddingTop: 'calc(var(--iwan-frame) * 0.40)',
+              paddingInline: `calc(${LEAF.inset} + 16px)`,
             }}
             variants={INSCRIPTION}
           >
@@ -258,18 +258,18 @@ export function IwanCover({
               a 390px phone in either language. Qahiri is a single weight display Kufi
               with nowhere to go but size, so the block wraps downward and never shrinks.
             */}
-            <h1 className="mt-7 font-inv-display text-inv-ink">
-              <span className="block text-[2.5rem] leading-[1.2] text-balance">{view.name1}</span>
-              <span className="my-2 block font-inv-body text-base text-inv-accent" aria-hidden="true">
+            <h1 className="mt-3 sm:mt-5 font-inv-display text-inv-ink">
+              <span className="block text-[2rem] sm:text-[2.5rem] leading-[1.2] text-balance">{view.name1}</span>
+              <span className="my-1 sm:my-2 block font-inv-body text-sm sm:text-base text-inv-accent" aria-hidden="true">
                 {copy.nameSeparator}
               </span>
-              <span className="block text-[2.5rem] leading-[1.2] text-balance">{view.name2}</span>
+              <span className="block text-[2rem] sm:text-[2.5rem] leading-[1.2] text-balance">{view.name2}</span>
             </h1>
 
             {/* No left to right isolation. The line mixes a month name with digits and
                 bidi already orders that correctly; forcing a direction onto the whole
                 string is what puts an Arabic date the wrong way round. */}
-            <p className="mt-7 font-inv-body text-[0.8125rem] text-inv-muted">
+            <p className="mt-3 sm:mt-5 font-inv-body text-xs sm:text-[0.8125rem] text-inv-muted">
               {formatEventDate(view.eventDate, view.lang)}
             </p>
           </motion.div>
@@ -288,7 +288,7 @@ export function IwanCover({
         <motion.button
           type="button"
           onClick={onOpen}
-          className="tap-target press block w-full bg-inv-accent px-6 py-4 font-inv-body text-[0.9375rem] text-inv-bg"
+          className="tap-target press block w-full bg-inv-accent px-6 py-3.5 font-inv-body text-sm sm:text-[0.9375rem] text-inv-bg"
           variants={BAR}
         >
           {copy.openButton}

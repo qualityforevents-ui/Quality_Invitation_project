@@ -41,7 +41,8 @@ export function MakhmalCover({
 }) {
   return (
     <motion.div
-      className="relative flex min-h-dvh flex-col overflow-hidden bg-inv-bg"
+      className="relative flex h-full max-h-full w-full flex-col justify-between overflow-hidden bg-inv-bg"
+      style={{ paddingBottom: 'calc(1.5rem + var(--inv-toggle-offset, 0px))' }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3, delay: 0.5, ease: EASE }}
     >
@@ -75,15 +76,15 @@ export function MakhmalCover({
         halves travel and only goes when the whole cover fades. Centred physically: the
         closed curtain is symmetric and must be identical in Arabic and English.
       */}
-      <TasselCord className="pointer-events-none absolute top-0 left-1/2 w-40 -translate-x-1/2 text-inv-accent-soft/55 rtl:-scale-x-100" />
+      <TasselCord className="pointer-events-none absolute top-0 left-1/2 w-32 sm:w-40 -translate-x-1/2 text-inv-accent-soft/55 rtl:-scale-x-100" />
 
       <motion.div
-        className="relative flex flex-1 flex-col justify-between px-7 pt-44 pb-10 text-center"
+        className="relative flex flex-1 flex-col justify-between px-6 sm:px-7 pt-20 sm:pt-28 pb-6 sm:pb-8 text-center"
         exit={{ opacity: 0, y: 6 }}
         transition={{ duration: 0.25, ease: EASE }}
       >
         <motion.div
-          className="@container relative"
+          className="@container relative my-auto"
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.1, ease: EASE }}
@@ -97,7 +98,7 @@ export function MakhmalCover({
             cover the same centre as theirs.
           */}
           <span
-            className="pointer-events-none absolute top-1/2 left-1/2 h-64 w-72 -translate-x-1/2 -translate-y-1/2 text-inv-accent-soft/8"
+            className="pointer-events-none absolute top-1/2 left-1/2 h-48 w-56 sm:h-64 sm:w-72 -translate-x-1/2 -translate-y-1/2 text-inv-accent-soft/8"
             style={{
               backgroundImage:
                 'radial-gradient(circle at 50% 50%, currentColor 0%, rgba(0,0,0,0) 68%), radial-gradient(circle at 50% 44%, rgba(255,255,255,0.035) 0%, rgba(255,255,255,0) 62%)',
@@ -116,19 +117,19 @@ export function MakhmalCover({
             at 64px it is wider than a 390px phone, so the cap comes down to 13% of the
             measure and only reaches its full size on a screen that can hold it.
           */}
-          <h1 className="relative mt-7 font-inv-display font-bold text-inv-ink">
-            <span className="block text-[length:min(2.75rem,13cqw)] leading-[1.16] text-balance">
+          <h1 className="relative mt-4 sm:mt-6 font-inv-display font-bold text-inv-ink">
+            <span className="block text-[length:min(2.5rem,12cqw)] leading-[1.16] text-balance">
               {view.name1}
             </span>
-            <span className="my-2 block font-inv-body text-xl text-inv-accent" aria-hidden="true">
+            <span className="my-1 sm:my-2 block font-inv-body text-lg sm:text-xl text-inv-accent" aria-hidden="true">
               {copy.nameSeparator}
             </span>
-            <span className="block text-[length:min(2.75rem,13cqw)] leading-[1.16] text-balance">
+            <span className="block text-[length:min(2.5rem,12cqw)] leading-[1.16] text-balance">
               {view.name2}
             </span>
           </h1>
 
-          <p className="relative mt-8 font-inv-body text-[0.9375rem] leading-[1.9] text-inv-muted text-pretty">
+          <p className="relative mt-4 sm:mt-6 font-inv-body text-xs sm:text-[0.9375rem] leading-[1.8] text-inv-muted text-pretty">
             {copy.inviteLine[view.eventType]}
           </p>
 
@@ -137,7 +138,7 @@ export function MakhmalCover({
             bidi algorithm already orders that correctly; forcing a direction is what
             puts an Arabic date the wrong way round.
           */}
-          <p className="relative mt-4 font-inv-body text-sm text-inv-accent">
+          <p className="relative mt-2 sm:mt-4 font-inv-body text-xs sm:text-sm text-inv-accent">
             {formatEventDate(view.eventDate, view.lang)}
           </p>
         </motion.div>
@@ -154,7 +155,7 @@ export function MakhmalCover({
         <motion.button
           type="button"
           onClick={onOpen}
-          className="tap-target press relative mt-12 block w-full bg-inv-accent px-6 py-4 font-inv-body text-base font-medium text-inv-bg"
+          className="tap-target press relative mt-6 sm:mt-8 block w-full bg-inv-accent px-6 py-3.5 sm:py-4 font-inv-body text-sm sm:text-base font-medium text-inv-bg"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.5, ease: EASE }}

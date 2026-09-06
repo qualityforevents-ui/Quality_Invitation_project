@@ -80,7 +80,7 @@ const VERSE_FACE = 'var(--font-amiri-quran), Georgia, serif';
 
 const classic: ThemeDefinition = {
   id: 'classic',
-  listed: true,
+  listed: false,
   nameAr: 'كلاسيك',
   nameEn: 'Classic',
   defaultMusicTrackId: 'oud-nights',
@@ -118,7 +118,7 @@ const classic: ThemeDefinition = {
 
 const modern: ThemeDefinition = {
   id: 'modern',
-  listed: true,
+  listed: false,
   nameAr: 'مودرن',
   nameEn: 'Modern',
   defaultMusicTrackId: 'piano-vows',
@@ -154,7 +154,7 @@ const modern: ThemeDefinition = {
 
 const floral: ThemeDefinition = {
   id: 'floral',
-  listed: true,
+  listed: false,
   nameAr: 'ورد',
   nameEn: 'Floral',
   defaultMusicTrackId: 'strings-morning',
@@ -188,7 +188,7 @@ const floral: ThemeDefinition = {
 
 const midnight: ThemeDefinition = {
   id: 'midnight',
-  listed: true,
+  listed: false,
   nameAr: 'ليلي',
   nameEn: 'Midnight',
   defaultMusicTrackId: 'cinematic-forever',
@@ -232,7 +232,7 @@ const midnight: ThemeDefinition = {
  */
 const mashrabiya: ThemeDefinition = {
   id: 'mashrabiya',
-  listed: false,
+  listed: true,
   nameAr: 'مشربية',
   nameEn: 'Mashrabiya',
   defaultMusicTrackId: 'qanun-serenade',
@@ -314,7 +314,7 @@ const iwan: ThemeDefinition = {
  */
 const qandeel: ThemeDefinition = {
   id: 'qandeel',
-  listed: false,
+  listed: true,
   nameAr: 'قنديل',
   nameEn: 'Qandeel',
   defaultMusicTrackId: 'oud-nights',
@@ -396,7 +396,7 @@ const makhmal: ThemeDefinition = {
  */
 const khayamiya: ThemeDefinition = {
   id: 'khayamiya',
-  listed: false,
+  listed: true,
   nameAr: 'خيامية',
   nameEn: 'Khayamiya',
   defaultMusicTrackId: 'baladi-wedding',
@@ -478,7 +478,7 @@ const ghouroub: ThemeDefinition = {
  */
 const netiga: ThemeDefinition = {
   id: 'netiga',
-  listed: false,
+  listed: true,
   nameAr: 'النتيجة',
   nameEn: 'Netiga',
   defaultMusicTrackId: 'baladi-wedding',
@@ -519,7 +519,7 @@ const netiga: ThemeDefinition = {
  */
 const sijill: ThemeDefinition = {
   id: 'sijill',
-  listed: false,
+  listed: true,
   nameAr: 'السجل',
   nameEn: 'Sijill',
   defaultMusicTrackId: 'qanun-serenade',
@@ -560,7 +560,7 @@ const sijill: ThemeDefinition = {
  */
 const zarf: ThemeDefinition = {
   id: 'zarf',
-  listed: false,
+  listed: true,
   nameAr: 'الظرف',
   nameEn: 'Zarf',
   defaultMusicTrackId: 'oud-nights',
@@ -642,7 +642,7 @@ const hadiqa: ThemeDefinition = {
  */
 const rizma: ThemeDefinition = {
   id: 'rizma',
-  listed: false,
+  listed: true,
   nameAr: 'الرزمة',
   nameEn: 'Rizma',
   defaultMusicTrackId: 'modern-romance',
@@ -683,7 +683,7 @@ const rizma: ThemeDefinition = {
  */
 const lawh: ThemeDefinition = {
   id: 'lawh',
-  listed: false,
+  listed: true,
   nameAr: 'اللوح',
   nameEn: 'Lawh',
   defaultMusicTrackId: 'piano-vows',

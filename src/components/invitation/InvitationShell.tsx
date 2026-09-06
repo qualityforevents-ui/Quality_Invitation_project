@@ -39,7 +39,7 @@ export function InvitationShell({
       style={themeStyle(theme, view.lang)}
       className={`${invitationFontVariables} ${contained ? 'min-h-full' : 'min-h-dvh'} bg-inv-bg text-inv-ink`}
     >
-      <InvitationExperience view={view} />
+      <InvitationExperience view={view} contained={contained} />
     </div>
   );
 }

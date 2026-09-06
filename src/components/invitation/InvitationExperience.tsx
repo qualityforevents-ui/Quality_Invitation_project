@@ -1,7 +1,7 @@
 'use client';
 
 import { AnimatePresence, MotionConfig } from 'framer-motion';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ConfettiBurst } from './ConfettiBurst';
 import { MuteToggle } from './MuteToggle';
 import { getInvitationCopy } from '@/i18n/invitation';
@@ -18,13 +18,33 @@ import type { InvitationView } from '@/lib/invitation-view';
  * first and is synchronous, because Safari only counts it as user initiated while the
  * handler is still on the stack.
  */
-export function InvitationExperience({ view }: { view: InvitationView }) {
+export function InvitationExperience({
+  view,
+  contained = false,
+}: {
+  view: InvitationView;
+  contained?: boolean;
+}) {
   const [opened, setOpened] = useState(false);
 
   const audio = useInvitationAudio(view.musicUrl);
   const copy = getInvitationCopy(view.lang);
   const { Cover, Card } = getThemeComponents(view.themeId);
   const theme = getTheme(view.themeId);
+
+  // Prevent background scrolling while the cover is closed
+  useEffect(() => {
+    if (!opened && !contained) {
+      const originalOverflow = document.body.style.overflow;
+      const originalOverscroll = document.body.style.overscrollBehavior;
+      document.body.style.overflow = 'hidden';
+      document.body.style.overscrollBehavior = 'none';
+      return () => {
+        document.body.style.overflow = originalOverflow;
+        document.body.style.overscrollBehavior = originalOverscroll;
+      };
+    }
+  }, [opened, contained]);
 
   function open() {
     // Must stay first and synchronous: this call is what Safari accepts as the user
@@ -35,13 +55,23 @@ export function InvitationExperience({ view }: { view: InvitationView }) {
 
   return (
     <MotionConfig reducedMotion="user">
-      <AnimatePresence mode="wait">
-        {opened ? (
-          <Card key="card" view={view} copy={copy} />
-        ) : (
-          <Cover key="cover" view={view} copy={copy} onOpen={open} />
-        )}
-      </AnimatePresence>
+      <div
+        className={
+          !opened
+            ? contained
+              ? 'h-full max-h-full w-full overflow-hidden flex flex-col'
+              : 'h-dvh max-h-dvh w-full overflow-hidden flex flex-col'
+            : ''
+        }
+      >
+        <AnimatePresence mode="wait">
+          {opened ? (
+            <Card key="card" view={view} copy={copy} />
+          ) : (
+            <Cover key="cover" view={view} copy={copy} onOpen={open} />
+          )}
+        </AnimatePresence>
+      </div>
 
       {/*
         Mounted the instant the tap lands rather than when the card finishes entering,

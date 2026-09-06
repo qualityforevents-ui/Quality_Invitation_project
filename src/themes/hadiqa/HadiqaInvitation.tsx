@@ -320,6 +320,9 @@ export function HadiqaInvitation({ view, copy }: { view: InvitationView; copy: I
           <Growth at={GROWTH.roles} progress={scrollYProgress} reduced={reduced} className="ms-2.5 h-[34px] w-[34px] text-inv-accent">
             <LeafNode />
           </Growth>
+          <Growth at={GROWTH.photo} progress={scrollYProgress} reduced={reduced} className="ms-3 h-[36px] w-[34px] text-inv-accent-soft">
+            <LeafNode />
+          </Growth>
           <Growth at={GROWTH.date} progress={scrollYProgress} reduced={reduced} className="ms-4 h-[34px] w-[24px] text-inv-accent">
             <JasmineBud />
           </Growth>
@@ -450,7 +453,17 @@ export function HadiqaInvitation({ view, copy }: { view: InvitationView; copy: I
             <Reveal className="relative z-10 mt-14 -ms-14">
               <PhotoArch view={view} />
             </Reveal>
-          ) : null}
+          ) : (
+            /*
+              NO PHOTO: the vine carries a longer leafed section filling the same 240px of
+              height, so the page rhythm is preserved exactly and nothing reflows.
+            */
+            <div className="h-[240px] flex items-center justify-start ps-3" aria-hidden="true">
+              <div className="h-16 w-8 text-inv-accent-soft/80">
+                <LeafNode />
+              </div>
+            </div>
+          )}
 
           {/* -------------------------------------------------------- 7 and 8. date */}
           <Block>

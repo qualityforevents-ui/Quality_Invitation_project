@@ -6,10 +6,7 @@ critique of the existing four, bilingual/a11y constraints) -> positioning brief 
 independent concept panels -> three judge lenses -> canonical set.
 55 concepts proposed, 12 selected. All palettes verified against WCAG AA.
 
-**Status.** `hadiqa`, `iwan`, `makhmal` and `ghouroub` are built and live. The other eight are specified
-below and already have registry entries (palette, fonts, confetti, default music)
-committed with `listed: false`. Building one = write its Cover + Invitation components
-in `src/themes/<id>/`, register the pair in `src/themes/components.ts`, flip `listed`.
+**Status.** All twelve themes (`hadiqa`, `iwan`, `makhmal`, `ghouroub`, `mashrabiya`, `qandeel`, `khayamiya`, `netiga`, `sijill`, `zarf`, `rizma`, `lawh`) are built and live with their Cover + Invitation components registered in `src/themes/components.ts` and `listed: true` in `src/themes/registry.ts`. The legacy four (`classic`, `modern`, `floral`, `midnight`) remain renderable with `listed: false`.
 
 ---
 

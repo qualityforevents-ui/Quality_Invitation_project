@@ -24,12 +24,13 @@ export function FloralCover({
 }) {
   return (
     <motion.div
-      className="relative flex min-h-dvh flex-col items-center justify-center overflow-hidden bg-inv-bg px-10 py-16 text-center"
+      className="relative flex h-full max-h-full w-full flex-col items-center justify-between overflow-hidden bg-inv-bg px-6 sm:px-10 pt-4 sm:pt-8 text-center"
+      style={{ paddingBottom: 'calc(1.5rem + var(--inv-toggle-offset, 0px))' }}
       exit={{ opacity: 0, scale: 0.98 }}
       transition={{ duration: 0.8, ease: EASE }}
     >
       <motion.div
-        className="pointer-events-none absolute top-4 left-4 text-inv-accent"
+        className="pointer-events-none absolute top-3 left-3 sm:top-4 sm:left-4 text-inv-accent"
         initial={{ opacity: 0, scale: 0.7, rotate: -12 }}
         animate={{ opacity: 1, scale: 1, rotate: 0 }}
         transition={{ duration: 1.3, ease: EASE }}
@@ -39,7 +40,7 @@ export function FloralCover({
       </motion.div>
 
       <motion.div
-        className="pointer-events-none absolute right-4 bottom-4 rotate-180 text-inv-accent-soft"
+        className="pointer-events-none absolute right-3 bottom-3 sm:right-4 sm:bottom-4 rotate-180 text-inv-accent-soft"
         initial={{ opacity: 0, scale: 0.7, rotate: 168 }}
         animate={{ opacity: 1, scale: 1, rotate: 180 }}
         transition={{ duration: 1.3, delay: 0.15, ease: EASE }}
@@ -49,7 +50,7 @@ export function FloralCover({
       </motion.div>
 
       <motion.div
-        className="relative"
+        className="relative my-auto flex flex-col items-center"
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, delay: 0.2, ease: EASE }}
@@ -58,23 +59,23 @@ export function FloralCover({
           {copy.eventName[view.eventType]}
         </p>
 
-        <FloralDivider className="my-7" />
+        <FloralDivider className="my-3 sm:my-5" />
 
         <h1 className="font-inv-display text-inv-ink">
-          <span className="block text-[2.5rem] leading-[1.4] text-balance">{view.name1}</span>
-          <span className="my-1 block text-xl text-inv-accent" aria-hidden="true">
+          <span className="block text-3xl sm:text-4xl leading-[1.3] text-balance">{view.name1}</span>
+          <span className="my-0.5 sm:my-1 block text-lg sm:text-xl text-inv-accent" aria-hidden="true">
             {copy.nameSeparator}
           </span>
-          <span className="block text-[2.5rem] leading-[1.4] text-balance">{view.name2}</span>
+          <span className="block text-3xl sm:text-4xl leading-[1.3] text-balance">{view.name2}</span>
         </h1>
 
-        <FloralDivider className="my-7" />
+        <FloralDivider className="my-3 sm:my-5" />
 
-        <p className="font-inv-body text-[0.9375rem] leading-relaxed text-inv-muted text-pretty">
+        <p className="font-inv-body text-xs sm:text-[0.9375rem] leading-relaxed text-inv-muted text-pretty">
           {copy.inviteLine[view.eventType]}
         </p>
 
-        <p className="mt-4 font-inv-body text-sm tracking-[0.18em] text-inv-accent">
+        <p className="mt-2 sm:mt-3 font-inv-body text-xs sm:text-sm tracking-[0.18em] text-inv-accent">
           {formatEventDate(view.eventDate, view.lang)}
         </p>
       </motion.div>
@@ -82,7 +83,7 @@ export function FloralCover({
       <motion.button
         type="button"
         onClick={onOpen}
-        className="tap-target mt-12 rounded-full bg-inv-accent px-9 py-4 font-inv-body text-base text-white shadow-[0_10px_26px_-14px_rgba(0,0,0,0.5)] transition active:scale-95"
+        className="tap-target mt-4 sm:mt-6 rounded-full bg-inv-accent px-8 py-3 sm:py-3.5 font-inv-body text-sm sm:text-base text-white shadow-[0_10px_26px_-14px_rgba(0,0,0,0.5)] transition active:scale-95"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0, scale: [1, 1.03, 1] }}
         transition={{

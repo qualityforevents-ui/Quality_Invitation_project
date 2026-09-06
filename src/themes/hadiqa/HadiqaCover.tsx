@@ -84,13 +84,14 @@ export function HadiqaCover({
 }) {
   return (
     <motion.div
-      className="relative flex min-h-dvh flex-col items-center justify-center overflow-hidden bg-inv-bg px-8 py-16 text-center"
+      className="relative flex h-full max-h-full w-full flex-col items-center justify-between overflow-hidden bg-inv-bg px-6 pt-4 sm:pt-8 text-center"
+      style={{ paddingBottom: 'calc(1.5rem + var(--inv-toggle-offset, 0px))' }}
       initial="closed"
       animate="closed"
       exit="open"
     >
       <motion.div
-        className="relative flex flex-col items-center"
+        className="relative my-auto flex flex-col items-center"
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, ease: EASE }}
@@ -102,7 +103,7 @@ export function HadiqaCover({
         <svg
           viewBox="0 0 200 290"
           fill="none"
-          className="h-[15.5rem] w-[10.75rem] text-inv-accent"
+          className="h-28 sm:h-36 w-auto text-inv-accent"
           aria-hidden="true"
         >
           <motion.path
@@ -139,15 +140,15 @@ export function HadiqaCover({
             fit. This field takes any script, and "Abdelrahman" beside "Yasmine" at this
             size does not fit a 390 pixel screen in either language.
           */}
-          <h1 className="mt-6 font-inv-display text-inv-ink">
-            <span className="block text-[2.5rem] leading-[1.35] text-balance">{view.name1}</span>
-            <span className="my-1 block text-xl text-inv-accent" aria-hidden="true">
+          <h1 className="mt-3 sm:mt-5 font-inv-display text-inv-ink">
+            <span className="block text-3xl sm:text-4xl leading-[1.3] text-balance">{view.name1}</span>
+            <span className="my-0.5 block text-lg sm:text-xl text-inv-accent" aria-hidden="true">
               {copy.nameSeparator}
             </span>
-            <span className="block text-[2.5rem] leading-[1.35] text-balance">{view.name2}</span>
+            <span className="block text-3xl sm:text-4xl leading-[1.3] text-balance">{view.name2}</span>
           </h1>
 
-          <p className="mt-7 max-w-[19rem] font-inv-body text-[0.9375rem] leading-relaxed text-inv-muted text-pretty">
+          <p className="mt-4 sm:mt-6 max-w-[19rem] font-inv-body text-xs sm:text-[0.9375rem] leading-relaxed text-inv-muted text-pretty">
             {copy.inviteLine[view.eventType]}
           </p>
 
@@ -156,7 +157,7 @@ export function HadiqaCover({
             bidi algorithm already orders that correctly in both languages; forcing a
             direction onto the whole line is what puts an Arabic date in the wrong order.
           */}
-          <p className="mt-4 font-inv-body text-sm text-inv-accent">
+          <p className="mt-2 sm:mt-4 font-inv-body text-xs sm:text-sm text-inv-accent">
             {formatEventDate(view.eventDate, view.lang)}
           </p>
         </motion.div>
@@ -174,7 +175,7 @@ export function HadiqaCover({
       <motion.button
         type="button"
         onClick={onOpen}
-        className="tap-target press mt-12 rounded-full border border-inv-accent/60 bg-inv-panel/60 px-9 py-4 font-inv-body text-base text-inv-ink"
+        className="tap-target press mt-6 rounded-full border border-inv-accent/60 bg-inv-panel/60 px-8 py-3.5 font-inv-body text-sm sm:text-base text-inv-ink"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: [0, 1, 0.72, 1], y: 0 }}
         transition={{

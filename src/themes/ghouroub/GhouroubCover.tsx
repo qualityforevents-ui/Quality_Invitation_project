@@ -90,7 +90,8 @@ export function GhouroubCover({
 }) {
   return (
     <motion.div
-      className="relative grid min-h-dvh grid-rows-[60fr_40fr] overflow-hidden bg-inv-bg"
+      className="relative grid h-full max-h-full w-full grid-rows-[46fr_54fr] overflow-hidden bg-inv-bg"
+      style={{ paddingBottom: 'calc(1.5rem + var(--inv-toggle-offset, 0px))' }}
       variants={SKY}
       initial="enter"
       animate="idle"
@@ -113,7 +114,7 @@ export function GhouroubCover({
       {/* The sky row. Its lower edge is the horizon, which is why it is also the clip. */}
       <div className="relative col-start-1 row-start-1 overflow-hidden">
         <motion.div
-          className="absolute bottom-[46px] left-1/2 -ml-[105px]"
+          className="absolute bottom-[36px] sm:bottom-[46px] left-1/2 -ml-[105px]"
           variants={SUN}
           aria-hidden="true"
         >
@@ -125,17 +126,17 @@ export function GhouroubCover({
 
       {/* Everything below the line shares one grid cell, because two items placed in the
           same cell would sit on top of each other rather than in sequence. */}
-      <div className="relative z-10 col-start-1 row-start-2 self-start px-6 pt-11 text-center">
-        <motion.div className="mx-auto w-[342px] max-w-full" variants={CONTENT}>
+      <div className="relative z-10 col-start-1 row-start-2 flex flex-col justify-between px-6 pt-5 pb-6 sm:pt-8 sm:pb-8 text-center">
+        <motion.div className="mx-auto my-auto w-[342px] max-w-full" variants={CONTENT}>
           <h1 className="font-inv-display font-bold text-inv-ink">
             {/* Stacked rather than joined on one line: these are free text in any
                 script, and "Abdelrahman" beside "Yasmine" at this size does not fit a
                 390px screen. */}
-            <span className="block text-[2.5rem] leading-[1.25] text-balance">{view.name1}</span>
-            <span className="my-3 block font-inv-body text-base text-inv-accent">
+            <span className="block text-3xl sm:text-[2.5rem] leading-[1.2] text-balance">{view.name1}</span>
+            <span className="my-1 sm:my-2 block font-inv-body text-sm sm:text-base text-inv-accent">
               {copy.nameSeparator}
             </span>
-            <span className="block text-[2.5rem] leading-[1.25] text-balance">{view.name2}</span>
+            <span className="block text-3xl sm:text-[2.5rem] leading-[1.2] text-balance">{view.name2}</span>
           </h1>
 
           {/*
@@ -143,7 +144,7 @@ export function GhouroubCover({
             bidi algorithm already orders that correctly; forcing a direction onto the
             whole string is what puts an Arabic date the wrong way round.
           */}
-          <p className="mt-7 font-inv-body text-[0.8125rem] text-inv-muted">
+          <p className="mt-3 sm:mt-5 font-inv-body text-xs sm:text-[0.8125rem] text-inv-muted">
             {formatEventDate(view.eventDate, view.lang)}
           </p>
         </motion.div>
@@ -159,7 +160,7 @@ export function GhouroubCover({
         <motion.button
           type="button"
           onClick={onOpen}
-          className="tap-target press mx-auto mt-9 block w-[228px] max-w-full border border-inv-accent/70 px-6 py-3 font-inv-body text-[0.9375rem] text-inv-ink"
+          className="tap-target press mx-auto mt-4 sm:mt-6 block w-[228px] max-w-full border border-inv-accent/70 px-6 py-3 font-inv-body text-sm sm:text-[0.9375rem] text-inv-ink"
           variants={BUTTON}
         >
           {copy.openButton}
