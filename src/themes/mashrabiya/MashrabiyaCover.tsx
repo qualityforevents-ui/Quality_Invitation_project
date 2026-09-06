@@ -57,12 +57,12 @@ export function MashrabiyaCover({
       variants={CONTAINER_VARIANTS}
     >
       {/* 1. Behind the screen: faint silhouette of couple's names (system fallback safe) */}
-      <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center select-none opacity-[0.12]">
-        <span className="block text-4xl sm:text-5xl font-bold font-sans">
+      <div className="pointer-events-none absolute inset-x-0 top-[12%] z-[5] flex flex-col items-center p-6 text-center select-none opacity-[0.16]">
+        <span className="block font-inv-display text-4xl leading-tight sm:text-5xl text-balance">
           {view.name1}
         </span>
-        <span className="my-2 block text-2xl font-sans">&</span>
-        <span className="block text-4xl sm:text-5xl font-bold font-sans">
+        <span className="my-2 block font-inv-display text-2xl">&</span>
+        <span className="block font-inv-display text-4xl leading-tight sm:text-5xl text-balance">
           {view.name2}
         </span>
       </div>
@@ -70,7 +70,7 @@ export function MashrabiyaCover({
       {/* 2. Opaque turned-wood lattice screen with scaling aperture mask on open */}
       <motion.div
         className="pointer-events-none absolute inset-0 z-0 bg-inv-panel/95 will-change-transform"
-        style={{ backgroundImage: LATTICE_TILE }}
+        style={{ backgroundImage: LATTICE_TILE, backgroundSize: '22px 22px' }}
         variants={APERTURE_VARIANTS}
       />
 

@@ -81,8 +81,15 @@ export function LawhCover({
             <motion.h1
               className={cn(
                 'font-inv-display text-3xl sm:text-4xl font-bold leading-tight transition-colors duration-700',
-                opening ? 'text-inv-ink' : 'text-inv-panel',
-                opening && CUT_BEVEL_CLASS,
+                /*
+                 * Cut into the stone, not absent from it. This used to be text-inv-panel
+                 * until the card opened, which meant the one state a customer actually
+                 * chooses from — the closed cover in the picker — carried no names at
+                 * all. The closed state is the shallow cut and the open state is the
+                 * same letterform brought to full depth.
+                 */
+                opening ? 'text-inv-ink' : 'text-inv-ink/45',
+                CUT_BEVEL_CLASS,
               )}
             >
               <span className="block">{view.name1}</span>

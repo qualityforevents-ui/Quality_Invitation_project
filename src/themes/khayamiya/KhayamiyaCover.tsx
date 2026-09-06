@@ -74,7 +74,7 @@ export function KhayamiyaCover({
           className="relative h-full w-1/2 border-e border-dashed border-inv-ink/80 bg-inv-bg"
           variants={LEFT_FLAP_VARIANTS}
         >
-          <div className="absolute top-1/2 -end-[90px] -translate-y-1/2 opacity-30">
+          <div className="absolute top-[74%] -end-[90px] -translate-y-1/2 opacity-30">
             <EightPetalMedallion size={180} />
           </div>
         </motion.div>
@@ -84,7 +84,7 @@ export function KhayamiyaCover({
           className="relative h-full w-1/2 border-s border-dashed border-inv-ink/80 bg-inv-bg"
           variants={RIGHT_FLAP_VARIANTS}
         >
-          <div className="absolute top-1/2 -start-[90px] -translate-y-1/2 opacity-30">
+          <div className="absolute top-[74%] -start-[90px] -translate-y-1/2 opacity-30">
             <EightPetalMedallion size={180} />
           </div>
         </motion.div>

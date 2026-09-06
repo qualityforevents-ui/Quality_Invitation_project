@@ -101,7 +101,7 @@ export function ZarfCover({
     onOpen();
   };
 
-  const monogram = `${view.name1[0] || ''} & ${view.name2[0] || ''}`;
+  const monogram = `${view.name1[0] || ''}\u00b7${view.name2[0] || ''}`;
 
   return (
     <motion.div

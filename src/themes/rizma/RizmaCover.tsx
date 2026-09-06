@@ -101,7 +101,7 @@ export function RizmaCover({
 
           {/* Belly Band crossing diagonally */}
           <motion.div
-            className="pointer-events-none absolute -inset-x-3 top-1/2 -translate-y-1/2 -rotate-12 bg-inv-accent py-2 shadow-sm text-center select-none"
+            className="pointer-events-none absolute -inset-x-3 -bottom-1 -rotate-12 bg-inv-accent py-2 shadow-sm text-center select-none"
             variants={BAND_VARIANTS}
           >
             <span className="font-inv-body text-[10px] font-bold tracking-widest text-inv-panel uppercase">

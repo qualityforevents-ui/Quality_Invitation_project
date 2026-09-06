@@ -335,7 +335,7 @@ const qandeel: ThemeDefinition = {
   },
   fonts: {
     AR: {
-      display: 'var(--font-reem-kufi-ink), system-ui, sans-serif',
+      display: 'var(--font-markazi), Georgia, serif',
       body: 'var(--font-almarai), system-ui, sans-serif',
     },
     EN: {

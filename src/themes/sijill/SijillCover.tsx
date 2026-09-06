@@ -84,7 +84,7 @@ export function SijillCover({
 
       {/* Header entry metadata: Entry Number & Hijri / Gregorian dates */}
       <header className="relative z-10 w-full max-w-[440px] border-b border-inv-line pb-2 sm:pb-3">
-        <div className="flex items-center justify-between font-inv-body text-xs text-inv-muted">
+        <div className="flex flex-col items-center gap-1 font-inv-body text-[0.6875rem] text-inv-muted">
           <div className="flex items-center gap-1.5">
             <span>{labels.entry}</span>
             <span className="numeric font-inv-display text-sm font-bold text-inv-accent">
@@ -92,7 +92,7 @@ export function SijillCover({
             </span>
           </div>
 
-          <div className="flex items-center gap-3 text-start">
+          <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-0.5 text-center">
             {dates.hijri ? (
               <span>
                 <span className="numeric">{dates.hijri}</span> {labels.hijri}

@@ -29,7 +29,6 @@ import {
   Lora,
   Manrope,
   Marcellus,
-  Markazi_Text,
   Mirza,
   Newsreader,
   Noto_Kufi_Arabic,
@@ -40,7 +39,7 @@ import {
   Rakkas,
   Readex_Pro,
   Reem_Kufi,
-  Reem_Kufi_Ink,
+  Markazi_Text,
   Ruwudu,
   Scheherazade_New,
   Sorts_Mill_Goudy,
@@ -223,15 +222,6 @@ export const fustat = Fustat({
   preload: false,
 });
 
-/** قنديل display. The inked cut of Reem Kufi: wet-brush terminals that hold at large sizes in gold. */
-export const reemKufiInk = Reem_Kufi_Ink({
-  subsets: ['arabic', 'latin'],
-  weight: ['400'],
-  variable: '--font-reem-kufi-ink',
-  display: 'swap',
-  preload: false,
-});
-
 /** مخمل display. High-contrast and theatrical, which is what velvet asks for. */
 export const zain = Zain({
   subsets: ['arabic', 'latin'],
@@ -350,10 +340,17 @@ export const notoKufi = Noto_Kufi_Arabic({
   preload: false,
 });
 
-/** اللوح body. */
+/**
+ * اللوح body, and قنديل display.
+ *
+ * قنديل was set in Reem Kufi Ink, which is a COLRv1 colour font: the ink wash is baked
+ * into the glyphs, so the couple's names rendered rust on a card whose ink is cream and
+ * whose accent is gold, and nothing the theme set could change it. This is the same
+ * warm ornamental register with the colour left to us. Carries 700 for the display use.
+ */
 export const markaziText = Markazi_Text({
   subsets: ['arabic', 'latin'],
-  weight: ['400', '600'],
+  weight: ['400', '600', '700'],
   variable: '--font-markazi',
   display: 'swap',
   preload: false,
@@ -608,7 +605,6 @@ export const invitationFontVariables = [
   almarai.variable,
   qahiri.variable,
   fustat.variable,
-  reemKufiInk.variable,
   zain.variable,
   notoNaskh.variable,
   rakkas.variable,
