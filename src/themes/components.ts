@@ -5,6 +5,10 @@ import { FloralCover } from './floral/FloralCover';
 import { FloralInvitation } from './floral/FloralInvitation';
 import { GhouroubCover } from './ghouroub/GhouroubCover';
 import { GhouroubInvitation } from './ghouroub/GhouroubInvitation';
+import { HadiqaCover } from './hadiqa/HadiqaCover';
+import { HadiqaInvitation } from './hadiqa/HadiqaInvitation';
+import { IwanCover } from './iwan/IwanCover';
+import { IwanInvitation } from './iwan/IwanInvitation';
 import { MakhmalCover } from './makhmal/MakhmalCover';
 import { MakhmalInvitation } from './makhmal/MakhmalInvitation';
 import { MidnightCover } from './midnight/MidnightCover';
@@ -38,6 +42,8 @@ export type CardComponent = ComponentType<{
  */
 export const THEME_COMPONENTS: Record<string, { Cover: CoverComponent; Card: CardComponent }> = {
   makhmal: { Cover: MakhmalCover, Card: MakhmalInvitation },
+  iwan: { Cover: IwanCover, Card: IwanInvitation },
+  hadiqa: { Cover: HadiqaCover, Card: HadiqaInvitation },
   ghouroub: { Cover: GhouroubCover, Card: GhouroubInvitation },
 
   classic: { Cover: ClassicCover, Card: ClassicInvitation },
@@ -54,5 +60,5 @@ export const THEME_COMPONENTS: Record<string, { Cover: CoverComponent; Card: Car
  * theme's markup in another theme's colours.
  */
 export function getThemeComponents(themeId: string) {
-  return THEME_COMPONENTS[themeId] ?? THEME_COMPONENTS.makhmal;
+  return THEME_COMPONENTS[themeId] ?? THEME_COMPONENTS.hadiqa;
 }

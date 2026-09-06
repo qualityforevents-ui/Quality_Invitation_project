@@ -273,7 +273,7 @@ const mashrabiya: ThemeDefinition = {
  */
 const iwan: ThemeDefinition = {
   id: 'iwan',
-  listed: false,
+  listed: true,
   nameAr: 'الإيوان',
   nameEn: 'Iwan',
   defaultMusicTrackId: 'cinematic-forever',
@@ -601,7 +601,7 @@ const zarf: ThemeDefinition = {
  */
 const hadiqa: ThemeDefinition = {
   id: 'hadiqa',
-  listed: false,
+  listed: true,
   nameAr: 'حديقة',
   nameEn: 'Hadiqa',
   defaultMusicTrackId: 'strings-morning',
@@ -752,7 +752,7 @@ const THEMES_BY_ID = new Map(THEMES.map((theme) => [theme.id, theme]));
  * حديقة. The engagement is the commonest first purchase and this is the set's strongest
  * card for it, so it is what a customer sees before they have chosen anything.
  */
-export const DEFAULT_THEME = classic;
+export const DEFAULT_THEME = hadiqa;
 
 export function getTheme(id: string | null | undefined): ThemeDefinition {
   if (id) {

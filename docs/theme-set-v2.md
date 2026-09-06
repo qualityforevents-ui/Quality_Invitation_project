@@ -6,7 +6,7 @@ critique of the existing four, bilingual/a11y constraints) -> positioning brief 
 independent concept panels -> three judge lenses -> canonical set.
 55 concepts proposed, 12 selected. All palettes verified against WCAG AA.
 
-**Status.** `makhmal` and `ghouroub` are built and live. The other ten are specified
+**Status.** `hadiqa`, `iwan`, `makhmal` and `ghouroub` are built and live. The other eight are specified
 below and already have registry entries (palette, fonts, confetti, default music)
 committed with `listed: false`. Building one = write its Cover + Invitation components
 in `src/themes/<id>/`, register the pair in `src/themes/components.ts`, flip `listed`.
@@ -75,7 +75,7 @@ CONTRAST. Every ink, muted and accent token in all twelve themes was computed ag
 **Pitfalls.** MOIRÉ: an 8% lattice tile behind a 0.35× parallax layer is the exact interference pair that aliases on mid-range Android. The tile must be authored at an even pixel size (22px, never scaled) and the parallax layer must be transform-only. Test at DPR 2.75 before the pattern pitch is fixed.; THE COVER SILHOUETTE MUST NOT DEPEND ON A WEBFONT. If the 12% names layer waits for Kufam to load, the closed card is a blank screen on a slow WhatsApp webview and the uncle closes it. Render it in the fallback stack and let it swap.; THE MEASURE IS 244px, NOT 300px. Text laid inside a hexagon wastes its corners. Author every size from the four-line long-name case inside a 244px measure at 390px before anything else is drawn.; Do not build the reveal by animating an SVG <mask> element — it repaints the whole masked layer each frame. CSS mask-image plus transform: scale on one promoted layer.
 
 
-### الإيوان — Iwan (`iwan`) — spec only
+### الإيوان — Iwan (`iwan`) — **BUILT**
 
 **Segment.** B primary (world-building Cairo bride), A secondary. زفاف, the formal hotel-ballroom register. Top of the light-ground ladder.
 
@@ -387,7 +387,7 @@ CONTRAST. Every ink, muted and accent token in all twelve themes was computed ag
 **Pitfalls.** BAKE THE SEAL'S JITTER AS FIXED PATH DATA. Randomise it and server and client render different seals — a hydration mismatch on the theme's hero ornament and its cover.; Place creases by content boundary from day one. Retrofitting that from a percentage layout means rewriting the component.; Keep the crease shadows as plain divs with no blur and no box-shadow. Twelve extra painted layers is the failure mode of every paper theme on a mid-range Android.; muted at 5.60 on panel is this theme's tightest number and it carries long-form letter prose. Do not lighten it to 'soften' the page.
 
 
-### حديقة — Hadiqa (`hadiqa`) — spec only
+### حديقة — Hadiqa (`hadiqa`) — **BUILT**
 
 **Segment.** A primary (the garden or terrace wedding, and the bride who wanted floral but is embarrassed by corner sprigs), E secondary, D secondary (summer garden). زفاف and the strongest خطوبة seller in the set. REPLACES FLORAL — see differentiators.
 
