@@ -65,7 +65,20 @@ export function NetigaCover({
       className="relative flex h-full max-h-full w-full flex-col items-center justify-between overflow-hidden bg-inv-bg px-4 pt-4 sm:pt-8 text-inv-ink"
       style={{ paddingBottom: 'calc(1.5rem + var(--inv-toggle-offset, 0px))' }}
       initial="closed"
-      animate={opening ? 'open' : 'closed'}
+      /*
+        `animate` must not chase the same variant `exit` uses.
+
+        This was animate={opening ? 'open' : 'closed'} beside exit="open". Tapping the
+        button set `opening`, so the cover animated itself all the way to the open
+        variant; AnimatePresence then marked it exiting and asked for that same variant,
+        found the element already sitting on it, and never received a completion for an
+        animation that had nothing left to do. In `wait` mode that means the card is
+        never mounted, so the invitation could be tapped but never opened.
+
+        The exit prop is the whole mechanism. `opening` stays because it still drives the
+        content swap, but it no longer touches the animation.
+      */
+      animate="closed"
       exit="open"
       variants={CONTAINER_VARIANTS}
     >

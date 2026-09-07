@@ -3,10 +3,10 @@
 import { motion, type Variants } from 'framer-motion';
 import { useState } from 'react';
 import {
+  WaxSeal,
   LAID_PAPER_TILE,
   WAX_SEAL_LEFT,
   WAX_SEAL_RIGHT,
-  WaxSeal,
 } from './ZarfOrnaments';
 import { EASE_OUT as EASE } from '@/lib/motion';
 import type { InvitationCopy } from '@/i18n/invitation';
@@ -63,19 +63,30 @@ const FLAP_RIGHT_VARIANTS: Variants = {
   },
 };
 
+/**
+ * The two halves are mounted from the first paint but invisible until the break, and the
+ * intact seal above them carries the resting look — its highlight arc, its debossed ring
+ * and the monogram. Mounting them only when the card opens is what used to deadlock the
+ * exit, so nothing here may appear or disappear from the tree; it only changes opacity.
+ */
+const WHOLE_SEAL_VARIANTS: Variants = {
+  closed: { opacity: 1 },
+  open: { opacity: 0, transition: { duration: 0.01 } },
+};
+
 const SEAL_LEFT_VARIANTS: Variants = {
-  closed: { x: 0, y: 0, rotate: 0, opacity: 1 },
+  closed: { x: 0, y: 0, rotate: 0, opacity: 0 },
   open: {
     x: -24,
     y: 35,
     rotate: -14,
-    opacity: 0,
+    opacity: [1, 1, 0],
     transition: { duration: 0.5, ease: EASE },
   },
 };
 
 const SEAL_RIGHT_VARIANTS: Variants = {
-  closed: { x: 0, y: 0, rotate: 0, opacity: 1 },
+  closed: { x: 0, y: 0, rotate: 0, opacity: 0 },
   open: {
     x: 24,
     y: 35,
@@ -108,7 +119,20 @@ export function ZarfCover({
       className="relative flex h-full max-h-full w-full flex-col items-center justify-between overflow-hidden bg-inv-bg px-4 pt-4 sm:pt-8 text-inv-ink"
       style={{ paddingBottom: 'calc(1.5rem + var(--inv-toggle-offset, 0px))' }}
       initial="closed"
-      animate={opening ? 'open' : 'closed'}
+      /*
+        `animate` must not chase the same variant `exit` uses.
+
+        This was animate={opening ? 'open' : 'closed'} beside exit="open". Tapping the
+        button set `opening`, so the cover animated itself all the way to the open
+        variant; AnimatePresence then marked it exiting and asked for that same variant,
+        found the element already sitting on it, and never received a completion for an
+        animation that had nothing left to do. In `wait` mode that means the card is
+        never mounted, so the invitation could be tapped but never opened.
+
+        The exit prop is the whole mechanism. `opening` stays because it still drives the
+        content swap, but it no longer touches the animation.
+      */
+      animate="closed"
       exit="open"
       variants={CONTAINER_VARIANTS}
     >
@@ -169,30 +193,49 @@ export function ZarfCover({
           variants={FLAP_RIGHT_VARIANTS}
         />
 
-        {/* The Wax Seal sitting at the center fold meeting point */}
+        {/*
+          The wax seal, in two halves that are always mounted.
+
+          This used to render a whole WaxSeal while closed and swap it for the two halves
+          the moment `opening` went true — which is to say it mounted new motion children
+          into a subtree that AnimatePresence had already begun exiting. Those children
+          have no closed state to leave, so the exit never resolved and the card was never
+          mounted: this design could be tapped but not opened.
+
+          Both halves are here from the first paint instead. At rest they meet on the
+          centre fold and read as one seal; on exit they break apart and fall, which is
+          the moment the theme is built around. The monogram sits over the join and goes
+          with them.
+        */}
         <div className="relative z-20 flex items-center justify-center">
-          {!opening ? (
-            <WaxSeal monogram={monogram} size={104} />
-          ) : (
-            <div className="relative h-[104px] w-[104px]">
-              <motion.svg
-                viewBox="0 0 132 132"
-                fill="none"
-                className="absolute inset-0 h-full w-full"
-                variants={SEAL_LEFT_VARIANTS}
-              >
-                <path d={WAX_SEAL_LEFT} fill="var(--inv-accent)" />
-              </motion.svg>
-              <motion.svg
-                viewBox="0 0 132 132"
-                fill="none"
-                className="absolute inset-0 h-full w-full"
-                variants={SEAL_RIGHT_VARIANTS}
-              >
-                <path d={WAX_SEAL_RIGHT} fill="var(--inv-accent)" />
-              </motion.svg>
-            </div>
-          )}
+          <div className="relative h-[104px] w-[104px]">
+            <motion.svg
+              viewBox="0 0 132 132"
+              fill="none"
+              className="absolute inset-0 h-full w-full drop-shadow-[0_2px_4px_rgba(46,43,36,0.18)]"
+              variants={SEAL_LEFT_VARIANTS}
+              aria-hidden="true"
+            >
+              <path d={WAX_SEAL_LEFT} fill="var(--inv-accent)" />
+            </motion.svg>
+            <motion.svg
+              viewBox="0 0 132 132"
+              fill="none"
+              className="absolute inset-0 h-full w-full drop-shadow-[0_2px_4px_rgba(46,43,36,0.18)]"
+              variants={SEAL_RIGHT_VARIANTS}
+              aria-hidden="true"
+            >
+              <path d={WAX_SEAL_RIGHT} fill="var(--inv-accent)" />
+            </motion.svg>
+
+            <motion.div
+              className="absolute inset-0"
+              variants={WHOLE_SEAL_VARIANTS}
+              aria-hidden="true"
+            >
+              <WaxSeal monogram={monogram} size={104} />
+            </motion.div>
+          </div>
         </div>
       </div>
 
