@@ -18,6 +18,39 @@ function partsUntil(targetMs: number, nowMs: number): Parts {
 }
 
 /**
+ * The clock behind a countdown, without any of its markup.
+ *
+ * Every theme wants its own countdown: rings, calendar leaves, carved numerals. What
+ * none of them should own is the clock, and when twelve of them each rewrote it, eight
+ * shipped the same two defects — Date.now() read once in a useState initialiser, so the
+ * count froze on mount and never ticked, and a server render that disagreed with the
+ * first client render because the two ran at different instants.
+ *
+ * This is that logic, once. The first render deliberately reports the target itself as
+ * the clock, so the server and the client agree and hydration is quiet; the real time
+ * takes over on mount, one tick later.
+ */
+export function useCountdownParts(targetMs: number): {
+  totalSeconds: number;
+  hasPassed: boolean;
+} {
+  const [nowMs, setNowMs] = useState<number | null>(null);
+
+  useEffect(() => {
+    setNowMs(Date.now());
+    const timer = window.setInterval(() => setNowMs(Date.now()), 1000);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  const remaining = Math.max(0, targetMs - (nowMs ?? targetMs));
+
+  return {
+    totalSeconds: Math.floor(remaining / 1000),
+    hasPassed: nowMs !== null && targetMs - nowMs <= 0,
+  };
+}
+
+/**
  * Live countdown to the event.
  *
  * The first render deliberately uses the target itself as the clock, so the server and

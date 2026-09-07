@@ -8,6 +8,7 @@ import {
   LATTICE_TILE,
   SixLobedRosette,
 } from './MashrabiyaOrnaments';
+import { useCountdownParts } from '@/components/invitation/Countdown';
 import { Reveal } from '@/components/invitation/Reveal';
 import { SITE_URL } from '@/lib/constants';
 import { formatEventDateParts, formatEventTimeParts } from '@/lib/format';
@@ -30,10 +31,7 @@ function MashrabiyaCountdown({
   targetMs: number;
   copy: InvitationCopy;
 }) {
-  const [nowMs] = useState<number | null>(() => Date.now());
-  const remaining = Math.max(0, targetMs - (nowMs ?? targetMs));
-  const totalSeconds = Math.floor(remaining / 1000);
-  const hasPassed = nowMs !== null && targetMs - nowMs <= 0;
+  const { totalSeconds, hasPassed } = useCountdownParts(targetMs);
 
   if (hasPassed) {
     return <p className="font-inv-display text-lg text-inv-accent">{copy.labels.started}</p>;

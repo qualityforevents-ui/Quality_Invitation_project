@@ -10,6 +10,7 @@ import {
   entryNumber,
   registerDates,
 } from './SijillOrnaments';
+import { useCountdownParts } from '@/components/invitation/Countdown';
 import { Reveal } from '@/components/invitation/Reveal';
 import { SITE_URL } from '@/lib/constants';
 import { cn } from '@/lib/cn';
@@ -63,10 +64,7 @@ function SijillCountdown({
   targetMs: number;
   copy: InvitationCopy;
 }) {
-  const [nowMs] = useState<number | null>(() => Date.now());
-  const remaining = Math.max(0, targetMs - (nowMs ?? targetMs));
-  const totalSeconds = Math.floor(remaining / 1000);
-  const hasPassed = nowMs !== null && targetMs - nowMs <= 0;
+  const { totalSeconds, hasPassed } = useCountdownParts(targetMs);
 
   if (hasPassed) {
     return <p className="font-inv-display text-sm text-inv-accent">{copy.labels.started}</p>;
