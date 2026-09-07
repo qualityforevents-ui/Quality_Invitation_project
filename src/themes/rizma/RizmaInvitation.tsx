@@ -40,7 +40,16 @@ function InsertCard({
     <Reveal className="w-full flex justify-center -mt-7 first:mt-0">
       <div
         className={cn(
-          'relative rounded border border-inv-line/60 bg-inv-panel p-6 text-center shadow-[2px_2px_0px_rgba(38,36,31,0.2)]',
+          /*
+            Bottom padding is deeper than the overlap on purpose.
+
+            The cards are pulled up 28px to sit on each other the way a stack of inserts
+            does, but the padding was an even 24px all round — so every card landed its
+            top edge and its rule 4px inside the last card's text, and the seam cut
+            through the verse and the roles. The overlap has to fall on padding, never on
+            a line of type, so the foot of each card is now deeper than the pull.
+          */
+          'relative rounded border border-inv-line/60 bg-inv-panel px-6 pt-6 pb-11 text-center shadow-[2px_2px_0px_rgba(38,36,31,0.2)]',
           className,
         )}
         style={{ width: `${measure}px`, maxWidth: '92vw' }}
