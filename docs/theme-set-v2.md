@@ -6,7 +6,9 @@ critique of the existing four, bilingual/a11y constraints) -> positioning brief 
 independent concept panels -> three judge lenses -> canonical set.
 55 concepts proposed, 12 selected. All palettes verified against WCAG AA.
 
-**Status.** All twelve themes (`hadiqa`, `iwan`, `makhmal`, `ghouroub`, `mashrabiya`, `qandeel`, `khayamiya`, `netiga`, `sijill`, `zarf`, `rizma`, `lawh`) are built and live with their Cover + Invitation components registered in `src/themes/components.ts` and `listed: true` in `src/themes/registry.ts`. The legacy four (`classic`, `modern`, `floral`, `midnight`) remain renderable with `listed: false`.
+**Status.** Nine of the twelve (`hadiqa`, `iwan`, `ghouroub`, `mashrabiya`, `qandeel`, `khayamiya`, `netiga`, `zarf`, `rizma`) are built and live with their Cover + Invitation components registered in `src/themes/components.ts` and `listed: true` in `src/themes/registry.ts`. The legacy four (`classic`, `modern`, `floral`, `midnight`) remain renderable with `listed: false`.
+
+**Three were built and then cut: `makhmal`, `sijill`, `lawh`.** Their components, registry entries and eight now-orphaned typefaces were deleted outright rather than retired to `listed: false`, which the code is otherwise strict about. That is safe only because none of the three ever reached `main` — they were built and cut on the same unmerged branch, so no invitation in the database can carry one of those ids. The rule still holds for everything that has shipped. Their specs below are kept as a record and marked; nothing renders them.
 
 ---
 
@@ -30,7 +32,7 @@ CONTRAST. Every ink, muted and accent token in all twelve themes was computed ag
 
 ---
 
-## The twelve
+## The twelve as researched (nine shipped)
 
 
 ### مشربية — Mashrabiya (`mashrabiya`) — spec only
@@ -150,7 +152,7 @@ CONTRAST. Every ink, muted and accent token in all twelve themes was computed ag
 **Pitfalls.** SHIP THE PLUMB LENGTHS AS NAMED, COMMENTED TOKENS. The irregular sequence is the theme, and it is the first thing a reviewer who does not know that will tidy into a regular one.; THE SIX-ELEMENT BUDGET PER BACKGROUND LAYER IS A HARD LIMIT ENFORCED IN THE COMPONENT. Three parallax layers on a dark ground is the heaviest thing in this set on a mid-range Android; one shadow or filter on either moving layer drops frames and the whole depth idea becomes a stutter.; No blur anywhere, ever. The temptation here is backdrop-filter for the lamp glow. Use a hard-edged radial-gradient inside the lamp body instead.; Near-black grounds band on cheap panels. Dither with a ~2% data-URI noise tile, never a filter.; accentSoft is 4.31:1 on panel and must never be given text, in either zone. It is petrol-green ornament and the far layer's tint, nothing else.
 
 
-### مخمل — Makhmal (`makhmal`) — **BUILT**
+### ~~مخمل — Makhmal~~ (`makhmal`) — **CUT, code deleted**
 
 **Segment.** B primary. زفاف, hotel ballroom, ceiling drape and crystal. Full-scale fantasy for the bride to whom restraint reads as unfinished. Top price tier alongside قنديل.
 
@@ -306,7 +308,7 @@ CONTRAST. Every ink, muted and accent token in all twelve themes was computed ag
 **Pitfalls.** APPLY THE NUMBERING SYSTEM ONCE AT THE LOCALE AND AUDIT EVERY NUMERAL — countdown, time, day, year, Hijri line. One Latin digit anywhere on the card mixes ٣ and 3 on one screen, which is the single worst tell in the set.; HOLD #98202a AND KEEP THE NUMERAL FLAT-SIDED. One degree toward orange, or a rounded terminal, and this becomes a pharmacy giveaway. The نتيجة is warm and universally read, but it is also cheap street printing, and cheapness is the one association this product cannot afford. The deepened board tone and generous leaf margins are what carry it from homage to object.; Bake the torn edge as fixed authored path data. A randomised jitter renders differently on server and client and produces a hydration mismatch on the theme's signature ornament.; Lalezar is single-weight and Latin-thin: the English card must switch its hero numeral to Archivo 800, not fall back.
 
 
-### السجل — Sijill (`sijill`) — spec only
+### ~~السجل — Sijill~~ (`sijill`) — **CUT, code deleted**
 
 **Segment.** C primary (the observant, family-hosted household). F secondary (الإكليل, with the verse row swapped). A secondary. عقد قران / كتب كتاب — the sober contract SKU, and the only route into the Coptic segment.
 
@@ -462,7 +464,7 @@ CONTRAST. Every ink, muted and accent token in all twelve themes was computed ag
 **Pitfalls.** HOLD THE HARD 2px OFFSET SHADOW WITH NO BLUR AND NO ALPHA RAMP. The moment it softens, this is Material Design and the premium claim is gone. Write it into the theme contract.; FIVE MEASURES MEANS FIVE SEPARATE 390px REVIEWS. Every card must be checked independently with عبد الرحمن و ياسمين — the announcement card is not the hard one; the 272px message card and the 286px invitation card are.; The ivory cards must carry no ground pattern at all. The cotton tile lives on the table only; the moment it bleeds onto a card, the paper-on-cloth reading collapses.; The footer credit is the one line on the grey table at 5.60:1. Do not move any other text off the cards.
 
 
-### اللوح — Lawh (`lawh`) — spec only
+### ~~اللوح — Lawh~~ (`lawh`) — **CUT, code deleted**
 
 **Segment.** A primary (restrained-luxury Cairo professionals — the ديوان register), C secondary. زفاف and كتب كتاب. The bespoke-tier object, and the one no template can imitate.
 

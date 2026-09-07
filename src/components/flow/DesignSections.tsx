@@ -132,13 +132,13 @@ export function LanguageSection({
  * A theme reduced to what identifies it at thumbnail size: its ground, its accent, and
  * the weight of its ink.
  *
- * Not a rendering of the invitation. At this size real text is a grey smudge, twelve of
- * them are twelve grey smudges, and it would cost twelve more font loads to say nothing.
+ * Not a rendering of the invitation. At this size real text is a grey smudge, nine of
+ * them are nine grey smudges, and it would cost nine more font loads to say nothing.
  *
  * This used to be defensible only because there were four themes and they were four
- * palettes. With twelve it earns its place for a different reason: the palettes are now
+ * palettes. With nine it earns its place for a different reason: the palettes are now
  * genuinely far apart — walnut on pale sand, brick on warm stone, gold on deep teal,
- * crimson appliqué, sunset, register blue — so the ground colour alone is enough to tell
+ * crimson appliqué, sunset, calendar red — so the ground colour alone is enough to tell
  * them apart in a grid, and the card underneath is where the actual choosing happens.
  */
 function ThemeSwatch({ theme, lang }: { theme: ThemeDefinition; lang: Lang }) {
@@ -198,7 +198,7 @@ export function ThemeSection({
   return (
     <SectionShell title={t.flow.themeTitle} onNext={onNext} nextLabel={t.flow.next}>
       {/*
-        One card, not twelve.
+        One card, not nine.
         This question used to be a column of thumbnails, which meant the design
         being decided on was never bigger than a third of the screen and comparing two of
         them was a scroll rather than a glance. The names are a row of buttons now and

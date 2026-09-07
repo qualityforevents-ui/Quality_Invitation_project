@@ -72,7 +72,7 @@ export type ThemeDefinition = {
  * The face the Bismillah and the verse are set in, in every theme.
  *
  * Amiri Quran is a Naskh cut specifically for Qur'anic text: it carries U+FDFD, it sets
- * tashkeel without collision, and it is the same in all sixteen themes on purpose. The
+ * tashkeel without collision, and it is the same in all thirteen themes on purpose. The
  * rest of the card speaks in the theme's own voice; this one block does not, because a
  * verse rendered in a novelty display face is a mistake no palette can excuse.
  */
@@ -346,53 +346,12 @@ const qandeel: ThemeDefinition = {
 };
 
 /**
- * مخمل · Makhmal
- *
- * The invitation is a velvet curtain: it parts to reveal the card, and the whole page stays pleated fabric with your names lying across it.
- *
- * Owns one structural axis and no other theme may borrow it: continuous surface.
- * ONE CONTINUOUS MATERIAL, no container anywhere. Every other theme in the set puts content on, in, under or beside something; this puts it directly on the surface and folds the surface where a divider would go. There is not one rectangle, rule or box in the theme.
- */
-const makhmal: ThemeDefinition = {
-  id: 'makhmal',
-  listed: true,
-  nameAr: 'مخمل',
-  nameEn: 'Makhmal',
-  defaultMusicTrackId: 'joyful-zaffa',
-  themeColor: '#2a1220',
-  vars: {
-    '--inv-bg': '#2a1220',
-    '--inv-panel': '#3a1a2c',
-    '--inv-ink': '#f6e9ec',
-    '--inv-muted': '#d3b3bd',
-    '--inv-accent': '#e0b66c',
-    '--inv-accent-soft': '#7a3b52',
-    '--inv-line': 'rgba(224, 182, 108, 0.24)',
-  },
-  confetti: {
-    colors: ['#7a3b52', '#a8536e', '#e0b66c', '#f6e9ec', '#5c2439'],
-    shapes: ['petal', 'strip'],
-    count: 150,
-  },
-  fonts: {
-    AR: {
-      display: 'var(--font-zain), system-ui, sans-serif',
-      body: 'var(--font-noto-naskh), Georgia, serif',
-    },
-    EN: {
-      display: 'var(--font-bodoni-moda), Georgia, serif',
-      body: 'var(--font-lora), Georgia, serif',
-    },
-  },
-};
-
-/**
  * خيامية · Khayamiya
  *
  * The tentmaker's appliqué — the cut cloth every Egyptian wedding street is actually hung with, stitched into a card.
  *
  * Owns one structural axis and no other theme may borrow it: field stack.
- * The only fully saturated ground in a sixteen-theme set. At picker size this is a deep red card among fifteen light and dark ones and it cannot be confused with anything.
+ * The only fully saturated ground in a thirteen-theme set. At picker size this is a deep red card among twelve light and dark ones and it cannot be confused with anything.
  */
 const khayamiya: ThemeDefinition = {
   id: 'khayamiya',
@@ -433,7 +392,7 @@ const khayamiya: ThemeDefinition = {
  * The card is a sunset. It starts pale at the top, deepens as you scroll, and the horizon moves across the page as the sun goes down.
  *
  * Owns one structural axis and no other theme may borrow it: horizon.
- * The organising mark is a LINE THAT MOVES, not a container. خيامية also stacks full-bleed fields, but its boundaries are hard sewn seams and its density is maximal; here the boundaries are invisible 60px blends, the ornament budget is the sparsest of the twelve, and the only persistent object is a 1px rule that sits at a different height in every band.
+ * The organising mark is a LINE THAT MOVES, not a container. خيامية also stacks full-bleed fields, but its boundaries are hard sewn seams and its density is maximal; here the boundaries are invisible 60px blends, the ornament budget is the sparsest of the nine, and the only persistent object is a 1px rule that sits at a different height in every band.
  */
 const ghouroub: ThemeDefinition = {
   id: 'ghouroub',
@@ -505,47 +464,6 @@ const netiga: ThemeDefinition = {
     EN: {
       display: 'var(--font-archivo), system-ui, sans-serif',
       body: 'var(--font-archivo), system-ui, sans-serif',
-    },
-  },
-};
-
-/**
- * السجل · Sijill
- *
- * The marriage entered in the register — ruled, witnessed, and quiet.
- *
- * Owns one structural axis and no other theme may borrow it: ruled table.
- * The only tabular layout in the set. Not a column, not a spine, not a field stack — a ruled table with a fixed label column and a value column, at a strict 44px pitch, unbroken from header to footer.
- */
-const sijill: ThemeDefinition = {
-  id: 'sijill',
-  listed: true,
-  nameAr: 'السجل',
-  nameEn: 'Sijill',
-  defaultMusicTrackId: 'qanun-serenade',
-  themeColor: '#f5f2ea',
-  vars: {
-    '--inv-bg': '#f5f2ea',
-    '--inv-panel': '#ece7da',
-    '--inv-ink': '#1d1b16',
-    '--inv-muted': '#55503f',
-    '--inv-accent': '#2c4a6e',
-    '--inv-accent-soft': '#8aa3bd',
-    '--inv-line': 'rgba(29, 27, 22, 0.26)',
-  },
-  confetti: {
-    colors: [],
-    shapes: ['square', 'strip'],
-    count: 0,
-  },
-  fonts: {
-    AR: {
-      display: 'var(--font-scheherazade), Georgia, serif',
-      body: 'var(--font-scheherazade), Georgia, serif',
-    },
-    EN: {
-      display: 'var(--font-newsreader), Georgia, serif',
-      body: 'var(--font-newsreader), Georgia, serif',
     },
   },
 };
@@ -674,50 +592,9 @@ const rizma: ThemeDefinition = {
 };
 
 /**
- * اللوح · Lawh
- *
- * One slab of stone, one continuous inscription — nothing on the card but the words, cut in.
- *
- * Owns one structural axis and no other theme may borrow it: monolith.
- * ZERO SECTION BREAKS. No dividers, no panels, no rules, no ornament between blocks — the only theme in the set (and the only one against the existing four) where hierarchy is carried entirely by size and vertical interval. Classic separates with a border and a seal; modern separates with hairlines eight times while claiming to separate with space; this separates with nothing.
- */
-const lawh: ThemeDefinition = {
-  id: 'lawh',
-  listed: true,
-  nameAr: 'اللوح',
-  nameEn: 'Lawh',
-  defaultMusicTrackId: 'piano-vows',
-  themeColor: '#f0ebdf',
-  vars: {
-    '--inv-bg': '#f0ebdf',
-    '--inv-panel': '#e6dfcd',
-    '--inv-ink': '#1e1c17',
-    '--inv-muted': '#56503f',
-    '--inv-accent': '#5f4e29',
-    '--inv-accent-soft': '#b3a180',
-    '--inv-line': 'rgba(30, 28, 23, 0.25)',
-  },
-  confetti: {
-    colors: ['#5f4e29', '#b3a180', '#f0ebdf', '#e6dfcd', '#1e1c17'],
-    shapes: ['square'],
-    count: 60,
-  },
-  fonts: {
-    AR: {
-      display: 'var(--font-noto-kufi), system-ui, sans-serif',
-      body: 'var(--font-markazi), Georgia, serif',
-    },
-    EN: {
-      display: 'var(--font-cinzel), Georgia, serif',
-      body: 'var(--font-crimson-pro), Georgia, serif',
-    },
-  },
-};
-
-/**
  * Every theme the product can render, in picker order.
  *
- * The twelve come first and the original four sit at the end marked `listed: false`.
+ * The nine come first and the original four sit at the end marked `listed: false`.
  * They are still here, and still render, because invitations sold under them are still
  * being opened; they are simply no longer offered. Adding a theme means an entry above,
  * a Cover and a Card in src/themes/<id>, and a line in src/themes/components.ts.
@@ -727,15 +604,12 @@ export const THEMES: ThemeDefinition[] = [
   mashrabiya,
   iwan,
   qandeel,
-  makhmal,
   khayamiya,
   ghouroub,
   netiga,
-  sijill,
   zarf,
   hadiqa,
   rizma,
-  lawh,
   // Retired, kept renderable.
   classic,
   modern,

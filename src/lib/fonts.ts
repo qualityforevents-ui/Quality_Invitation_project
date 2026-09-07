@@ -7,11 +7,8 @@ import {
   Amiri_Quran,
   Archivo,
   Aref_Ruqaa,
-  Bodoni_Moda,
   Cairo,
-  Cinzel,
   Cormorant_Garamond,
-  Crimson_Pro,
   EB_Garamond,
   El_Messiri,
   Estedad,
@@ -26,12 +23,9 @@ import {
   Karla,
   Kufam,
   Lalezar,
-  Lora,
   Manrope,
   Marcellus,
   Mirza,
-  Newsreader,
-  Noto_Kufi_Arabic,
   Noto_Naskh_Arabic,
   Playfair_Display,
   Prata,
@@ -41,14 +35,12 @@ import {
   Reem_Kufi,
   Markazi_Text,
   Ruwudu,
-  Scheherazade_New,
   Sorts_Mill_Goudy,
   Spectral,
   Tajawal,
   Tenor_Sans,
   Vazirmatn,
   Work_Sans,
-  Zain,
 } from 'next/font/google';
 
 /**
@@ -230,17 +222,7 @@ export const fustat = Fustat({
   preload: false,
 });
 
-/** مخمل display. High-contrast and theatrical, which is what velvet asks for. */
-export const zain = Zain({
-  subsets: ['arabic', 'latin'],
-  weight: ['400', '700'],
-  style: ['normal', 'italic'],
-  variable: '--font-zain',
-  display: 'swap',
-  preload: false,
-});
-
-/** مخمل and الظرف body. The plain workhorse Naskh, used where the surface is already doing the work. */
+/** الظرف body. The plain workhorse Naskh, used where the surface is already doing the work. */
 export const notoNaskh = Noto_Naskh_Arabic({
   subsets: ['arabic', 'latin'],
   weight: ['400', '700'],
@@ -294,15 +276,6 @@ export const readexPro = Readex_Pro({
   preload: false,
 });
 
-/** السجل, set in one voice. A manuscript Naskh, right for a register. */
-export const scheherazade = Scheherazade_New({
-  subsets: ['arabic', 'latin'],
-  weight: ['400', '700'],
-  variable: '--font-scheherazade',
-  display: 'swap',
-  preload: false,
-});
-
 /** الظرف display. A letter-writing hand rather than a display face. */
 export const ruwudu = Ruwudu({
   subsets: ['arabic', 'latin'],
@@ -339,17 +312,8 @@ export const vazirmatn = Vazirmatn({
   preload: false,
 });
 
-/** اللوح display. Geometric Kufi reads as cut stone, which is the whole theme. */
-export const notoKufi = Noto_Kufi_Arabic({
-  subsets: ['arabic', 'latin'],
-  weight: ['400', '700'],
-  variable: '--font-noto-kufi',
-  display: 'swap',
-  preload: false,
-});
-
 /**
- * اللوح body, and قنديل display.
+ * قنديل display.
  *
  * قنديل was set in Reem Kufi Ink, which is a COLRv1 colour font: the ink wash is baked
  * into the glyphs, so the couple's names rendered rust on a card whose ink is cream and
@@ -429,26 +393,6 @@ export const manrope = Manrope({
   preload: false,
 });
 
-/** مخمل Latin display. */
-export const bodoniModa = Bodoni_Moda({
-  subsets: ['latin'],
-  weight: ['400', '500', '700'],
-  style: ['normal', 'italic'],
-  variable: '--font-bodoni-moda',
-  display: 'swap',
-  preload: false,
-});
-
-/** مخمل Latin body. */
-export const lora = Lora({
-  subsets: ['latin'],
-  weight: ['400', '500'],
-  style: ['normal', 'italic'],
-  variable: '--font-lora',
-  display: 'swap',
-  preload: false,
-});
-
 /** خيامية Latin display. Soft-serif with a wobble, the closest Latin gets to cut cloth. */
 export const fraunces = Fraunces({
   subsets: ['latin'],
@@ -494,16 +438,6 @@ export const archivo = Archivo({
   weight: ['400', '600', '700'],
   style: ['normal', 'italic'],
   variable: '--font-archivo',
-  display: 'swap',
-  preload: false,
-});
-
-/** السجل, set in one voice. A text face with a record-keeping temperament. */
-export const newsreader = Newsreader({
-  subsets: ['latin'],
-  weight: ['400', '600'],
-  style: ['normal', 'italic'],
-  variable: '--font-newsreader',
   display: 'swap',
   preload: false,
 });
@@ -556,25 +490,6 @@ export const workSans = Work_Sans({
   preload: false,
 });
 
-/** اللوح Latin display. Roman capitals cut in stone, which is the theme's entire premise. */
-export const cinzel = Cinzel({
-  subsets: ['latin'],
-  weight: ['400', '600'],
-  variable: '--font-cinzel',
-  display: 'swap',
-  preload: false,
-});
-
-/** اللوح Latin body. */
-export const crimsonPro = Crimson_Pro({
-  subsets: ['latin'],
-  weight: ['400', '600'],
-  style: ['normal', 'italic'],
-  variable: '--font-crimson-pro',
-  display: 'swap',
-  preload: false,
-});
-
 /** Applied to the builder and landing surfaces. */
 export const uiFontVariables = `${tajawal.variable} ${inter.variable}`;
 
@@ -613,19 +528,16 @@ export const invitationFontVariables = [
   almarai.variable,
   changa.variable,
   fustat.variable,
-  zain.variable,
   notoNaskh.variable,
   rakkas.variable,
   alexandria.variable,
   plexArabic.variable,
   lalezar.variable,
   readexPro.variable,
-  scheherazade.variable,
   ruwudu.variable,
   mirza.variable,
   estedad.variable,
   vazirmatn.variable,
-  notoKufi.variable,
   markaziText.variable,
   tajawal.variable,
 
@@ -636,19 +548,14 @@ export const invitationFontVariables = [
   alegreyaSans.variable,
   prata.variable,
   manrope.variable,
-  bodoniModa.variable,
-  lora.variable,
   fraunces.variable,
   karla.variable,
   tenorSans.variable,
   interTight.variable,
   archivo.variable,
-  newsreader.variable,
   ebGaramond.variable,
   gildaDisplay.variable,
   alice.variable,
   sortsMillGoudy.variable,
   workSans.variable,
-  cinzel.variable,
-  crimsonPro.variable,
 ].join(' ');
