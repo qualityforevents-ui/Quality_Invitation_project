@@ -64,14 +64,17 @@ function InsertCard({
 function RizmaCountdown({
   targetMs,
   copy,
+  eventType,
 }: {
   targetMs: number;
   copy: InvitationCopy;
+  /** The line this draws when the count runs out names the occasion. */
+  eventType: InvitationView['eventType'];
 }) {
   const { totalSeconds, hasPassed } = useCountdownParts(targetMs);
 
   if (hasPassed) {
-    return <p className="font-inv-display text-lg text-inv-accent">{copy.labels.started}</p>;
+    return <p className="font-inv-display text-lg text-inv-accent">{copy.labels.started[eventType]}</p>;
   }
 
   const cells = [
@@ -255,9 +258,9 @@ export function RizmaInvitation({ view, copy }: { view: InvitationView; copy: In
 
           <div className="border-t border-inv-line/40 pt-4">
             <p className="mb-3 font-inv-body text-xs text-inv-muted">
-              {copy.labels.countdownHeading}
+              {copy.labels.countdownHeading[view.eventType]}
             </p>
-            <RizmaCountdown targetMs={view.eventInstantMs} copy={copy} />
+            <RizmaCountdown targetMs={view.eventInstantMs} copy={copy} eventType={view.eventType} />
           </div>
         </InsertCard>
 

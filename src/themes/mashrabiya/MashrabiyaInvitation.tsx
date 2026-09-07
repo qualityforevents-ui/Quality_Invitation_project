@@ -27,14 +27,17 @@ import type { InvitationView } from '@/lib/invitation-view';
 function MashrabiyaCountdown({
   targetMs,
   copy,
+  eventType,
 }: {
   targetMs: number;
   copy: InvitationCopy;
+  /** The line this draws when the count runs out names the occasion. */
+  eventType: InvitationView['eventType'];
 }) {
   const { totalSeconds, hasPassed } = useCountdownParts(targetMs);
 
   if (hasPassed) {
-    return <p className="font-inv-display text-lg text-inv-accent">{copy.labels.started}</p>;
+    return <p className="font-inv-display text-lg text-inv-accent">{copy.labels.started[eventType]}</p>;
   }
 
   const cells = [
@@ -278,9 +281,9 @@ export function MashrabiyaInvitation({ view, copy }: { view: InvitationView; cop
         <Reveal>
           <HexagonalVoid align="start" className="min-h-[170px] flex flex-col justify-center">
             <p className="mb-3 font-inv-body text-xs text-inv-muted">
-              {copy.labels.countdownHeading}
+              {copy.labels.countdownHeading[view.eventType]}
             </p>
-            <MashrabiyaCountdown targetMs={view.eventInstantMs} copy={copy} />
+            <MashrabiyaCountdown targetMs={view.eventInstantMs} copy={copy} eventType={view.eventType} />
           </HexagonalVoid>
         </Reveal>
 

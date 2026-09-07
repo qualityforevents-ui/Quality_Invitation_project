@@ -52,8 +52,17 @@ export type InvitationCopy = {
     countdownHours: string;
     countdownMinutes: string;
     countdownSeconds: string;
-    countdownHeading: string;
-    started: string;
+    /**
+     * Both of these name the occasion, so both are keyed by it.
+     *
+     * They were flat strings, which meant every card counted down to الفرح and
+     * announced الفرح النهاردة — including the engagements and the عقد قران, which
+     * are most of what this product sells. The two other occasion-dependent strings
+     * on the card, inviteLine and eventName, were records from the start; these two
+     * were the ones that got missed, and a plain string is what let them be missed.
+     */
+    countdownHeading: EventCopy;
+    started: EventCopy;
     muteAudio: string;
     unmuteAudio: string;
   };
@@ -89,8 +98,16 @@ const AR: InvitationCopy = {
     countdownHours: 'ساعة',
     countdownMinutes: 'دقيقة',
     countdownSeconds: 'ثانية',
-    countdownHeading: 'باقي على الفرح',
-    started: 'الفرح النهاردة',
+    countdownHeading: {
+      ENGAGEMENT: 'باقي على الخطوبة',
+      WEDDING: 'باقي على الفرح',
+      KATB_KETAB: 'باقي على عقد القران',
+    },
+    started: {
+      ENGAGEMENT: 'الخطوبة النهاردة',
+      WEDDING: 'الفرح النهاردة',
+      KATB_KETAB: 'عقد القران النهاردة',
+    },
     muteAudio: 'اكتم الموسيقى',
     unmuteAudio: 'شغل الموسيقى',
   },
@@ -125,8 +142,16 @@ const EN: InvitationCopy = {
     countdownHours: 'Hours',
     countdownMinutes: 'Minutes',
     countdownSeconds: 'Seconds',
-    countdownHeading: 'Counting down',
-    started: 'Today is the day',
+    countdownHeading: {
+      ENGAGEMENT: 'Counting down to the engagement',
+      WEDDING: 'Counting down to the wedding',
+      KATB_KETAB: 'Counting down to the Katb Ketab',
+    },
+    started: {
+      ENGAGEMENT: 'The engagement is today',
+      WEDDING: 'The wedding is today',
+      KATB_KETAB: 'The Katb Ketab is today',
+    },
     muteAudio: 'Mute the music',
     unmuteAudio: 'Play the music',
   },

@@ -33,14 +33,17 @@ import type { InvitationView } from '@/lib/invitation-view';
 function ZarfCountdown({
   targetMs,
   copy,
+  eventType,
 }: {
   targetMs: number;
   copy: InvitationCopy;
+  /** The line this draws when the count runs out names the occasion. */
+  eventType: InvitationView['eventType'];
 }) {
   const { totalSeconds, hasPassed } = useCountdownParts(targetMs);
 
   if (hasPassed) {
-    return <p className="font-inv-display text-xl text-inv-accent">{copy.labels.started}</p>;
+    return <p className="font-inv-display text-xl text-inv-accent">{copy.labels.started[eventType]}</p>;
   }
 
   const cells = [
@@ -269,9 +272,9 @@ export function ZarfInvitation({ view, copy }: { view: InvitationView; copy: Inv
           <Reveal>
             <div className="py-2">
               <p className="mb-4 font-inv-body text-xs text-inv-muted">
-                {copy.labels.countdownHeading}
+                {copy.labels.countdownHeading[view.eventType]}
               </p>
-              <ZarfCountdown targetMs={view.eventInstantMs} copy={copy} />
+              <ZarfCountdown targetMs={view.eventInstantMs} copy={copy} eventType={view.eventType} />
             </div>
           </Reveal>
 

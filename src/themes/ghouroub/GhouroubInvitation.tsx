@@ -341,7 +341,7 @@ function GhouroubCountdown({ view, copy }: { view: InvitationView; copy: Invitat
   const hasPassed = nowMs !== null && view.eventInstantMs - nowMs <= 0;
 
   if (hasPassed) {
-    return <p className="font-inv-display text-2xl text-inv-accent">{copy.labels.started}</p>;
+    return <p className="font-inv-display text-2xl text-inv-accent">{copy.labels.started[view.eventType]}</p>;
   }
 
   const cells = [
@@ -353,7 +353,7 @@ function GhouroubCountdown({ view, copy }: { view: InvitationView; copy: Invitat
 
   return (
     <div>
-      <p className={LABEL}>{copy.labels.countdownHeading}</p>
+      <p className={LABEL}>{copy.labels.countdownHeading[view.eventType]}</p>
 
       <div className="mt-6 grid grid-cols-4">
         {cells.map((cell) => (

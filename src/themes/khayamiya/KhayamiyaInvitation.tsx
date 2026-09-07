@@ -26,14 +26,17 @@ import type { InvitationView } from '@/lib/invitation-view';
 function KhayamiyaCountdown({
   targetMs,
   copy,
+  eventType,
 }: {
   targetMs: number;
   copy: InvitationCopy;
+  /** The line this draws when the count runs out names the occasion. */
+  eventType: InvitationView['eventType'];
 }) {
   const { totalSeconds, hasPassed } = useCountdownParts(targetMs);
 
   if (hasPassed) {
-    return <p className="font-inv-display text-xl text-inv-ink">{copy.labels.started}</p>;
+    return <p className="font-inv-display text-xl text-inv-ink">{copy.labels.started[eventType]}</p>;
   }
 
   const cells = [
@@ -292,9 +295,9 @@ export function KhayamiyaInvitation({ view, copy }: { view: InvitationView; copy
       <section className="relative flex flex-col items-center justify-center bg-inv-accent-soft px-5 py-10 text-center">
         <Reveal className="w-full max-w-[420px]">
           <p className="mb-4 font-inv-body text-xs text-inv-ink/90 font-medium">
-            {copy.labels.countdownHeading}
+            {copy.labels.countdownHeading[view.eventType]}
           </p>
-          <KhayamiyaCountdown targetMs={view.eventInstantMs} copy={copy} />
+          <KhayamiyaCountdown targetMs={view.eventInstantMs} copy={copy} eventType={view.eventType} />
         </Reveal>
       </section>
 

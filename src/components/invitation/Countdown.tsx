@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import type { InvitationCopy } from '@/i18n/invitation';
+import type { InvitationView } from '@/lib/invitation-view';
 
 type Parts = { days: number; hours: number; minutes: number; seconds: number };
 
@@ -61,7 +62,16 @@ export function useCountdownParts(targetMs: number): {
  * reorders a two digit number sitting next to Arabic label text, and the count starts
  * showing days as though they were seconds.
  */
-export function Countdown({ targetMs, copy }: { targetMs: number; copy: InvitationCopy }) {
+export function Countdown({
+  targetMs,
+  copy,
+  eventType,
+}: {
+  targetMs: number;
+  copy: InvitationCopy;
+  /** Both lines this draws name the occasion, so it has to be told which one. */
+  eventType: InvitationView['eventType'];
+}) {
   const [nowMs, setNowMs] = useState<number | null>(null);
 
   useEffect(() => {
@@ -82,14 +92,14 @@ export function Countdown({ targetMs, copy }: { targetMs: number; copy: Invitati
 
   if (hasPassed) {
     return (
-      <p className="font-inv-display text-2xl text-inv-accent">{copy.labels.started}</p>
+      <p className="font-inv-display text-2xl text-inv-accent">{copy.labels.started[eventType]}</p>
     );
   }
 
   return (
     <div>
       <p className="font-inv-body text-sm tracking-wide text-inv-muted">
-        {copy.labels.countdownHeading}
+        {copy.labels.countdownHeading[eventType]}
       </p>
 
       {/* Four rings rather than four filled tiles. Lighter on the page, and it keeps

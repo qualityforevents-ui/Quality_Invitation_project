@@ -148,7 +148,7 @@ function IwanCountdown({ view, copy }: { view: InvitationView; copy: InvitationC
   const hasPassed = nowMs !== null && view.eventInstantMs - nowMs <= 0;
 
   if (hasPassed) {
-    return <p className="font-inv-display text-2xl text-inv-accent">{copy.labels.started}</p>;
+    return <p className="font-inv-display text-2xl text-inv-accent">{copy.labels.started[view.eventType]}</p>;
   }
 
   const cells = [
@@ -160,7 +160,7 @@ function IwanCountdown({ view, copy }: { view: InvitationView; copy: InvitationC
 
   return (
     <div>
-      <p className={LABEL}>{copy.labels.countdownHeading}</p>
+      <p className={LABEL}>{copy.labels.countdownHeading[view.eventType]}</p>
 
       <div className="mt-6 grid grid-cols-4">
         {cells.map((cell) => (

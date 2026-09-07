@@ -187,7 +187,7 @@ export function ClassicInvitation({ view, copy }: { view: InvitationView; copy: 
 
         {/* 7. Countdown, standing on its own below the panel. */}
         <Reveal className="mt-11">
-          <Countdown targetMs={view.eventInstantMs} copy={copy} />
+          <Countdown targetMs={view.eventInstantMs} copy={copy} eventType={view.eventType} />
         </Reveal>
 
         {/* 9. The couple's own words, if they wrote any. */}

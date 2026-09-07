@@ -66,18 +66,21 @@ function Leaf({
 function NetigaCountdown({
   targetMs,
   copy,
+  eventType,
   lang,
   large = false,
 }: {
   targetMs: number;
   copy: InvitationCopy;
+  /** The line this draws when the count runs out names the occasion. */
+  eventType: InvitationView['eventType'];
   lang: InvitationView['lang'];
   large?: boolean;
 }) {
   const { totalSeconds, hasPassed } = useCountdownParts(targetMs);
 
   if (hasPassed) {
-    return <p className="font-inv-display text-xl text-inv-accent">{copy.labels.started}</p>;
+    return <p className="font-inv-display text-xl text-inv-accent">{copy.labels.started[eventType]}</p>;
   }
 
   const cells = [
@@ -245,11 +248,11 @@ export function NetigaInvitation({ view, copy }: { view: InvitationView; copy: I
           /* NO PHOTO: Second date leaf with loud countdown */
           <Leaf
             index={6}
-            headerTitle={copy.labels.countdownHeading}
+            headerTitle={copy.labels.countdownHeading[view.eventType]}
             secondaryNumber={formatNetigaDigits('06', view.lang)}
           >
             <div className="py-2">
-              <NetigaCountdown targetMs={view.eventInstantMs} copy={copy} lang={view.lang} large />
+              <NetigaCountdown targetMs={view.eventInstantMs} copy={copy} eventType={view.eventType} lang={view.lang} large />
             </div>
           </Leaf>
         )}
@@ -319,11 +322,11 @@ export function NetigaInvitation({ view, copy }: { view: InvitationView; copy: I
         {hasPhoto ? (
           <Leaf
             index={10}
-            headerTitle={copy.labels.countdownHeading}
+            headerTitle={copy.labels.countdownHeading[view.eventType]}
             secondaryNumber={formatNetigaDigits('10', view.lang)}
           >
             <div className="py-2">
-              <NetigaCountdown targetMs={view.eventInstantMs} copy={copy} lang={view.lang} />
+              <NetigaCountdown targetMs={view.eventInstantMs} copy={copy} eventType={view.eventType} lang={view.lang} />
             </div>
           </Leaf>
         ) : null}

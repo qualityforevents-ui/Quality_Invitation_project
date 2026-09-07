@@ -203,7 +203,7 @@ function HadiqaCountdown({ view, copy }: { view: InvitationView; copy: Invitatio
   const hasPassed = nowMs !== null && view.eventInstantMs - nowMs <= 0;
 
   if (hasPassed) {
-    return <p className="font-inv-display text-2xl text-inv-accent">{copy.labels.started}</p>;
+    return <p className="font-inv-display text-2xl text-inv-accent">{copy.labels.started[view.eventType]}</p>;
   }
 
   const cells = [
@@ -215,7 +215,7 @@ function HadiqaCountdown({ view, copy }: { view: InvitationView; copy: Invitatio
 
   return (
     <div>
-      <p className="font-inv-body text-sm text-inv-muted">{copy.labels.countdownHeading}</p>
+      <p className="font-inv-body text-sm text-inv-muted">{copy.labels.countdownHeading[view.eventType]}</p>
 
       <div className="mt-4 flex gap-6">
         {cells.map((cell) => (

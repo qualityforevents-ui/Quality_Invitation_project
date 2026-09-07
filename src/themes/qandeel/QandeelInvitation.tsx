@@ -45,14 +45,17 @@ function HungBlock({
 function QandeelCountdown({
   targetMs,
   copy,
+  eventType,
 }: {
   targetMs: number;
   copy: InvitationCopy;
+  /** The line this draws when the count runs out names the occasion. */
+  eventType: InvitationView['eventType'];
 }) {
   const { totalSeconds, hasPassed } = useCountdownParts(targetMs);
 
   if (hasPassed) {
-    return <p className="font-inv-display text-xl text-inv-accent">{copy.labels.started}</p>;
+    return <p className="font-inv-display text-xl text-inv-accent">{copy.labels.started[eventType]}</p>;
   }
 
   const cells = [
@@ -308,9 +311,9 @@ export function QandeelInvitation({ view, copy }: { view: InvitationView; copy: 
         {/* 10. COUNTDOWN — hung on 68px line */}
         <HungBlock drop={PLUMB_LENGTHS.countdown}>
           <p className="mb-4 font-inv-body text-xs text-inv-muted">
-            {copy.labels.countdownHeading}
+            {copy.labels.countdownHeading[view.eventType]}
           </p>
-          <QandeelCountdown targetMs={view.eventInstantMs} copy={copy} />
+          <QandeelCountdown targetMs={view.eventInstantMs} copy={copy} eventType={view.eventType} />
         </HungBlock>
 
         {/* 11. MESSAGE — hung on 40px line */}

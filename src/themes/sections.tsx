@@ -196,7 +196,7 @@ export function VenueBlock({
 export { PhotoFrame } from '@/components/invitation/PhotoFrame';
 
 export function CountdownBlock({ view, copy }: { view: InvitationView; copy: InvitationCopy }) {
-  return <Countdown targetMs={view.eventInstantMs} copy={copy} />;
+  return <Countdown targetMs={view.eventInstantMs} copy={copy} eventType={view.eventType} />;
 }
 
 export function MessageBlock({ view }: { view: InvitationView }) {
