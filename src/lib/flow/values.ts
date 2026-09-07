@@ -5,6 +5,7 @@ import { isGoogleMapsUrl, normaliseEgyptianPhone } from '../validation';
 import { suggestArabicName, suggestLatinName } from '../arabic-suggest';
 import { getPackage } from '../packages';
 import { DEFAULT_THEME_ID } from '../constants';
+import { DEFAULT_VERSE_ID } from '../verses';
 import { getTheme } from '@/themes/registry';
 import type { Invitation } from '@/generated/prisma/client';
 import type { EventType, Lang, Package } from '@/generated/prisma/enums';
@@ -34,6 +35,8 @@ export type FlowValues = {
   venueMapUrl: string;
   customMessage: string;
   invitationLang: Lang;
+  /** One of the four verse ids, or `none`. See src/lib/verses.ts. */
+  verseId: string;
   themeId: string;
   musicTrackId: string;
   photoFileId: string | null;
@@ -65,6 +68,7 @@ export function emptyValues(requestedPackage: Package): FlowValues {
     venueMapUrl: '',
     customMessage: '',
     invitationLang: 'AR',
+    verseId: DEFAULT_VERSE_ID,
     themeId: theme.id,
     musicTrackId: theme.defaultMusicTrackId,
     photoFileId: null,
@@ -95,6 +99,7 @@ export function valuesFromInvitation(
     venueMapUrl: invitation.venueMapUrl ?? '',
     customMessage: invitation.customMessage ?? '',
     invitationLang: invitation.invitationLang,
+    verseId: invitation.verseId,
     themeId: invitation.themeId,
     musicTrackId: invitation.musicTrackId,
     photoFileId: invitation.photoFileId,
@@ -128,6 +133,7 @@ export function toPatch(values: FlowValues, uiLang: Lang): Record<string, unknow
     venueName: values.venueName,
     customMessage: values.customMessage,
     invitationLang: values.invitationLang,
+    verseId: values.verseId,
     themeId: values.themeId,
     musicTrackId: values.musicTrackId,
     photoFileId: values.photoFileId,
@@ -187,6 +193,7 @@ export function isAnswered(id: SectionId, values: FlowValues): boolean {
     case 'package':
     case 'occasion':
     case 'language':
+    case 'verse':
     case 'theme':
     case 'music':
       // These always hold a valid value, so reaching them is answering them.
@@ -251,7 +258,7 @@ export function clampFurthest(
 
   for (let i = 0; i <= limit && i < SECTION_ORDER.length; i += 1) {
     const id = SECTION_ORDER[i];
-    if (!isSectionActive(id, values.package)) continue;
+    if (!isSectionActive(id, values.package, values.invitationLang)) continue;
     if (!isAnswered(id, values)) {
       // Land on the question itself, which means revealing everything before it.
       return i === 0 ? null : SECTION_ORDER[i - 1];

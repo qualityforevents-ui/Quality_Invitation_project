@@ -1,3 +1,4 @@
+import { getVerse, verseSource } from '@/lib/verses';
 import type { EventType, Lang } from '@/generated/prisma/enums';
 
 /**
@@ -20,7 +21,14 @@ type EventCopy = Record<EventType, string>;
 export type InvitationCopy = {
   /** The Bismillah glyph. Arabic card only, null on the English one. */
   bismillah: string | null;
-  /** Surah Ar-Rum 21. Arabic card only. */
+  /**
+   * The verse the customer chose, or null when they chose to have none.
+   *
+   * Null is also what the English card carries, and every theme guards the block on
+   * `bismillah && verse`, so "no verse" reuses a layout each design already draws
+   * rather than a state none of them has been seen in. The Bismillah goes with it:
+   * the block is one object in all twelve layouts, not two stacked ones.
+   */
   verse: string | null;
   verseSource: string | null;
   /** A line of classical verse in Arabic, a short line of its own in English. */
@@ -159,6 +167,25 @@ const EN: InvitationCopy = {
 
 const COPY: Record<Lang, InvitationCopy> = { AR, EN };
 
-export function getInvitationCopy(lang: Lang): InvitationCopy {
-  return COPY[lang] ?? AR;
+/**
+ * The words on the card, for a language and a chosen verse.
+ *
+ * `verseId` is optional because two callers legitimately have no use for it: the
+ * builder's thumbnail and the Open Graph image draw no verse at all. Everywhere the
+ * verse can actually appear, the id comes off the invitation — `InvitationView` carries
+ * it for exactly that reason.
+ */
+export function getInvitationCopy(lang: Lang, verseId?: string | null): InvitationCopy {
+  const base = COPY[lang] ?? AR;
+
+  // The English card has no verse in any variation of it, so there is nothing to swap.
+  if (base.verse === null) return base;
+
+  const verse = getVerse(verseId);
+
+  return {
+    ...base,
+    verse: verse?.text ?? null,
+    verseSource: verse ? verseSource(verse, lang) : null,
+  };
 }

@@ -98,6 +98,7 @@ export const invitationPatchSchema = z.object({
   /** The design brief, collected only on the bespoke tier. */
   customRequest: optionalText(1200),
 
+  verseId: z.string().trim().max(40).optional(),
   themeId: z.string().trim().max(40).optional(),
   musicTrackId: z.string().trim().max(40).optional(),
 

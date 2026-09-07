@@ -19,6 +19,7 @@ import {
   PhoneSection,
   TimeSection,
   VenueSection,
+  VerseSection,
 } from './QuestionSections';
 import {
   LanguageSection,
@@ -34,6 +35,7 @@ import { formatEventDate, formatEventTimeParts, fromDateInputValue } from '@/lib
 import { packageName } from '@/lib/packages';
 import { getTheme, themeName } from '@/themes/registry';
 import { getTrack, trackName } from '@/lib/music';
+import { getVerse, verseLabel } from '@/lib/verses';
 import { normaliseEgyptianPhone } from '@/lib/validation';
 import {
   FIRST_SECTION,
@@ -89,7 +91,7 @@ function reducer(state: FlowState, action: Action): FlowState {
        * dropped question is walked forward to the next one that survives.
        */
       const keep = (id: SectionId | null): SectionId | null =>
-        !id || isSectionActive(id, values.package) ? id : nextSection(id, values.package);
+        !id || isSectionActive(id, values.package, values.invitationLang) ? id : nextSection(id, values.package, values.invitationLang);
 
       const furthest = keep(state.furthest);
 
@@ -103,7 +105,7 @@ function reducer(state: FlowState, action: Action): FlowState {
         return { ...state, values, furthest, active: furthest };
       }
 
-      const next = nextSection(action.from, values.package);
+      const next = nextSection(action.from, values.package, values.invitationLang);
       return { ...state, values, furthest: next ?? furthest, active: next ?? furthest };
     }
 
@@ -263,6 +265,12 @@ export function InvitationFlow({
           label: t.flow.langSummary,
           value: values.invitationLang === 'AR' ? 'العربية' : 'English',
         };
+      case 'verse': {
+        const verse = getVerse(values.verseId);
+        return verse
+          ? { label: t.flow.verseSummary, value: verseLabel(verse, lang) }
+          : { label: t.flow.verseSummary, value: t.flow.verseNone, muted: true };
+      }
       case 'theme':
         return { label: t.flow.themeSummary, value: themeName(getTheme(values.themeId), lang) };
       case 'music':
@@ -392,6 +400,16 @@ export function InvitationFlow({
             onNext={() => advance('language')}
           />
         );
+      case 'verse':
+        return (
+          <VerseSection
+            t={t}
+            uiLang={lang}
+            value={values.verseId}
+            onChange={(verseId) => set({ verseId })}
+            onNext={() => advance('verse')}
+          />
+        );
       case 'theme':
         return (
           <ThemeSection
@@ -514,13 +532,17 @@ export function InvitationFlow({
     while (cursor) {
       list.push(cursor);
       if (cursor === furthest) break;
-      cursor = nextSection(cursor, values.package);
+      cursor = nextSection(cursor, values.package, values.invitationLang);
     }
 
     return list;
-  }, [furthest, values.package]);
+    // The walk skips questions that no longer apply, so it has to be redone when the
+    // answer that decides applicability changes. The invitation language is one of
+    // those now: switching an Arabic card to English retires the verse question, and
+    // without this dependency the retired question stayed on screen as an answered row.
+  }, [furthest, values.package, values.invitationLang]);
 
-  const percent = progressPercent(furthest, values.package);
+  const percent = progressPercent(furthest, values.package, values.invitationLang);
   const started = furthest !== null;
 
   return (

@@ -66,7 +66,7 @@ const AR = {
       },
       {
         title: 'اختار الشكل والموسيقى',
-        body: 'اتناشر تصميم، وبتشوف اسمك انت وشريكتك جوه كل واحد قبل ما تختار. تسمع الموسيقى قبل ما تحطها، وترفع صورة وتحركها جوه الإطار زي ما يعجبك.',
+        body: 'تسعة تصاميم، وبتشوف اسمك انت وشريكتك جوه كل واحد قبل ما تختار. تسمع الموسيقى قبل ما تحطها، وترفع صورة وتحركها جوه الإطار زي ما يعجبك.',
       },
       {
         title: 'شوف الدعوة كاملة',
@@ -145,6 +145,12 @@ const AR = {
 
     langTitle: 'الدعوة تطلع بأي لغة؟',
     langSummary: 'لغة الدعوة',
+
+    verseTitle: 'تحب تختار آية للدعوة؟',
+    verseHint: 'الآية بتيجي فوق، تحت البسملة.',
+    verseNone: 'من غير آية',
+    verseNoneHint: 'الدعوة تبدأ بأسمائكم على طول، من غير بسملة ولا آية.',
+    verseSummary: 'الآية',
 
     themeTitle: 'اختار شكل دعوتك',
     themeSummary: 'التصميم',
@@ -384,7 +390,7 @@ const EN: Dictionary = {
       },
       {
         title: 'Choose a design and music',
-        body: 'Twelve designs, each with its own typography and its own shape, and you see your own names inside every one before choosing. Listen to the music before you pick it, and drag a photo into the frame until it sits right.',
+        body: 'Nine designs, each with its own typography and its own shape, and you see your own names inside every one before choosing. Listen to the music before you pick it, and drag a photo into the frame until it sits right.',
       },
       {
         title: 'See the whole thing',
@@ -452,6 +458,12 @@ const EN: Dictionary = {
 
     langTitle: 'Which language should the invitation be in?',
     langSummary: 'Invitation language',
+
+    verseTitle: 'Choose a verse for the invitation',
+    verseHint: 'It opens the card, under the Bismillah.',
+    verseNone: 'No verse',
+    verseNoneHint: 'The card opens straight on your names, with no Bismillah and no verse.',
+    verseSummary: 'Verse',
 
     themeTitle: 'Choose a design',
     themeSummary: 'Design',

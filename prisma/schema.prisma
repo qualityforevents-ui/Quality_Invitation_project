@@ -48,6 +48,11 @@ model Invitation {
   venueMapUrl   String?
   customMessage String?
 
+  // Which Qur'anic verse the card carries, or "none". See src/lib/verses.ts.
+  // Defaulted rather than nullable so that rows written before the question existed
+  // keep the verse they were built with, which is the one every card used to have.
+  verseId String @default("ar-rum-21")
+
   // presentation
   themeId       String
   musicTrackId  String

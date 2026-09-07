@@ -1,4 +1,5 @@
 import { getEventInstant } from './format';
+import { DEFAULT_VERSE_ID } from './verses';
 import { getTrack, trackName, trackUrl } from './music';
 import { DEFAULT_THEME, getTheme } from '@/themes/registry';
 import type { InvitationView } from './invitation-view';
@@ -11,7 +12,7 @@ import type { Lang } from '@/generated/prisma/enums';
  * start, and it doubles as a way to work on a theme without a database or a draft.
  * The date is always some weeks out so the countdown is doing something.
  */
-export function buildSampleView(lang: Lang, themeId?: string): InvitationView {
+export function buildSampleView(lang: Lang, themeId?: string, verseId?: string): InvitationView {
   const now = new Date();
   const eventDate = new Date(
     Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 45),
@@ -46,6 +47,7 @@ export function buildSampleView(lang: Lang, themeId?: string): InvitationView {
     eventInstantMs: getEventInstant(eventDate, eventTime).getTime(),
     venueMapUrl: 'https://maps.google.com/?q=Cairo',
     themeId: theme.id,
+    verseId: verseId ?? DEFAULT_VERSE_ID,
     musicUrl: trackUrl(track),
     musicName: trackName(track, lang),
     // The sample deliberately shows the layout without a photo. That version is a real

@@ -1,4 +1,4 @@
-import type { Package } from '@/generated/prisma/enums';
+import type { Lang, Package } from '@/generated/prisma/enums';
 
 /**
  * The order the flow asks its questions in, as data rather than as JSX.
@@ -21,6 +21,9 @@ export const SECTION_ORDER = [
   'map',
   'message',
   'language',
+  // Straight after the language, because it is the language that decides whether this
+  // question exists at all: the verse and the Bismillah are on the Arabic card only.
+  'verse',
   'theme',
   'music',
   'photo',
@@ -56,12 +59,19 @@ export function isSkippable(id: SectionId): boolean {
 /**
  * Whether a section belongs in the flow at all, given what has been chosen so far.
  *
- * Only the bespoke tier is asked for a written brief. The predicate is evaluated on
- * every advance rather than once, so changing the package from the payment panel adds
- * or removes that question live.
+ * Only the bespoke tier is asked for a written brief, and only an Arabic card has a
+ * verse to choose. The predicate is evaluated on every advance rather than once, so
+ * changing the package from the payment panel, or going back and switching the card to
+ * English, adds or removes those questions live — and the progress rail follows,
+ * because it counts the same set.
  */
-export function isSectionActive(id: SectionId, packageId: Package): boolean {
+export function isSectionActive(
+  id: SectionId,
+  packageId: Package,
+  invitationLang: Lang,
+): boolean {
   if (id === 'brief') return packageId === 'CUSTOM';
+  if (id === 'verse') return invitationLang === 'AR';
   return true;
 }
 
@@ -70,10 +80,14 @@ export function sectionIndex(id: SectionId): number {
 }
 
 /** The next section after `id` that applies, or null when the flow is finished. */
-export function nextSection(id: SectionId, packageId: Package): SectionId | null {
+export function nextSection(
+  id: SectionId,
+  packageId: Package,
+  invitationLang: Lang,
+): SectionId | null {
   for (let i = sectionIndex(id) + 1; i < SECTION_ORDER.length; i += 1) {
     const candidate = SECTION_ORDER[i];
-    if (isSectionActive(candidate, packageId)) return candidate;
+    if (isSectionActive(candidate, packageId, invitationLang)) return candidate;
   }
   return null;
 }
@@ -89,10 +103,14 @@ export function isValidSectionId(value: string): value is SectionId {
  * not permanently short of the end because a question they will never be asked is
  * counted in the denominator.
  */
-export function progressPercent(furthest: SectionId | null, packageId: Package): number {
+export function progressPercent(
+  furthest: SectionId | null,
+  packageId: Package,
+  invitationLang: Lang,
+): number {
   if (!furthest) return 0;
 
-  const applicable = SECTION_ORDER.filter((id) => isSectionActive(id, packageId));
+  const applicable = SECTION_ORDER.filter((id) => isSectionActive(id, packageId, invitationLang));
   const reached = applicable.indexOf(furthest);
 
   return Math.round(((reached + 1) / applicable.length) * 100);

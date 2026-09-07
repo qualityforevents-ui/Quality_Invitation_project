@@ -14,6 +14,8 @@ import { PACKAGES } from '@/lib/packages';
 import { isGoogleMapsUrl } from '@/lib/validation';
 import { formatEventTimeParts } from '@/lib/format';
 import { BRIEF_MAX, MESSAGE_MAX, TIME_PATTERN } from '@/lib/flow/values';
+import { invitationFontVariables } from '@/lib/fonts';
+import { NO_VERSE_ID, VERSES, verseLabel } from '@/lib/verses';
 import type { Dictionary } from '@/i18n/ui';
 import type { EventType, Lang, Package } from '@/generated/prisma/enums';
 
@@ -233,6 +235,130 @@ export function OccasionSection({
         ))}
       </ToggleGroup>
     </SectionShell>
+  );
+}
+
+/* -------------------------------------------------------------------- verse */
+
+/**
+ * Which verse opens the card, or none.
+ *
+ * Every option shows the verse in full, in Amiri Quran, right to left, at a size it can
+ * actually be read at. A list of surah references would be a list nobody can choose
+ * from: people know this text by its words, not by its numbering, and picking the verse
+ * that opens your own wedding invitation from the label "Ar-Rum 21" is not a choice, it
+ * is a guess. The face is the one the card will use, for the reason it is used there —
+ * U+FDFD and tashkeel are carried by almost nothing else — so what is chosen here is
+ * what will be seen.
+ *
+ * This question is asked on Arabic cards only, which the flow decides, not this
+ * component: the English card has neither Bismillah nor verse in any of its designs.
+ */
+export function VerseSection({
+  t,
+  uiLang,
+  value,
+  onChange,
+  onNext,
+}: {
+  t: Dictionary;
+  /** The builder's language. The verses themselves are Arabic either way. */
+  uiLang: Lang;
+  value: string;
+  onChange: (verseId: string) => void;
+  onNext: () => void;
+}) {
+  return (
+    <SectionShell
+      title={t.flow.verseTitle}
+      hint={t.flow.verseHint}
+      onNext={onNext}
+      nextLabel={t.flow.next}
+    >
+      <div
+        role="radiogroup"
+        aria-label={t.flow.verseSummary}
+        className={cn(invitationFontVariables, 'flex flex-col gap-2')}
+      >
+        {VERSES.map((verse) => {
+          const selected = verse.id === value;
+
+          return (
+            <VerseOption
+              key={verse.id}
+              selected={selected}
+              label={verseLabel(verse, uiLang)}
+              onSelect={() => onChange(verse.id)}
+            >
+              {/*
+                Held at rtl and lang="ar" whatever the builder is set to. An Egyptian
+                customer building in English is still choosing Arabic scripture, and
+                letting the surrounding interface direction reach this text would
+                reorder it.
+              */}
+              <span
+                lang="ar"
+                dir="rtl"
+                className="mt-1 block text-[1.0625rem] leading-[2] text-foreground"
+                style={{ fontFamily: 'var(--font-amiri-quran), Georgia, serif' }}
+              >
+                {verse.text}
+              </span>
+            </VerseOption>
+          );
+        })}
+
+        <VerseOption
+          selected={value === NO_VERSE_ID}
+          label={t.flow.verseNone}
+          onSelect={() => onChange(NO_VERSE_ID)}
+        >
+          <span className="mt-1 block text-sm leading-relaxed text-muted-foreground">
+            {t.flow.verseNoneHint}
+          </span>
+        </VerseOption>
+      </div>
+    </SectionShell>
+  );
+}
+
+function VerseOption({
+  selected,
+  label,
+  onSelect,
+  children,
+}: {
+  selected: boolean;
+  label: string;
+  onSelect: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      role="radio"
+      aria-checked={selected}
+      onClick={onSelect}
+      className={cn(
+        'press tap-target flex w-full gap-3 rounded-xl border px-3 py-3 text-start transition',
+        selected ? 'border-primary bg-secondary' : 'border-border bg-card',
+      )}
+    >
+      <span
+        className={cn(
+          'mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full border',
+          selected ? 'border-primary bg-primary' : 'border-border',
+        )}
+        aria-hidden="true"
+      >
+        {selected ? <Check className="size-3 text-primary-foreground" /> : null}
+      </span>
+
+      <span className="flex-1">
+        <span className="block text-xs tracking-wide text-muted-foreground">{label}</span>
+        {children}
+      </span>
+    </button>
   );
 }
 

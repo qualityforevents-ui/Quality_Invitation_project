@@ -33,6 +33,7 @@ export function viewFromValues(values: FlowValues, themeOverride?: string): Invi
     venueMapUrl: values.venueMapUrl.trim() || null,
     customMessage: values.customMessage.trim() || null,
     themeId: themeOverride ?? values.themeId,
+    verseId: values.verseId,
     musicUrl: trackUrl(track),
     musicName: trackName(track, values.invitationLang),
     photoUrl: values.photoFileId ? buildPhotoUrl(values.photoFileId, values.photoCrop) : null,

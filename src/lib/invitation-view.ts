@@ -26,6 +26,14 @@ export type InvitationView = {
   venueMapUrl: string | null;
   customMessage: string | null;
   themeId: string;
+  /**
+   * Which verse the card carries, or `none`. See src/lib/verses.ts.
+   *
+   * It travels on the view rather than being looked up from the copy module because
+   * the copy module has no invitation to look at: it is given a language and asked for
+   * the words, and the verse is now the one word set that depends on the row.
+   */
+  verseId: string;
   /** Null when the track file is not in the build, which is not an error. */
   musicUrl: string;
   musicName: string;
@@ -53,6 +61,7 @@ export function toInvitationView(invitation: Invitation): InvitationView {
     venueMapUrl: invitation.venueMapUrl,
     customMessage: invitation.customMessage,
     themeId: invitation.themeId,
+    verseId: invitation.verseId,
     musicUrl: trackUrl(track),
     musicName: trackName(track, invitation.invitationLang),
     photoUrl: invitation.photoFileId
