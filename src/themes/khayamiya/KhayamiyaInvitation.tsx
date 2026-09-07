@@ -70,14 +70,23 @@ export function KhayamiyaInvitation({ view, copy }: { view: InvitationView; copy
     <div className="relative min-h-dvh w-full overflow-hidden bg-inv-bg text-inv-ink">
 
       {/* ================= 1. NAMES: 30vh madder field ================= */}
-      <section className="relative flex min-h-[30vh] flex-col items-center justify-center bg-inv-bg px-5 py-16 text-center">
+      <section className="relative flex min-h-[36vh] flex-col items-center justify-center bg-inv-bg px-5 py-14 text-center">
         <SteppedMerlonBorder side="left" />
         <SteppedMerlonBorder side="right" />
 
-        {/* 200px Eight-Petal Medallion centered behind names at 25% opacity */}
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-25">
-          <EightPetalMedallion size={200} />
-        </div>
+        {/*
+          The medallion is a crest over the names, not a watermark under them.
+
+          It used to sit at inset-0, dead centre, at 25% opacity — which put a 200px
+          eight-petal flower in saturated teal and gold directly behind the one line of
+          the card that has to be read first. On this madder ground 25% is not a
+          watermark, it is an object, and the names were competing with it for the same
+          pixels. Appliqué panels stack: a medallion, then the text beneath it. So does
+          this now, at full strength, where it decorates instead of interferes.
+        */}
+        <Reveal immediate className="relative z-10 mb-6" aria-hidden="true">
+          <EightPetalMedallion size={104} />
+        </Reveal>
 
         <Reveal immediate className="relative z-10">
           {copy.familiesPrefix ? (

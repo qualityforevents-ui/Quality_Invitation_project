@@ -102,7 +102,7 @@ export function QandeelInvitation({ view, copy }: { view: InvitationView; copy: 
     >
       {/* ================= FAR DEPTH LAYER (0.35x, petrol green tint) ================= */}
       <motion.div
-        className="pointer-events-none fixed inset-0 z-0 opacity-40 select-none"
+        className="pointer-events-none fixed inset-0 z-0 opacity-[0.22] select-none"
         style={{
           y: farY,
           scale: 0.82,
@@ -124,7 +124,7 @@ export function QandeelInvitation({ view, copy }: { view: InvitationView; copy: 
 
       {/* ================= MID DEPTH LAYER (0.7x) ================= */}
       <motion.div
-        className="pointer-events-none fixed inset-0 z-0 opacity-70 select-none"
+        className="pointer-events-none fixed inset-0 z-0 opacity-[0.34] select-none"
         style={{
           y: midY,
           scale: 0.92,
@@ -142,12 +142,16 @@ export function QandeelInvitation({ view, copy }: { view: InvitationView; copy: 
       {/* ================= NEAR DEPTH LAYER: The Invitation Content (342px measure) ================= */}
       <div className="relative z-10 mx-auto w-full max-w-[342px] flex flex-col items-center">
 
-        {/* 1. NAMES — hung on 40px line with 190px hero lamp behind at 30% */}
-        <div className="relative w-full text-center">
-          <div className="pointer-events-none absolute -top-8 inset-x-0 flex justify-center opacity-30" aria-hidden="true">
-            <MosqueLamp size={190} />
-          </div>
+        {/*
+          1. NAMES, hung on their plumb line.
 
+          There was a 190px mosque lamp behind them at 30%, which drew its bowl, its
+          finial and its chains straight through both names. The theme already hangs
+          five lamps in the two drifting layers behind this column — the motif was never
+          short of representation, and the one place it should not appear is inside the
+          couple's names.
+        */}
+        <div className="relative w-full text-center">
           <HungBlock drop={PLUMB_LENGTHS.names}>
             {copy.familiesPrefix ? (
               <p className="mb-3 font-inv-body text-xs text-inv-muted tracking-wider">

@@ -70,7 +70,17 @@ const GROUND: Array<{ flat: string; blend: string | null }> = [
  * content, so a ratio would do exactly that. Band four is the one true percentage in the
  * set, because a photograph gives that band a genuinely fixed height.
  */
-const HORIZON_SKY = [560, 380, 310, 380, 440];
+/*
+ * The sky above each band's rule.
+ *
+ * The first number was 560, which is two thirds of a 390x844 phone. A guest opened the
+ * card and got most of a screen of empty sand before the first word of it — on the one
+ * scroll position that is guaranteed to be seen. The sun needs 105px above the horizon
+ * and the rest was air nobody asked for. The later bands are trimmed for the same
+ * reason: this is a long card, and the space between sections should be a breath rather
+ * than a gap you have to cross.
+ */
+const HORIZON_SKY = [250, 300, 250, 300, 340];
 
 /**
  * The signature: the break in the horizon travels sideways as you scroll.

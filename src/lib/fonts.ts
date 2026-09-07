@@ -35,7 +35,7 @@ import {
   Noto_Naskh_Arabic,
   Playfair_Display,
   Prata,
-  Qahiri,
+  Changa,
   Rakkas,
   Readex_Pro,
   Reem_Kufi,
@@ -204,11 +204,19 @@ export const almarai = Almarai({
   preload: false,
 });
 
-/** الإيوان display. A single-weight Kufi cut from the Cairo street-sign tradition. */
-export const qahiri = Qahiri({
+/**
+ * الإيوان display.
+ *
+ * Was Qahiri, a single-weight display Kufi cut from the Cairo street-sign tradition.
+ * It is a beautiful face and the wrong job for it: its letterforms are stylised to the
+ * point that a couple's names stop reading as names, which on the one line of the card
+ * that matters most is not a style, it is a failure. Changa keeps the monumental,
+ * architectural weight the stone arch wants and stays legible at speed on a phone.
+ */
+export const changa = Changa({
   subsets: ['arabic', 'latin'],
-  weight: ['400'],
-  variable: '--font-qahiri',
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-changa',
   display: 'swap',
   preload: false,
 });
@@ -603,7 +611,7 @@ export const invitationFontVariables = [
   // Arabic faces for the twelve.
   kufam.variable,
   almarai.variable,
-  qahiri.variable,
+  changa.variable,
   fustat.variable,
   zain.variable,
   notoNaskh.variable,

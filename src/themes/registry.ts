@@ -294,7 +294,7 @@ const iwan: ThemeDefinition = {
   },
   fonts: {
     AR: {
-      display: 'var(--font-qahiri), system-ui, sans-serif',
+      display: 'var(--font-changa), system-ui, sans-serif',
       body: 'var(--font-fustat), system-ui, sans-serif',
     },
     EN: {

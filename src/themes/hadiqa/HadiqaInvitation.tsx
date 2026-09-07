@@ -351,14 +351,14 @@ export function HadiqaInvitation({ view, copy }: { view: InvitationView; copy: I
         */}
         <div className="relative z-10">
           <div
-            className="pointer-events-none absolute -top-6 -start-8 h-[200px] w-[200px] text-inv-accent opacity-40 rtl:-scale-x-100"
+            className="pointer-events-none absolute -top-12 -start-14 h-[200px] w-[200px] text-inv-accent opacity-25 rtl:-scale-x-100"
             aria-hidden="true"
           >
             <JasmineBlossom />
           </div>
 
           <Reveal immediate>
-            <div className="relative -ms-10 max-w-[352px]">
+            <div className="relative -ms-2 max-w-[352px]">
               {copy.familiesPrefix ? (
                 <p className="mb-4 font-inv-body text-[0.8125rem] text-inv-muted">
                   {copy.familiesPrefix}

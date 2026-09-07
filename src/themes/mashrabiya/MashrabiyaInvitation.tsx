@@ -97,11 +97,20 @@ export function MashrabiyaInvitation({ view, copy }: { view: InvitationView; cop
         {/* 1. NAMES: center void, 380px tall with 180px rosette behind at 30% */}
         <Reveal immediate>
           <HexagonalVoid align="center" className="min-h-[380px] flex flex-col justify-center">
-            <div className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-30" aria-hidden="true">
-              <SixLobedRosette size={180} />
-            </div>
-
             <div className="relative z-10 py-4">
+              {/*
+                The rosette is over the names, not under them.
+
+                A 180px rosette at 30% centred on inset-0 put its lobes straight through
+                the couple's names — and a shape that reads through type is not a
+                watermark, it is interference. Turned into a crest at the head of the
+                void, it still fills the hexagonal opening the theme is built on and the
+                names get their own air.
+              */}
+              <span className="mb-5 flex justify-center text-inv-accent-soft" aria-hidden="true">
+                <SixLobedRosette size={92} />
+              </span>
+
               {copy.familiesPrefix ? (
                 <p className="mb-3 font-inv-body text-xs text-inv-muted tracking-wider">
                   {copy.familiesPrefix}
