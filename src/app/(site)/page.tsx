@@ -75,7 +75,15 @@ export default async function HomePage({
 
   return (
     <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col px-5 pb-16">
+      {/*
+        Keyed on which invitation this is, so the flow remounts when that changes.
+        Its answers live in a useReducer seeded from initialValues, and a reducer's
+        initial state is read once: without a key change, clearing the cookie would
+        re-render the page with empty values while the customer carried on looking at
+        the old ones. This is what makes "start over" actually start over.
+      */}
       <InvitationFlow
+        key={invitation?.requestId ?? 'fresh'}
         lang={lang}
         t={t}
         initialValues={values}

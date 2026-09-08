@@ -152,6 +152,13 @@ const AR = {
     verseNoneHint: 'الدعوة تبدأ بأسمائكم على طول، من غير بسملة ولا آية.',
     verseSummary: 'الآية',
 
+    startOver: 'ابدأ من الأول',
+    startOverTitle: 'تبدأ دعوة جديدة من الأول؟',
+    startOverBody:
+      'هتبدأ دعوة فاضية من أول سؤال. الدعوة اللي شغال عليها دلوقتي مش هتقدر ترجعلها من الموبايل ده تاني، فلو محتاجها كلمنا على واتساب قبل ما تكمل.',
+    startOverConfirm: 'أيوة، ابدأ من الأول',
+    startOverCancel: 'لا، كمّل اللي بدأته',
+
     themeTitle: 'اختار شكل دعوتك',
     themeSummary: 'التصميم',
 
@@ -464,6 +471,13 @@ const EN: Dictionary = {
     verseNone: 'No verse',
     verseNoneHint: 'The card opens straight on your names, with no Bismillah and no verse.',
     verseSummary: 'Verse',
+
+    startOver: 'Start over',
+    startOverTitle: 'Start a new invitation from scratch?',
+    startOverBody:
+      'You will begin an empty invitation at the first question. The one you are working on now cannot be reopened from this phone afterwards, so message us on WhatsApp first if you still need it.',
+    startOverConfirm: 'Yes, start over',
+    startOverCancel: 'No, keep going',
 
     themeTitle: 'Choose a design',
     themeSummary: 'Design',

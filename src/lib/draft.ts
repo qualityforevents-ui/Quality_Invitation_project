@@ -11,7 +11,7 @@ export type LoadedDraft = {
 /**
  * Loads the draft belonging to this device, if there is one.
  *
- * A failure to reach the database is reported rather than thrown. Before Supabase is
+ * A failure to reach the database is reported rather than thrown. Before Firebase is
  * provisioned the flow is still worth being able to open and look at on a phone, and
  * once it is provisioned a brief outage should leave the customer looking at a form
  * that cannot save rather than an error page that loses what they typed.

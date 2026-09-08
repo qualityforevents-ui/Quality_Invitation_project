@@ -8,6 +8,7 @@ import { AnsweredRow } from './AnsweredRow';
 import { PendingBanner } from './PendingBanner';
 import { PaymentPanel } from './PaymentPanel';
 import { PreviewDialog } from './PreviewDialog';
+import { StartOverButton } from './StartOverButton';
 import {
   BriefSection,
   DateSection,
@@ -603,6 +604,15 @@ export function InvitationFlow({
           {/* Somebody whose request is already sent or already live is editing, not
               buying. They get the way back to their own status screen instead of a
               second demand for money. */}
+          {/*
+            Only while it is still a draft, and only once there is one.
+            Past DRAFT the invitation has been sent to the operator or paid for, and
+            "start over" there would strand somebody from an invitation they may already
+            have money in. Before a draft exists there is nothing to reset, and clearing
+            a cookie that was never set would leave the flow looking unchanged.
+          */}
+          {isDraft && invitation ? <StartOverButton t={t} /> : null}
+
           {!isDraft && invitation ? (
             <Button asChild size="lg" className="mt-4 w-full rounded-full text-base">
               <Link href={`/build/status/${invitation.editToken}`}>
