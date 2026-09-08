@@ -124,9 +124,11 @@ const AR = {
 
     dateTitle: 'الفرح إمتى؟',
     dateHint: 'اضغط على الخانة واختار التاريخ من النتيجة.',
+    datePlaceholder: 'اختار التاريخ',
     dateSummary: 'التاريخ',
 
     timeTitle: 'الساعة كام؟',
+    timePlaceholder: 'اختار الساعة',
     timeSummary: 'الساعة',
     timeOther: 'ميعاد تاني',
 
@@ -456,9 +458,11 @@ const EN: Dictionary = {
 
     dateTitle: 'When is it?',
     dateHint: 'Tap the field and pick the date from the calendar.',
+    datePlaceholder: 'Pick the date',
     dateSummary: 'Date',
 
     timeTitle: 'What time does it start?',
+    timePlaceholder: 'Pick the time',
     timeSummary: 'Time',
     timeOther: 'Another time',
 

@@ -363,6 +363,76 @@ function VerseOption({
   );
 }
 
+/* ----------------------------------------------------- native picker field */
+
+/**
+ * A native date or time input that shows its value in the page's language.
+ *
+ * The browser renders `<input type="date">` in the PHONE's locale, and nothing the page
+ * can set changes it — not the lang attribute, not CSS, not dir. So an Egyptian customer
+ * on an English handset picked their wedding day and read "17 Sep 2026" back in the
+ * middle of an Arabic form, and their hour as "9:00 PM" under four buttons that all said
+ * مساءً. Printing the Arabic underneath the field did not fix that: the wrong thing was
+ * still the biggest thing in the box.
+ *
+ * The input is still native — the wheel an iPhone opens for a date months out beats any
+ * calendar this could draw, and it is what the customer's thumb already knows — but it
+ * is transparent and stretched across the whole field, and the text painted underneath
+ * is ours. A tap anywhere on the box is a tap on the input, so the picker opens exactly
+ * as it did; only the reading changes.
+ *
+ * Deliberately not `hidden`, `display: none`, or zero-sized. An input in any of those
+ * states cannot be focused on iOS, and the picker would simply never open.
+ */
+function NativePickerField({
+  type,
+  value,
+  display,
+  placeholder,
+  label,
+  min,
+  invalid,
+  onChange,
+}: {
+  type: 'date' | 'time';
+  value: string;
+  /** The value written the way the card writes it. Empty when nothing is chosen yet. */
+  display: string;
+  placeholder: string;
+  label: string;
+  min?: string;
+  invalid?: boolean;
+  onChange: (next: string) => void;
+}) {
+  return (
+    <div
+      className={cn(
+        'relative flex h-12 w-full items-center justify-center rounded-xl border bg-transparent px-3 transition',
+        invalid ? 'border-destructive' : 'border-input',
+      )}
+    >
+      <span
+        className={cn(
+          'pointer-events-none truncate text-base',
+          display ? 'font-medium text-foreground' : 'text-muted-foreground',
+        )}
+      >
+        {display || placeholder}
+      </span>
+
+      <input
+        type={type}
+        value={value}
+        min={min}
+        onChange={(event) => onChange(event.target.value)}
+        aria-label={label}
+        aria-invalid={invalid ? true : undefined}
+        className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+      />
+    </div>
+  );
+}
+
 /* --------------------------------------------------------------------- date */
 
 export function DateSection({
@@ -411,32 +481,17 @@ export function DateSection({
           where a grid needs a tap per month. `dir="ltr"` is safe here and only here
           because the value is bare digits and separators with no Arabic word in it.
         */}
-        <Input
+        <NativePickerField
           type="date"
-          dir="ltr"
-          min={today}
           value={value}
-          onChange={(event) => onChange(event.target.value)}
-          aria-label={t.flow.dateTitle}
-          aria-invalid={touched && missing ? true : undefined}
-          className="h-12 text-center"
+          display={value ? formatEventDate(fromDateInputValue(value) ?? new Date(), lang) : ''}
+          placeholder={t.flow.datePlaceholder}
+          label={t.flow.dateTitle}
+          min={today}
+          invalid={touched && missing}
+          onChange={onChange}
         />
 
-        {/*
-          The date again, in the language the card is being built in.
-
-          A native date input renders in the PHONE's locale, not the page's, and nothing
-          the page can set changes that — no lang attribute, no CSS. So an Egyptian
-          customer with an English handset picks their wedding day and the form answers
-          "18 Dec 2026" in the middle of an Arabic form. This line is the confirmation
-          they can actually read, in the same wording the answered row and the card use,
-          so the value they see here is the value they will see on the invitation.
-        */}
-        {!missing ? (
-          <p className="mt-2 text-center text-sm font-medium text-foreground">
-            {formatEventDate(fromDateInputValue(value) ?? new Date(), lang)}
-          </p>
-        ) : null}
       </QuestionForm>
     </SectionShell>
   );
@@ -524,23 +579,15 @@ export function TimeSection({
 
       {custom ? (
         <div className="rise mt-2">
-          <Input
+          <NativePickerField
             type="time"
-            dir="ltr"
-            autoFocus
             value={value}
-            onChange={(event) => onChange(event.target.value)}
-            aria-label={t.flow.timeTitle}
-            className="h-12 text-center"
+            display={missing ? '' : label(value)}
+            placeholder={t.flow.timePlaceholder}
+            label={t.flow.timeTitle}
+            onChange={onChange}
           />
 
-          {/* Same reason as the date: the native picker says "9:00 PM" whatever the
-              page language is. This says it the way the four buttons above say it. */}
-          {!missing ? (
-            <p className="mt-2 text-center text-sm font-medium text-foreground">
-              <bdi>{label(value)}</bdi>
-            </p>
-          ) : null}
         </div>
       ) : null}
     </SectionShell>
