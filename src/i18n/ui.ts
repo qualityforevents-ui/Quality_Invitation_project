@@ -299,6 +299,13 @@ const AR = {
     pendingCta: 'شوف حالة الطلب',
     activeBanner: 'دعوتك مفعّلة.',
     activeCta: 'شوف دعوتك',
+
+    cancel: 'ألغِ الطلب',
+    cancelTitle: 'تلغي الطلب؟',
+    cancelBody:
+      'الدعوة هترجع مسودّة وتقدر تعدّل فيها وتبعتها تاني. مش هيتمسح منها حاجة. لو كنت حوّلت الفلوس بالفعل، كلمنا على واتساب بدل ما تلغي.',
+    cancelConfirm: 'أيوة، ألغِ الطلب',
+    cancelKeep: 'لا، سيبه زي ما هو',
   },
 
   success: {
@@ -620,6 +627,13 @@ const EN: Dictionary = {
     pendingCta: 'See its status',
     activeBanner: 'Your invitation is live.',
     activeCta: 'See your invitation',
+
+    cancel: 'Cancel this request',
+    cancelTitle: 'Cancel the request?',
+    cancelBody:
+      'Your invitation goes back to being a draft, so you can edit it and send it again. Nothing is deleted. If you have already transferred the money, message us on WhatsApp instead of cancelling.',
+    cancelConfirm: 'Yes, cancel it',
+    cancelKeep: 'No, leave it',
   },
 
   success: {

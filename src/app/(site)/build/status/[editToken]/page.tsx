@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { AlertTriangle } from 'lucide-react';
+import { CancelRequestButton } from '@/components/status/CancelRequestButton';
 import { StatusWatcher } from '@/components/status/StatusWatcher';
 import { SupportButton } from '@/components/SupportButton';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { CopyField } from '@/components/ui/CopyField';
 import { getDictionary } from '@/i18n/ui';
@@ -86,9 +86,20 @@ export default async function StatusPage({ params }: Params) {
             <h2 className="text-base font-bold text-secondary-foreground">{t.success.shareTitle}</h2>
             <p className="mt-1 text-xs text-muted-foreground">{t.success.shareHint}</p>
 
-            <p dir="ltr" className="mt-3 truncate rounded-lg bg-card px-3 py-2 text-start text-sm">
-              {publicUrl}
-            </p>
+            {/*
+              Copyable, not merely readable. Sharing over WhatsApp is one tap below,
+              but plenty of people are pasting this into Facebook, a story, or a message
+              to somebody who is not in their WhatsApp contacts, and selecting a
+              truncated URL by hand on a phone is close to impossible.
+            */}
+            <div className="mt-3">
+              <CopyField
+                label={t.status.linkLabel}
+                value={publicUrl}
+                copyLabel={t.common.copy}
+                copiedLabel={t.common.copied}
+              />
+            </div>
 
             <Button asChild size="lg" className="mt-3 w-full rounded-full">
               <a href={whatsappLink(shareText)} target="_blank" rel="noopener noreferrer">
@@ -106,16 +117,31 @@ export default async function StatusPage({ params }: Params) {
           </section>
         </>
       ) : (
-        <section className="rounded-xl border bg-card px-4 py-3">
-          <div className="flex items-center justify-between gap-3">
-            <h2 className="text-sm font-medium">{t.status.linkLabel}</h2>
-            <Badge variant="secondary">{t.status.notActive}</Badge>
-          </div>
-          <p dir="ltr" className="mt-2 truncate text-start text-sm text-muted-foreground">
-            {publicUrl}
-          </p>
-        </section>
+        <div>
+          {/*
+            Copyable even before it works. This is the address the invitation will have,
+            it does not change on activation, and somebody who wants to keep it
+            somewhere safe while they wait should not have to retype it off a screen.
+            The line underneath says plainly that it is not live yet.
+          */}
+          <CopyField
+            label={t.status.linkLabel}
+            value={publicUrl}
+            copyLabel={t.common.copy}
+            copiedLabel={t.common.copied}
+          />
+          <p className="mt-2 px-1 text-xs text-muted-foreground">{t.status.notActive}</p>
+        </div>
       )}
+
+      {/*
+        Only while the request is waiting on us, or has come back rejected. An ACTIVE
+        invitation has been paid for and its link may already be with the guests, so
+        taking it down is a conversation rather than a button.
+      */}
+      {invitation.status === 'AWAITING_CONFIRMATION' || isRejected ? (
+        <CancelRequestButton editToken={invitation.editToken} t={t} />
+      ) : null}
 
       {/* Carries the request id into the prefilled message. This is the screen where
           somebody who has already paid comes looking for a human. */}
