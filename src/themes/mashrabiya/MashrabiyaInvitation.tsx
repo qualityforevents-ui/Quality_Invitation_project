@@ -166,20 +166,6 @@ export function MashrabiyaInvitation({ view, copy }: { view: InvitationView; cop
           </Reveal>
         ) : null}
 
-        {/* 3. POETRY: small center void, 200px tall with bobbin divider */}
-        <Reveal>
-          {/* Empty when the couple chose no line. */}
-          {copy.poetry ? (
-            <HexagonalVoid align="center" className="min-h-[200px] flex flex-col justify-center">
-              <BobbinDivider className="my-2" />
-              <p className="font-inv-body text-base leading-[1.9] text-inv-muted text-pretty">
-                {copy.poetry}
-              </p>
-            </HexagonalVoid>
-          ) : null}
-        </Reveal>
-
-
         {/* 5. ROLES: center void with bobbin divider */}
         <Reveal>
           <HexagonalVoid align="center">
@@ -303,6 +289,16 @@ export function MashrabiyaInvitation({ view, copy }: { view: InvitationView; cop
         ) : null}
 
         {/* 12. FOOTER: small center void */}
+        {/* Empty when the couple chose no line. */}
+        {copy.poetry ? (
+          <HexagonalVoid align="center" className="min-h-[200px] flex flex-col justify-center">
+            <BobbinDivider className="my-2" />
+            <p className="font-inv-body text-base leading-[1.9] text-inv-muted text-pretty">
+              {copy.poetry}
+            </p>
+          </HexagonalVoid>
+        ) : null}
+
         <footer className="my-8 text-center">
           <HexagonalVoid align="center" className="py-4">
             <BobbinDivider className="my-1" />

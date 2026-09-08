@@ -163,17 +163,16 @@ export function RizmaInvitation({ view, copy }: { view: InvitationView; copy: In
           ) : null}
         </InsertCard>
 
-        {/* ================= CARD 2: INVITATION (286px) ================= */}
-        {/* Empty when the couple chose no line. */}
-        {copy.poetry ? (
-          <InsertCard measure={286}>
-            <p className="font-inv-body text-base leading-[1.9] text-inv-muted text-pretty">
-              {copy.poetry}
-            </p>
-  
-  
+        {/* ================= CARD 2: THE COUPLE (286px) ================= */}
+        {/*
+          Unconditional. A guard added around this card to hide the couple's line also
+          hid the bride and the groom with it, so choosing "no line" took their names
+          off the card entirely. The line lives at the end of the set now; this card is
+          the two people, and they are never optional.
+        */}
+        <InsertCard measure={286}>
             {/* Roles */}
-            <div className="mt-6 grid grid-cols-2 gap-3 border-t border-inv-line/40 pt-4">
+            <div className="grid grid-cols-2 gap-3">
               <div>
                 <span className="font-inv-body text-[11px] text-inv-muted [word-spacing:0.3em] uppercase">
                   {copy.roleGroom}
@@ -191,8 +190,7 @@ export function RizmaInvitation({ view, copy }: { view: InvitationView; copy: In
                 </p>
               </div>
             </div>
-          </InsertCard>
-        ) : null}
+        </InsertCard>
 
         {/* ================= CARD 3: PHOTO / CREST CARD ================= */}
         {hasPhoto ? (
@@ -278,6 +276,15 @@ export function RizmaInvitation({ view, copy }: { view: InvitationView; copy: In
         ) : null}
 
         {/* ================= FOOTER: sitting on the grey table itself ================= */}
+        {/* The couple's own line, last of the set. Empty when they chose none. */}
+        {copy.poetry ? (
+          <InsertCard measure={264}>
+            <p className="font-inv-body text-base leading-[1.9] text-inv-muted text-pretty">
+              {copy.poetry}
+            </p>
+          </InsertCard>
+        ) : null}
+
         <footer className="mt-12 text-center">
           <a
             href={SITE_URL}

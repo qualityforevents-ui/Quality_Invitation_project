@@ -206,14 +206,6 @@ export function QandeelInvitation({ view, copy }: { view: InvitationView; copy: 
         ) : null}
 
         {/* 3. POETRY — hung on 62px line */}
-        {/* Empty when the couple chose no line. */}
-        {copy.poetry ? (
-          <HungBlock drop={PLUMB_LENGTHS.poetry}>
-            <p className="font-inv-body text-lg leading-[1.9] text-inv-muted text-pretty">
-              {copy.poetry}
-            </p>
-          </HungBlock>
-        ) : null}
 
 
         {/* 5. ROLES — hung on 78px line with 26px solid lamp */}
@@ -330,6 +322,15 @@ export function QandeelInvitation({ view, copy }: { view: InvitationView; copy: 
         ) : null}
 
         {/* 12. FOOTER — shortest hang with 26px solid lamp */}
+        {/* Empty when the couple chose no line. */}
+        {copy.poetry ? (
+          <HungBlock drop={PLUMB_LENGTHS.poetry}>
+            <p className="font-inv-body text-lg leading-[1.9] text-inv-muted text-pretty">
+              {copy.poetry}
+            </p>
+          </HungBlock>
+        ) : null}
+
         <footer className="mt-12 flex flex-col items-center text-center">
           <PlumbLine length={24} />
           <div className="my-2">

@@ -411,14 +411,6 @@ export function HadiqaInvitation({ view, copy }: { view: InvitationView; copy: I
           ) : null}
 
           {/* ------------------------------------------------------------ 3. poetry */}
-          {/* Empty when the couple chose no line. */}
-          {copy.poetry ? (
-            <Block>
-              <p className="font-inv-body text-[1.125rem] leading-[1.9] text-inv-muted text-pretty">
-                {copy.poetry}
-              </p>
-            </Block>
-          ) : null}
 
 
           {/* ------------------------------------------------------------- 5. roles */}
@@ -533,6 +525,15 @@ export function HadiqaInvitation({ view, copy }: { view: InvitationView; copy: I
           ) : null}
 
           {/* ------------------------------------------------------------ 12. footer */}
+          {/* Empty when the couple chose no line. */}
+          {copy.poetry ? (
+            <Block>
+              <p className="font-inv-body text-[1.125rem] leading-[1.9] text-inv-muted text-pretty">
+                {copy.poetry}
+              </p>
+            </Block>
+          ) : null}
+
           <Block className="mt-16">
             <a
               href={SITE_URL}

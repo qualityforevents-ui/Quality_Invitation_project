@@ -151,17 +151,6 @@ export function KhayamiyaInvitation({ view, copy }: { view: InvitationView; copy
         <SteppedMerlonBorder side="left" />
         <SteppedMerlonBorder side="right" />
 
-        {/* Empty when the couple chose no line. */}
-        {copy.poetry ? (
-          <Reveal className="max-w-[420px]">
-            <div className="mb-4">
-              <LotusPalmette size={40} />
-            </div>
-            <p className="font-inv-body text-lg font-medium leading-[1.9] text-inv-muted text-pretty">
-              {copy.poetry}
-            </p>
-          </Reveal>
-        ) : null}
       </section>
 
       <RunningStitchSeam />
@@ -324,6 +313,18 @@ export function KhayamiyaInvitation({ view, copy }: { view: InvitationView; copy
       ) : null}
 
       {/* ================= 12. FOOTER: short panel field ================= */}
+      {/* Empty when the couple chose no line. */}
+      {copy.poetry ? (
+        <Reveal className="max-w-[420px]">
+          <div className="mb-4">
+            <LotusPalmette size={40} />
+          </div>
+          <p className="font-inv-body text-lg font-medium leading-[1.9] text-inv-muted text-pretty">
+            {copy.poetry}
+          </p>
+        </Reveal>
+      ) : null}
+
       <footer className="relative flex h-[72px] items-center justify-center bg-inv-panel px-5 text-center">
         <a
           href={SITE_URL}

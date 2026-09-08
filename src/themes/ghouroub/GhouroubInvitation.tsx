@@ -453,18 +453,6 @@ export function GhouroubInvitation({ view, copy }: { view: InvitationView; copy:
         ) : null}
       </Band>
 
-      {/* 3. The line of verse, alone in its band. */}
-      <Band index={1} side="below" sky={HORIZON_SKY[1]} progress={scrollYProgress} reduced={reduced}>
-        {/* Empty when the couple chose no line. */}
-        {copy.poetry ? (
-          <Reveal>
-            <p className="font-inv-body text-[1.125rem] leading-[2] text-inv-muted text-pretty">
-              {copy.poetry}
-            </p>
-          </Reveal>
-        ) : null}
-      </Band>
-
       {/* 4 and 5. The invitation and the two people it comes from — the last content
           that hangs below the line. Everything after this sits above it. */}
       <Band index={2} side="below" sky={HORIZON_SKY[2]} progress={scrollYProgress} reduced={reduced}>
@@ -578,6 +566,15 @@ export function GhouroubInvitation({ view, copy }: { view: InvitationView; copy:
       <div className="relative bg-inv-panel">
         <Haze opacity={haze} />
         <div className={cn('relative pb-24', MEASURE)}>
+          {/* Empty when the couple chose no line. */}
+          {copy.poetry ? (
+            <Reveal>
+              <p className="font-inv-body text-[1.125rem] leading-[2] text-inv-muted text-pretty">
+                {copy.poetry}
+              </p>
+            </Reveal>
+          ) : null}
+
           <FooterBlock view={view} />
         </div>
       </div>

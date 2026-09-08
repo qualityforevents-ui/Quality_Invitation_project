@@ -309,15 +309,6 @@ export function IwanInvitation({ view, copy }: { view: InvitationView; copy: Inv
           ) : null}
 
           {/* ---------------------------------------------------------- 3. poetry */}
-          {/* Empty when the couple chose no line. */}
-          {copy.poetry ? (
-            <Course tier={0} className="mt-14">
-              <IwanVoussoirStub className="mb-8" />
-              <p className="text-center font-inv-body text-[1.125rem] leading-[1.9] text-inv-muted text-pretty">
-                {copy.poetry}
-              </p>
-            </Course>
-          ) : null}
 
 
           {/* ----------------------------------------------------------- 5. roles */}
@@ -436,6 +427,16 @@ export function IwanInvitation({ view, copy }: { view: InvitationView; copy: Inv
             className="text-center"
             style={{ paddingInline: TIER_INSET[3] + GUTTER }}
           >
+            {/* Empty when the couple chose no line. */}
+            {copy.poetry ? (
+              <Course tier={0} className="mt-14">
+                <IwanVoussoirStub className="mb-8" />
+                <p className="text-center font-inv-body text-[1.125rem] leading-[1.9] text-inv-muted text-pretty">
+                  {copy.poetry}
+                </p>
+              </Course>
+            ) : null}
+
             <FooterBlock view={view} ornament={<IwanVoussoirStub className="mb-8" />} />
           </div>
         </div>
