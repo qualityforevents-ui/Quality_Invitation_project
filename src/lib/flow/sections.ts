@@ -28,9 +28,27 @@ export const SECTION_ORDER = [
   // whether this question exists at all, since the verse and the Bismillah are on the
   // Arabic card only.
   'verse',
-  'theme',
   'music',
   'photo',
+  /*
+   * Last, immediately before the card is opened.
+   *
+   * The design used to be chosen in the middle, before the music, the photo and half
+   * the content. That is the wrong moment for it: the question draws a live card, and
+   * the more of the invitation exists by the time it is asked, the more the customer is
+   * choosing between real invitations rather than between colour schemes. By here the
+   * names, the date, the venue, the words and the photo are all in, so every design on
+   * offer is drawn with the actual thing being bought.
+   *
+   * It also puts the decision next to the moment it pays off, which is opening the card
+   * on the next question.
+   *
+   * Safe to move after the music. Choosing a design carries its default track along,
+   * but only while the customer has not picked a track of their own — so asking the
+   * music first means their choice survives, and leaving it untouched still lets the
+   * design decide it.
+   */
+  'theme',
   'preview',
   // The tier is asked here, after the card has been seen and before the brief that only
   // the bespoke tier collects. Asking it first meant quoting a price to somebody who had
