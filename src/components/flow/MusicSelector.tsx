@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/cn';
 import { MUSIC_TRACKS, trackMood, trackName, trackUrl } from '@/lib/music';
 import type { Dictionary } from '@/i18n/ui';
-import type { Lang } from '@/generated/prisma/enums';
+import type { Lang } from '@/lib/types';
 
 /**
  * Tracks are named, never listed by filename, and each one can be auditioned before

@@ -7,25 +7,28 @@ link to send guests on WhatsApp.
 No customer accounts exist anywhere in this codebase. Access to an invitation is by
 secret token only.
 
-**Start here: [SETUP.md](SETUP.md).** Nothing that touches the database runs until
-Supabase is provisioned.
+**Start here: [SETUP.md](SETUP.md).** Nothing that touches the database runs until the
+Firebase project is provisioned. Local development runs against the Firestore emulator
+and needs no credentials at all.
 
 ---
 
 ## Where things are
 
 ```
-prisma/schema.prisma      the data model
-prisma.config.ts          connection URL for migrations, Prisma 7 keeps it here
-src/lib/db.ts             runtime client, pooler, pool capped at one connection
-src/lib/tokens.ts         editToken, requestId, collision retry
+src/lib/types.ts          the data model, written by hand since Firestore has no schema
+src/lib/db.ts             Firestore handles, credentials, Timestamp to Date
+src/lib/firebase/auth.ts  operator sign in and the session cookie
+firestore.indexes.json    the two composite indexes the admin lists sort by
+firestore.rules           deny everything: no browser talks to Firestore, only the server
+src/lib/tokens.ts         editToken, requestId, slug suffixes
 src/lib/slug.ts           Arabic to Latin transliteration
 src/lib/format.ts         dates and times, resolved in Africa/Cairo
 src/lib/invitations.ts    create, patch, status transitions
 src/i18n/ui.ts            all builder and landing copy, both languages
 src/i18n/invitation.ts    copy inside the card, written twice not translated
 src/themes/registry.ts    theme colours, font pairs, defaults
-src/themes/classic/       the one theme built so far
+src/themes/hadiqa/        one theme per folder, nine of them
 src/components/invitation/  cover, reveal, countdown, audio, ornaments
 src/lib/flow/               section order, values, the autosave patch
 src/components/flow/        the one page flow and its questions

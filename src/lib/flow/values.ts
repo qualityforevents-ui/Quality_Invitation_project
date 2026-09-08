@@ -7,8 +7,8 @@ import { getPackage } from '../packages';
 import { DEFAULT_THEME_ID } from '../constants';
 import { DEFAULT_VERSE_ID } from '../verses';
 import { getTheme } from '@/themes/registry';
-import type { Invitation } from '@/generated/prisma/client';
-import type { EventType, Lang, Package } from '@/generated/prisma/enums';
+import type { Invitation } from '@/lib/types';
+import type { EventType, Lang, Package } from '@/lib/types';
 
 export const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 export const TIME_PATTERN = /^([01]\d|2[0-3]):[0-5]\d$/;

@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { CheckCircle2, Clock } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import type { Invitation } from '@/generated/prisma/client';
+import type { Invitation } from '@/lib/types';
 import type { Dictionary } from '@/i18n/ui';
 
 /**

@@ -47,8 +47,8 @@ import {
 import { clampFurthest, isAnswered, toPatch, type FlowValues } from '@/lib/flow/values';
 import { viewFromValues } from '@/lib/flow/preview-view';
 import type { Dictionary } from '@/i18n/ui';
-import type { Invitation } from '@/generated/prisma/client';
-import type { EventType, Lang } from '@/generated/prisma/enums';
+import type { Invitation } from '@/lib/types';
+import type { EventType, Lang } from '@/lib/types';
 
 type FlowState = {
   values: FlowValues;

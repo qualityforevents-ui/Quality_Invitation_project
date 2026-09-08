@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import { THEMES } from '@/themes/registry';
 import { NO_VERSE_ID, VERSES } from '@/lib/verses';
-import type { EventType, Lang } from '@/generated/prisma/enums';
+import type { EventType, Lang } from '@/lib/types';
 
 /**
  * All thirteen designs on one screen, live.

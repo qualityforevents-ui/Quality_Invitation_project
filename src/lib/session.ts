@@ -1,6 +1,6 @@
 import { cookies, headers } from 'next/headers';
 import { COOKIE_MAX_AGE_SECONDS, EDIT_TOKEN_COOKIE, UI_LANG_COOKIE } from './constants';
-import type { Lang } from '@/generated/prisma/enums';
+import type { Lang } from '@/lib/types';
 
 /**
  * Whether this request actually arrived over HTTPS.

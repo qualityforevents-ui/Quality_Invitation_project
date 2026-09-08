@@ -3,7 +3,7 @@ import { DEFAULT_VERSE_ID } from './verses';
 import { getTrack, trackName, trackUrl } from './music';
 import { DEFAULT_THEME, getTheme } from '@/themes/registry';
 import type { InvitationView } from './invitation-view';
-import type { Lang } from '@/generated/prisma/enums';
+import type { Lang } from '@/lib/types';
 
 /**
  * The invitation shown at /sample.

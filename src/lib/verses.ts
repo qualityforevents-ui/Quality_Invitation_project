@@ -1,4 +1,4 @@
-import type { Lang } from '@/generated/prisma/enums';
+import type { Lang } from '@/lib/types';
 
 /**
  * The verses a customer may put on their card, and the option of none.

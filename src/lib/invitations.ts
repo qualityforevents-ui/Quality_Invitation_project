@@ -1,20 +1,82 @@
-import { Prisma } from '@/generated/prisma/client';
-import { prisma } from './db';
+import { db, defined, invitations, toDate, toDateOr } from './db';
 import { buildSlugBase } from './slug';
-import { generateEditToken, generateRequestId, generateSlugSuffix, withUniqueRetry } from './tokens';
+import { generateEditToken, generateRequestId, generateSlugSuffix } from './tokens';
 import { DEFAULT_THEME_ID } from './constants';
 import { DEFAULT_PACKAGE } from './packages';
+import { DEFAULT_VERSE_ID } from './verses';
 import { fromDateInputValue } from './format';
+import { parseCrop } from './photo-url';
 import { getTheme } from '@/themes/registry';
+import type { DocumentData, DocumentSnapshot, Transaction } from 'firebase-admin/firestore';
 import type { InvitationPatch } from './validation';
-import type { Invitation } from '@/generated/prisma/client';
-import type { Lang } from '@/generated/prisma/enums';
+import type { Invitation, Lang } from './types';
 
 /** Statuses whose content the customer is still allowed to change. */
 const EDITABLE_STATUSES = new Set(['DRAFT', 'AWAITING_CONFIRMATION', 'ACTIVE']);
 
 export function isEditable(invitation: Invitation): boolean {
   return EDITABLE_STATUSES.has(invitation.status);
+}
+
+/**
+ * A stored document, read back as the shape the rest of the app expects.
+ *
+ * Every field is defaulted rather than trusted. Postgres refused a row that did not
+ * match the schema; Firestore accepts whatever it is handed, so a document written by
+ * an older version of this code is a normal thing to read and not an error. `verseId`
+ * is the live example: documents written before the verse question existed do not
+ * carry it, and the default here is what the migration's DEFAULT clause used to do.
+ */
+export function mapInvitation(doc: DocumentSnapshot<DocumentData>): Invitation {
+  const data = doc.data() ?? {};
+  const epoch = new Date(0);
+
+  return {
+    id: doc.id,
+    editToken: String(data.editToken ?? ''),
+    slug: String(data.slug ?? ''),
+    requestId: String(data.requestId ?? ''),
+    status: data.status ?? 'DRAFT',
+
+    package: data.package ?? DEFAULT_PACKAGE,
+    customRequest: data.customRequest ?? null,
+
+    uiLang: data.uiLang ?? 'AR',
+    invitationLang: data.invitationLang ?? 'AR',
+
+    eventType: data.eventType ?? 'ENGAGEMENT',
+    name1: String(data.name1 ?? ''),
+    name2: String(data.name2 ?? ''),
+    eventDate: toDateOr(data.eventDate, epoch),
+    eventTime: String(data.eventTime ?? '20:00'),
+    venueName: String(data.venueName ?? ''),
+    venueMapUrl: data.venueMapUrl ?? null,
+    customMessage: data.customMessage ?? null,
+
+    verseId: data.verseId ?? DEFAULT_VERSE_ID,
+
+    themeId: data.themeId ?? DEFAULT_THEME_ID,
+    musicTrackId: String(data.musicTrackId ?? ''),
+    photoFileId: data.photoFileId ?? null,
+    photoCrop: parseCrop(data.photoCrop),
+    ogImageUrl: data.ogImageUrl ?? null,
+
+    customerPhone: data.customerPhone ?? null,
+    paymentNote: data.paymentNote ?? null,
+    rejectReason: data.rejectReason ?? null,
+    viewCount: Number(data.viewCount ?? 0),
+    activatedAt: toDate(data.activatedAt),
+    expiresAt: toDate(data.expiresAt),
+    createdAt: toDateOr(data.createdAt, epoch),
+    updatedAt: toDateOr(data.updatedAt, epoch),
+  };
+}
+
+/** The one-document result of a lookup on a field that is unique by construction. */
+async function findOneBy(field: string, value: string): Promise<Invitation | null> {
+  if (!value) return null;
+  const snapshot = await invitations().where(field, '==', value).limit(1).get();
+  return snapshot.empty ? null : mapInvitation(snapshot.docs[0]);
 }
 
 function defaultEventDate(): Date {
@@ -27,7 +89,7 @@ function defaultEventDate(): Date {
  * The slug a draft should have, given the names typed so far.
  *
  * Before both names exist there is nothing worth deriving, so a throwaway value keeps
- * the unique column satisfied. Nothing points at a draft's slug, so churn here is free.
+ * the field populated. Nothing points at a draft's slug, so churn here is free.
  */
 function desiredSlug(name1: string, name2: string, attemptIndex: number): string {
   const hasBothNames = name1.trim().length > 0 && name2.trim().length > 0;
@@ -41,70 +103,111 @@ function desiredSlug(name1: string, name2: string, attemptIndex: number): string
   return `${base}-${generateSlugSuffix(attemptIndex === 1 ? 2 : 4)}`;
 }
 
+/**
+ * Claims a slug nobody else holds, inside a transaction.
+ *
+ * Postgres enforced this with a unique index and the old code simply attempted the
+ * insert and retried on the constraint violation. Firestore has no unique constraints,
+ * so checking and then writing would be a race, and losing that race means two
+ * invitations answering to one URL — a guest opening the wrong couple's wedding. The
+ * transaction closes it: the read and the write commit together or not at all.
+ *
+ * This is the one place the move gives something back that has to be paid for by hand.
+ */
+async function claimSlug(
+  tx: Transaction,
+  name1: string,
+  name2: string,
+  excludeId: string | null,
+): Promise<string> {
+  for (let attempt = 0; attempt < 8; attempt += 1) {
+    const candidate = desiredSlug(name1, name2, attempt);
+    const held = await tx.get(invitations().where('slug', '==', candidate).limit(1));
+
+    if (held.empty || held.docs[0].id === excludeId) return candidate;
+  }
+
+  throw new Error('Could not find a free slug after 8 attempts.');
+}
+
 export async function getByEditToken(editToken: string): Promise<Invitation | null> {
-  if (!editToken) return null;
-  return prisma.invitation.findUnique({ where: { editToken } });
+  return findOneBy('editToken', editToken);
 }
 
 export async function getBySlug(slug: string): Promise<Invitation | null> {
-  if (!slug) return null;
-  return prisma.invitation.findUnique({ where: { slug } });
+  return findOneBy('slug', slug);
 }
 
 export async function getByRequestId(requestId: string): Promise<Invitation | null> {
   if (!requestId) return null;
-  return prisma.invitation.findUnique({ where: { requestId: requestId.toUpperCase().trim() } });
+  return findOneBy('requestId', requestId.toUpperCase().trim());
 }
 
 /**
- * Creates the DRAFT row on the customer's first keystroke.
+ * Creates the DRAFT document on the customer's first keystroke.
  *
- * Almost everything is optional at this point, so the row is built from defaults and
- * then filled in by successive autosaves.
+ * Almost everything is optional at this point, so the document is built from defaults
+ * and then filled in by successive autosaves.
  */
 export async function createDraft(patch: InvitationPatch, uiLang: Lang): Promise<Invitation> {
   const name1 = patch.name1 ?? '';
   const name2 = patch.name2 ?? '';
 
-  const themeId = patch.themeId ?? DEFAULT_THEME_ID;
-  const theme = getTheme(themeId);
-
+  const theme = getTheme(patch.themeId ?? DEFAULT_THEME_ID);
   const eventDate = patch.eventDate ? fromDateInputValue(patch.eventDate) : null;
+  const now = new Date();
 
-  return withUniqueRetry((attemptIndex) =>
-    prisma.invitation.create({
-      data: {
-        editToken: generateEditToken(),
-        requestId: generateRequestId(),
-        slug: desiredSlug(name1, name2, attemptIndex),
+  const ref = invitations().doc();
 
-        uiLang: patch.uiLang ?? uiLang,
-        // Deliberately not seeded from uiLang. Which language somebody reads the
-        // builder in says nothing about which language their guests should read the
-        // card in, and inheriting it quietly made the choice for them. Arabic is the
-        // default because it is the primary market, and the real decision is made on
-        // the theme step where the toggle redraws every miniature.
-        invitationLang: patch.invitationLang ?? 'AR',
+  await db().runTransaction(async (tx) => {
+    const slug = await claimSlug(tx, name1, name2, null);
 
-        eventType: patch.eventType ?? 'ENGAGEMENT',
-        name1,
-        name2,
-        eventDate: eventDate ?? defaultEventDate(),
-        eventTime: patch.eventTime ?? '20:00',
-        venueName: patch.venueName ?? '',
-        venueMapUrl: patch.venueMapUrl ?? null,
-        customMessage: patch.customMessage ?? null,
+    tx.set(ref, {
+      editToken: generateEditToken(),
+      requestId: generateRequestId(),
+      slug,
+      status: 'DRAFT',
 
-        package: patch.package ?? DEFAULT_PACKAGE,
-        customRequest: patch.customRequest ?? null,
+      uiLang: patch.uiLang ?? uiLang,
+      // Deliberately not seeded from uiLang. Which language somebody reads the builder
+      // in says nothing about which language their guests should read the card in, and
+      // inheriting it quietly made the choice for them. Arabic is the default because
+      // it is the primary market, and the real decision is made on the design step
+      // where the toggle redraws every miniature.
+      invitationLang: patch.invitationLang ?? 'AR',
 
-        themeId: theme.id,
-        musicTrackId: patch.musicTrackId ?? theme.defaultMusicTrackId,
+      eventType: patch.eventType ?? 'ENGAGEMENT',
+      name1,
+      name2,
+      eventDate: eventDate ?? defaultEventDate(),
+      eventTime: patch.eventTime ?? '20:00',
+      venueName: patch.venueName ?? '',
+      venueMapUrl: patch.venueMapUrl ?? null,
+      customMessage: patch.customMessage ?? null,
 
-        customerPhone: patch.customerPhone ?? null,
-      },
-    }),
-  );
+      verseId: patch.verseId ?? DEFAULT_VERSE_ID,
+
+      package: patch.package ?? DEFAULT_PACKAGE,
+      customRequest: patch.customRequest ?? null,
+
+      themeId: theme.id,
+      musicTrackId: patch.musicTrackId ?? theme.defaultMusicTrackId,
+      photoFileId: null,
+      photoCrop: null,
+      ogImageUrl: null,
+
+      customerPhone: patch.customerPhone ?? null,
+      paymentNote: null,
+      rejectReason: null,
+      viewCount: 0,
+      activatedAt: null,
+      expiresAt: null,
+      createdAt: now,
+      updatedAt: now,
+    });
+  });
+
+  return mapInvitation(await ref.get());
 }
 
 /**
@@ -116,28 +219,39 @@ export async function createDraft(patch: InvitationPatch, uiLang: Lang): Promise
  * and may already be in somebody's WhatsApp thread, and a link that changes underneath
  * a guest is worse than a link with a typo. The operator can still change it by hand.
  */
-export async function applyPatch(invitation: Invitation, patch: InvitationPatch): Promise<Invitation> {
+export async function applyPatch(
+  invitation: Invitation,
+  patch: InvitationPatch,
+): Promise<Invitation> {
   const eventDate = patch.eventDate ? fromDateInputValue(patch.eventDate) : undefined;
 
-  const data: Parameters<typeof prisma.invitation.update>[0]['data'] = {
-    ...(patch.uiLang !== undefined ? { uiLang: patch.uiLang } : {}),
-    ...(patch.invitationLang !== undefined ? { invitationLang: patch.invitationLang } : {}),
-    ...(patch.eventType !== undefined ? { eventType: patch.eventType } : {}),
-    ...(patch.name1 !== undefined ? { name1: patch.name1 } : {}),
-    ...(patch.name2 !== undefined ? { name2: patch.name2 } : {}),
-    ...(eventDate ? { eventDate } : {}),
-    ...(patch.eventTime !== undefined ? { eventTime: patch.eventTime } : {}),
-    ...(patch.venueName !== undefined ? { venueName: patch.venueName } : {}),
-    ...(patch.venueMapUrl !== undefined ? { venueMapUrl: patch.venueMapUrl } : {}),
-    ...(patch.customMessage !== undefined ? { customMessage: patch.customMessage } : {}),
-    ...(patch.package !== undefined ? { package: patch.package } : {}),
-    ...(patch.customRequest !== undefined ? { customRequest: patch.customRequest } : {}),
-    ...(patch.themeId !== undefined ? { themeId: getTheme(patch.themeId).id } : {}),
-    ...(patch.musicTrackId !== undefined ? { musicTrackId: patch.musicTrackId } : {}),
-    ...(patch.photoFileId !== undefined ? { photoFileId: patch.photoFileId } : {}),
-    ...(patch.photoCrop !== undefined ? { photoCrop: patch.photoCrop ?? Prisma.DbNull } : {}),
-    ...(patch.customerPhone !== undefined ? { customerPhone: patch.customerPhone } : {}),
-  };
+  // Undefined means "do not touch this field". defined() strips those keys before
+  // the write, because Firestore rejects an undefined value rather than ignoring it.
+  const data: Record<string, unknown> = defined({
+    uiLang: patch.uiLang,
+    invitationLang: patch.invitationLang,
+    eventType: patch.eventType,
+    name1: patch.name1,
+    name2: patch.name2,
+    eventDate,
+    eventTime: patch.eventTime,
+    venueName: patch.venueName,
+    venueMapUrl: patch.venueMapUrl,
+    customMessage: patch.customMessage,
+    verseId: patch.verseId,
+    package: patch.package,
+    customRequest: patch.customRequest,
+    themeId: patch.themeId !== undefined ? getTheme(patch.themeId).id : undefined,
+    musicTrackId: patch.musicTrackId,
+    photoFileId: patch.photoFileId,
+    photoCrop: patch.photoCrop,
+    customerPhone: patch.customerPhone,
+    // Prisma kept this current with @updatedAt. Nothing does that here, and the admin's
+    // stale-request alert is measured from it, so it is set on every write by hand.
+    updatedAt: new Date(),
+  });
+
+  const ref = invitations().doc(invitation.id);
 
   const nextName1 = patch.name1 ?? invitation.name1;
   const nextName2 = patch.name2 ?? invitation.name2;
@@ -145,15 +259,16 @@ export async function applyPatch(invitation: Invitation, patch: InvitationPatch)
   const shouldReslug = invitation.status === 'DRAFT' && namesChanged;
 
   if (!shouldReslug) {
-    return prisma.invitation.update({ where: { id: invitation.id }, data });
+    await ref.update(data);
+    return mapInvitation(await ref.get());
   }
 
-  return withUniqueRetry((attemptIndex) =>
-    prisma.invitation.update({
-      where: { id: invitation.id },
-      data: { ...data, slug: desiredSlug(nextName1, nextName2, attemptIndex) },
-    }),
-  );
+  await db().runTransaction(async (tx) => {
+    const slug = await claimSlug(tx, nextName1, nextName2, invitation.id);
+    tx.update(ref, { ...data, slug });
+  });
+
+  return mapInvitation(await ref.get());
 }
 
 /**
@@ -167,8 +282,24 @@ export async function applyPatch(invitation: Invitation, patch: InvitationPatch)
 export async function markAwaitingConfirmation(invitation: Invitation): Promise<Invitation> {
   if (invitation.status !== 'DRAFT' && invitation.status !== 'REJECTED') return invitation;
 
-  return prisma.invitation.update({
-    where: { id: invitation.id },
-    data: { status: 'AWAITING_CONFIRMATION' },
-  });
+  const ref = invitations().doc(invitation.id);
+  await ref.update({ status: 'AWAITING_CONFIRMATION', updatedAt: new Date() });
+
+  return mapInvitation(await ref.get());
+}
+
+/**
+ * Writes fields to one invitation and hands back the whole thing.
+ *
+ * Every admin action needs the slug and editToken afterwards to revalidate the cached
+ * pages, which Prisma's update returned for free. Firestore's does not return the
+ * document, so the read-back lives here rather than at five call sites.
+ */
+export async function updateInvitation(
+  id: string,
+  data: Record<string, unknown>,
+): Promise<Invitation> {
+  const ref = invitations().doc(id);
+  await ref.update(defined({ ...data, updatedAt: new Date() }));
+  return mapInvitation(await ref.get());
 }

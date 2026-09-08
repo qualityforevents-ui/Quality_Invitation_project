@@ -4,7 +4,7 @@ import { invitationFontVariables } from '@/lib/fonts';
 import { dirFor, htmlLangFor } from '@/i18n/ui';
 import { getInvitationCopy } from '@/i18n/invitation';
 import { getTheme, themeStyle } from '@/themes/registry';
-import type { EventType, Lang } from '@/generated/prisma/enums';
+import type { EventType, Lang } from '@/lib/types';
 
 /**
  * A small, true to life rendering of an invitation, drawn with real data.

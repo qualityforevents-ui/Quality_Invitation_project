@@ -1,9 +1,10 @@
-import { prisma } from './db';
+import { invitations } from './db';
+import { mapInvitation } from './invitations';
 import { getEventInstant } from './format';
 import { EVENT_TIMEZONE } from './constants';
 import { packagePrice } from './packages';
 import { normaliseEgyptianPhone } from './validation';
-import type { Invitation } from '@/generated/prisma/client';
+import type { Invitation } from './types';
 
 /** Anything waiting this long is a customer who tapped the button and went quiet. */
 export const STALE_AFTER_HOURS = 4;
@@ -42,32 +43,37 @@ export type AdminStats = {
  * Monday as on a Saturday, and there is no argument about which day a week starts on.
  * Revenue is the exception and follows the calendar month, because that is the number
  * anyone actually wants when they think about a month.
+ *
+ * The conversion pair used to be two counts, one of them filtering on createdAt and
+ * activatedAt at once. Firestore will not range-filter two fields in one query, so the
+ * thirty day window is fetched once and both numbers are counted from it in memory.
+ * At this volume that is one read of a few hundred small documents; if the business
+ * ever outgrows that, the fix is a stored daily rollup, not a bigger query.
  */
 export async function getStats(): Promise<AdminStats> {
   const now = new Date();
   const sevenDaysAgo = new Date(now.getTime() - 7 * DAY_MS);
   const thirtyDaysAgo = new Date(now.getTime() - 30 * DAY_MS);
 
-  const [builtLast7, paidLast7, activatedThisMonth, conversionBuilt, conversionPaid] = await Promise.all([
-    prisma.invitation.count({ where: { createdAt: { gte: sevenDaysAgo } } }),
-    prisma.invitation.count({ where: { activatedAt: { gte: sevenDaysAgo } } }),
-    // The rows themselves, because revenue now depends on which tier each one was.
-    prisma.invitation.findMany({
-      where: { activatedAt: { gte: monthStart(now) } },
-      select: { package: true },
-    }),
-    prisma.invitation.count({ where: { createdAt: { gte: thirtyDaysAgo } } }),
-    prisma.invitation.count({
-      where: { createdAt: { gte: thirtyDaysAgo }, activatedAt: { not: null } },
-    }),
+  const [builtLast7, paidLast7, activatedThisMonth, lastThirtyDays] = await Promise.all([
+    invitations().where('createdAt', '>=', sevenDaysAgo).count().get(),
+    invitations().where('activatedAt', '>=', sevenDaysAgo).count().get(),
+    invitations().where('activatedAt', '>=', monthStart(now)).get(),
+    invitations().where('createdAt', '>=', thirtyDaysAgo).get(),
   ]);
 
+  const conversionBuilt = lastThirtyDays.size;
+  const conversionPaid = lastThirtyDays.docs.filter((doc) => doc.get('activatedAt')).length;
+
   return {
-    builtLast7,
-    paidLast7,
+    builtLast7: builtLast7.data().count,
+    paidLast7: paidLast7.data().count,
     // Summed per invitation rather than multiplied by one price. Three tiers exist and
     // an average would be wrong every month.
-    revenueThisMonth: activatedThisMonth.reduce((total, row) => total + packagePrice(row.package), 0),
+    revenueThisMonth: activatedThisMonth.docs.reduce(
+      (total, doc) => total + packagePrice(doc.get('package') ?? 'BASIC'),
+      0,
+    ),
     conversionRate: conversionBuilt > 0 ? conversionPaid / conversionBuilt : null,
     conversionBuilt,
     conversionPaid,
@@ -76,11 +82,13 @@ export async function getStats(): Promise<AdminStats> {
 
 /** Newest first. This is the screen the operator lives on. */
 export async function getPending(): Promise<Invitation[]> {
-  return prisma.invitation.findMany({
-    where: { status: 'AWAITING_CONFIRMATION' },
-    orderBy: { updatedAt: 'desc' },
-    take: 100,
-  });
+  const snapshot = await invitations()
+    .where('status', '==', 'AWAITING_CONFIRMATION')
+    .orderBy('updatedAt', 'desc')
+    .limit(100)
+    .get();
+
+  return snapshot.docs.map(mapInvitation);
 }
 
 export function isStale(invitation: Invitation): boolean {
@@ -88,15 +96,28 @@ export function isStale(invitation: Invitation): boolean {
 }
 
 export async function getById(id: string): Promise<Invitation | null> {
-  return prisma.invitation.findUnique({ where: { id } });
+  if (!id) return null;
+  const doc = await invitations().doc(id).get();
+  return doc.exists ? mapInvitation(doc) : null;
 }
+
+/** How many recent invitations the search box will look through. */
+const SEARCH_SCAN_LIMIT = 500;
 
 /**
  * One box, several kinds of input.
  *
  * The overwhelmingly common case is a request id pasted out of a WhatsApp message, so
- * that is tried first and exactly. Failing that it is a customer asking for help, and
- * the operator has either their phone number or the couple's names.
+ * that is tried first and exactly, as a real indexed lookup.
+ *
+ * Everything after it is a substring match, and this is the one capability the move to
+ * Firestore actually costs: Postgres could answer `name1 ILIKE '%kar%'`, and Firestore
+ * cannot express it at all — it indexes whole field values and prefixes, never the
+ * middle of a string. So the fallback reads the most recent SEARCH_SCAN_LIMIT
+ * invitations and filters them here. It is honest at this size and it is bounded, but
+ * it is a scan: an operator searching for a customer from two years and ten thousand
+ * invitations ago will not find them this way. The exact request id path, which is how
+ * the operator actually arrives here, is unaffected.
  */
 export async function search(query: string): Promise<Invitation[]> {
   const trimmed = query.trim();
@@ -106,32 +127,48 @@ export async function search(query: string): Promise<Invitation[]> {
     ? trimmed.toUpperCase()
     : `QLT-${trimmed.toUpperCase()}`;
 
-  const exact = await prisma.invitation.findUnique({ where: { requestId: asRequestId } });
-  if (exact) return [exact];
+  const exact = await invitations().where('requestId', '==', asRequestId).limit(1).get();
+  if (!exact.empty) return [mapInvitation(exact.docs[0])];
 
   const phone = normaliseEgyptianPhone(trimmed);
+  const needle = trimmed.toLowerCase();
 
-  return prisma.invitation.findMany({
-    where: {
-      OR: [
-        ...(phone ? [{ customerPhone: { contains: phone } }] : []),
-        { customerPhone: { contains: trimmed } },
-        { name1: { contains: trimmed, mode: 'insensitive' as const } },
-        { name2: { contains: trimmed, mode: 'insensitive' as const } },
-        { slug: { contains: trimmed.toLowerCase() } },
-      ],
-    },
-    orderBy: { createdAt: 'desc' },
-    take: 40,
-  });
+  const recent = await invitations()
+    .orderBy('createdAt', 'desc')
+    .limit(SEARCH_SCAN_LIMIT)
+    .get();
+
+  return recent.docs
+    .map(mapInvitation)
+    .filter((invitation) => {
+      const phoneOnRow = invitation.customerPhone ?? '';
+
+      return (
+        (phone !== null && phoneOnRow.includes(phone)) ||
+        phoneOnRow.includes(trimmed) ||
+        invitation.name1.toLowerCase().includes(needle) ||
+        invitation.name2.toLowerCase().includes(needle) ||
+        invitation.slug.includes(needle)
+      );
+    })
+    .slice(0, 40);
 }
 
-export type StatusFilter = 'ALL' | 'DRAFT' | 'AWAITING_CONFIRMATION' | 'ACTIVE' | 'EXPIRED' | 'REJECTED';
+export type StatusFilter =
+  | 'ALL'
+  | 'DRAFT'
+  | 'AWAITING_CONFIRMATION'
+  | 'ACTIVE'
+  | 'EXPIRED'
+  | 'REJECTED';
 
 export async function listByStatus(filter: StatusFilter): Promise<Invitation[]> {
-  return prisma.invitation.findMany({
-    where: filter === 'ALL' ? {} : { status: filter },
-    orderBy: { createdAt: 'desc' },
-    take: 100,
-  });
+  const base = invitations().orderBy('createdAt', 'desc').limit(100);
+  const query = filter === 'ALL' ? base : invitations()
+    .where('status', '==', filter)
+    .orderBy('createdAt', 'desc')
+    .limit(100);
+
+  const snapshot = await query.get();
+  return snapshot.docs.map(mapInvitation);
 }

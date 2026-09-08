@@ -1,4 +1,4 @@
-import type { Package } from '@/generated/prisma/enums';
+import type { Package } from '@/lib/types';
 
 /**
  * What the three tiers cost and what they include.

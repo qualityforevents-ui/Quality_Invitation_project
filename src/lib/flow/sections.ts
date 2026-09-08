@@ -1,4 +1,4 @@
-import type { Lang, Package } from '@/generated/prisma/enums';
+import type { Lang, Package } from '@/lib/types';
 
 /**
  * The order the flow asks its questions in, as data rather than as JSX.

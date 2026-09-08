@@ -2,7 +2,7 @@ import { revalidatePath } from 'next/cache';
 import { AdminHeader } from '@/components/admin/AdminChrome';
 import { assertOperator, requireOperator } from '@/lib/admin-auth';
 import { getAllReviews } from '@/lib/reviews';
-import { prisma } from '@/lib/db';
+import { reviews } from '@/lib/db';
 import { formatShortDateTime } from '@/lib/format';
 import { cn } from '@/lib/cn';
 
@@ -23,7 +23,7 @@ async function setStatus(formData: FormData): Promise<void> {
 
   if (status !== 'APPROVED' && status !== 'HIDDEN' && status !== 'PENDING') return;
 
-  await prisma.review.update({ where: { id }, data: { status } });
+  await reviews().doc(id).update({ status });
 
   // The landing page renders approved reviews, so it has to be rebuilt.
   revalidatePath('/');

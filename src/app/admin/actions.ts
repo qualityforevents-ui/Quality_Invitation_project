@@ -3,7 +3,8 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { assertOperator } from '@/lib/admin-auth';
-import { prisma } from '@/lib/db';
+import { getBySlug, updateInvitation } from '@/lib/invitations';
+import { getById } from '@/lib/admin-queries';
 import { DEFAULT_EXPIRY_DAYS_AFTER_EVENT } from '@/lib/constants';
 import { isValidSlug } from '@/lib/slug';
 import { getPackage } from '@/lib/packages';
@@ -29,7 +30,7 @@ export async function activateInvitation(formData: FormData): Promise<void> {
   const id = String(formData.get('id') ?? '');
   const paymentNote = String(formData.get('paymentNote') ?? '').trim() || null;
 
-  const invitation = await prisma.invitation.findUnique({ where: { id } });
+  const invitation = await getById(id);
   if (!invitation) throw new Error('Invitation not found');
 
   /*
@@ -46,16 +47,13 @@ export async function activateInvitation(formData: FormData): Promise<void> {
     ? null
     : new Date(invitation.eventDate.getTime() + DEFAULT_EXPIRY_DAYS_AFTER_EVENT * DAY_MS);
 
-  const updated = await prisma.invitation.update({
-    where: { id },
-    data: {
+  const updated = await updateInvitation(id, {
       status: 'ACTIVE',
       activatedAt: invitation.activatedAt ?? new Date(),
       expiresAt,
       paymentNote,
       rejectReason: null,
-    },
-  });
+    });
 
   revalidateInvitation(updated.slug, updated.editToken);
   revalidatePath('/admin');
@@ -69,18 +67,15 @@ export async function rejectInvitation(formData: FormData): Promise<void> {
   const id = String(formData.get('id') ?? '');
   const reason = String(formData.get('reason') ?? '').trim();
 
-  const invitation = await prisma.invitation.findUnique({ where: { id } });
+  const invitation = await getById(id);
   if (!invitation) throw new Error('Invitation not found');
 
-  const updated = await prisma.invitation.update({
-    where: { id },
-    data: {
+  const updated = await updateInvitation(id, {
       status: 'REJECTED',
       // Stored rather than left blank, so the customer's waiting screen can say what
       // went wrong instead of silently never changing.
       rejectReason: reason || 'محتاجين نراجع التحويل تاني',
-    },
-  });
+    });
 
   revalidateInvitation(updated.slug, updated.editToken);
   revalidatePath('/admin');
@@ -100,19 +95,16 @@ export async function extendExpiry(formData: FormData): Promise<void> {
   const id = String(formData.get('id') ?? '');
   const days = Math.min(365, Math.max(1, Number(formData.get('days') ?? 30) || 30));
 
-  const invitation = await prisma.invitation.findUnique({ where: { id } });
+  const invitation = await getById(id);
   if (!invitation) throw new Error('Invitation not found');
 
   const from = invitation.expiresAt && invitation.expiresAt > new Date() ? invitation.expiresAt : new Date();
 
-  const updated = await prisma.invitation.update({
-    where: { id },
-    data: {
+  const updated = await updateInvitation(id, {
       expiresAt: new Date(from.getTime() + days * DAY_MS),
       // An expired link being extended is being brought back, so it goes live again.
       status: invitation.status === 'EXPIRED' ? 'ACTIVE' : invitation.status,
-    },
-  });
+    });
 
   revalidateInvitation(updated.slug, updated.editToken);
   redirect(`/admin/invitation/${id}`);
@@ -140,19 +132,16 @@ export async function changeSlug(formData: FormData): Promise<void> {
     redirect(`/admin/invitation/${id}?error=slug`);
   }
 
-  const invitation = await prisma.invitation.findUnique({ where: { id } });
+  const invitation = await getById(id);
   if (!invitation) throw new Error('Invitation not found');
   if (invitation.slug === requested) redirect(`/admin/invitation/${id}`);
 
-  const taken = await prisma.invitation.findUnique({ where: { slug: requested } });
+  const taken = await getBySlug(requested);
   if (taken) redirect(`/admin/invitation/${id}?error=taken`);
 
   const previousSlug = invitation.slug;
 
-  const updated = await prisma.invitation.update({
-    where: { id },
-    data: { slug: requested },
-  });
+  const updated = await updateInvitation(id, { slug: requested });
 
   // The page cached under the old slug is now wrong and has to go, or the old link
   // keeps serving a live invitation from a URL that no longer belongs to it.
@@ -167,10 +156,7 @@ export async function deactivateInvitation(formData: FormData): Promise<void> {
 
   const id = String(formData.get('id') ?? '');
 
-  const updated = await prisma.invitation.update({
-    where: { id },
-    data: { status: 'EXPIRED' },
-  });
+  const updated = await updateInvitation(id, { status: 'EXPIRED' });
 
   revalidateInvitation(updated.slug, updated.editToken);
   revalidatePath('/admin');

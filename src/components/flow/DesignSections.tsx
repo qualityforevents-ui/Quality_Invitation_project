@@ -11,7 +11,7 @@ import { scriptSuggestions } from '@/lib/flow/values';
 import { getTheme, LISTED_THEMES, themeName, themeStyle, type ThemeDefinition } from '@/themes/registry';
 import type { PhotoCrop } from '@/lib/photo-url';
 import type { Dictionary } from '@/i18n/ui';
-import type { EventType, Lang } from '@/generated/prisma/enums';
+import type { EventType, Lang } from '@/lib/types';
 
 /* ----------------------------------------------------------------- language */
 

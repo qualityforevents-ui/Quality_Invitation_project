@@ -1,6 +1,6 @@
 import { getByEditToken } from './invitations';
 import { getEditToken } from './session';
-import type { Invitation } from '@/generated/prisma/client';
+import type { Invitation } from '@/lib/types';
 
 export type LoadedDraft = {
   invitation: Invitation | null;

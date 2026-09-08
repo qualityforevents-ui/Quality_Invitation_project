@@ -5,7 +5,7 @@ import { useTransition } from 'react';
 import { COOKIE_MAX_AGE_SECONDS, UI_LANG_COOKIE } from '@/lib/constants';
 import { dirFor, htmlLangFor } from '@/i18n/ui';
 import { cn } from '@/lib/cn';
-import type { Lang } from '@/generated/prisma/enums';
+import type { Lang } from '@/lib/types';
 
 /**
  * Switches the builder language.

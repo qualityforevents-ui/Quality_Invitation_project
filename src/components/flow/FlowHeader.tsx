@@ -6,7 +6,7 @@ import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/cn';
 import type { SaveStatus } from '@/lib/useAutosave';
 import type { Dictionary } from '@/i18n/ui';
-import type { Lang } from '@/generated/prisma/enums';
+import type { Lang } from '@/lib/types';
 
 /**
  * The only fixed chrome in the flow.

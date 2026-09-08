@@ -1,5 +1,5 @@
 import { getVerse, verseSource } from '@/lib/verses';
-import type { EventType, Lang } from '@/generated/prisma/enums';
+import type { EventType, Lang } from '@/lib/types';
 
 /**
  * The words that appear inside the invitation itself.

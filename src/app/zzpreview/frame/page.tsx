@@ -7,7 +7,7 @@ import { buildSampleView } from '@/lib/sample';
 import { getThemeComponents } from '@/themes/components';
 import { DEFAULT_THEME, getTheme, isValidThemeId, themeStyle } from '@/themes/registry';
 import { DEFAULT_VERSE_ID, isValidVerseId } from '@/lib/verses';
-import type { EventType, Lang } from '@/generated/prisma/enums';
+import type { EventType, Lang } from '@/lib/types';
 
 export const dynamic = 'force-dynamic';
 

@@ -5,80 +5,36 @@ app will run at all. Steps 6 onward can wait.
 
 ---
 
-## 1. Supabase project
+## 1. Firebase project
 
-1. Create a new project at [supabase.com](https://supabase.com).
-2. **Region: Frankfurt (eu-central-1).** Egypt to Frankfurt is a much shorter trip than
-   Egypt to any US region, and this choice cannot be changed later without recreating
-   the project.
-3. Save the database password somewhere safe. Supabase shows it once.
+1. Create a project at [console.firebase.google.com](https://console.firebase.google.com).
+2. Create a Firestore database. **Location: `eur3` (Europe).** Egypt to Europe is a much
+   shorter trip than Egypt to any US region, and this cannot be changed later without
+   recreating the database.
+3. Enable **Authentication, Sign-in method, Email/Password**. Leave sign-up closed —
+   there is exactly one operator account and no public registration.
+4. Under **Authentication, Users**, add the operator account by hand.
 
-### Get the two connection strings
+### Get the credentials
 
-In the dashboard go to **Project Settings, Database, Connection string**.
+**Project settings, Service accounts, Generate new private key.** That downloads a JSON
+file. Three values out of it go into the environment:
 
-You need both of these:
+| From the JSON | Environment variable |
+|---|---|
+| `project_id` | `FIREBASE_PROJECT_ID` |
+| `client_email` | `FIREBASE_CLIENT_EMAIL` |
+| `private_key` | `FIREBASE_PRIVATE_KEY` |
 
-- **Transaction pooler, port 6543.** This is `DATABASE_URL`. Every query the running app
-  makes goes through it. Each Vercel serverless invocation opens its own connection, and
-  the direct connection limit is reached quickly under load, which is the whole reason
-  the pooler exists.
-- **Direct connection, port 5432.** This is `DIRECT_URL`. Migrations only. Migrations
-  issue statements a transaction pooler cannot carry, so they need the direct route.
+Keep the quotes around the private key. It contains newlines, which travel through an
+environment variable as literal `\n`, and `src/lib/db.ts` converts them back.
 
-> **If the direct host does not resolve,** which is normal on projects created recently,
-> use the **session pooler** as `DIRECT_URL` instead: same pooler hostname, port 5432.
-> Supabase now gives new projects an IPv6 only direct address, so `db.<ref>.supabase.co`
-> simply has no IPv4 record and fails with a name resolution error rather than anything
-> that hints at the real cause. The session pooler holds one connection per client for
-> its whole session, which is what migrations need.
+**Project settings, General, Web API Key** goes into `FIREBASE_WEB_API_KEY`. It is used
+only to check the operator's password at sign in and grants nothing on its own.
 
-### Passwords with punctuation in them
-
-The password is embedded in both URLs, so any of `@ ? & + # / : %` inside it has to be
-percent encoded or the string is malformed. An unescaped `@` is the nastiest: the parser
-treats everything after it as the hostname, and you get a "host not found" error that
-sends you looking at DNS instead of at your password.
-
-There is a helper for this. It runs locally, so the password never leaves your machine:
-
-```sh
-node scripts/encode-db-url.mjs "postgresql://postgres.abc:my@pass?word@host:6543/postgres"
-```
-
-It prints the encoded URL, ready to paste into `.env`. Use it again whenever you rotate
-the password.
-
-Append `?pgbouncer=true&connection_limit=1` to `DATABASE_URL` as Supabase suggests. The
-app strips those two parameters before handing the string to the Postgres driver, so it
-works whether or not they are there.
-
-### Disable public signup
-
-**Authentication, Sign In and Providers, Email.** There are two controls here and they
-do different things. Getting them the wrong way round locks you out of your own admin:
-
-| Control | Set it to | What it controls |
-|---|---|---|
-| **Enable Email provider** | **ON** | Whether email and password sign in works at all |
-| **Allow new users to sign up** | **OFF** | Whether strangers can create accounts |
-
-Turn off the second one only. Switching off the provider disables sign in for the
-operator as well, and the login screen then reports the same thing it reports for a
-wrong password, so it is a slow one to diagnose.
-
-The only account that should ever exist is the operator's. Leaving signup on means anyone
-who finds the admin URL can create themselves an account. Do this now, before the admin
-exists, so it is not forgotten later.
-
-### Create the operator account
-
-**Authentication, Users, Add user.** Tick **Auto Confirm User**.
-
-That box is unticked by default, and without it the account is created but cannot sign
-in until the address is confirmed. There is no real mailbox behind an operator address,
-so the confirmation email never arrives and the account is unusable. With signup
-disabled, this dialog is the only way an account gets created from here on.
+Treat the service account JSON as the keys to the business. It bypasses Firestore
+security rules completely, which is exactly why the rules in `firestore.rules` deny
+everything: no browser ever talks to Firestore, only the server does.
 
 ---
 
@@ -88,13 +44,7 @@ disabled, this dialog is the only way an account gets created from here on.
 cp .env.example .env
 ```
 
-Fill in `DATABASE_URL` and `DIRECT_URL` from step 1.
-
-Generate the cron secret:
-
-```sh
-node -e "console.log(require('crypto').randomBytes(32).toString('base64url'))"
-```
+Fill in the four `FIREBASE_*` values from step 1.
 
 Set `NEXT_PUBLIC_INSTAPAY_ADDRESS` and `NEXT_PUBLIC_INSTAPAY_NAME` to the real recipient
 details. Customers copy these straight into their banking app, so a typo here is a
@@ -102,26 +52,35 @@ misdirected transfer, not a cosmetic bug. Check them character by character.
 
 ---
 
-## 3. Create the tables
+## 3. Indexes
+
+There are no tables to create and no migrations to run. Firestore makes a collection the
+first time something is written to it.
+
+What it does need is the two composite indexes the admin lists sort by, which are
+declared in `firestore.indexes.json`:
 
 ```sh
-npm run db:migrate
+firebase deploy --only firestore
 ```
 
-This reads `DIRECT_URL` from `prisma.config.ts` and applies the schema. On a fresh
-project it will ask for a migration name. `init` is fine.
-
-Confirm it worked:
-
-```sh
-npm run db:studio
-```
-
-You should see an empty `Invitation` table and an empty `Heartbeat` table.
+That deploys the indexes and the security rules together. If a query ever fails with a
+"requires an index" error, the message contains a link that creates it — add it to
+`firestore.indexes.json` afterwards so it is not lost the next time the project is set up.
 
 ---
 
 ## 4. Run it locally
+
+Local development runs against the Firestore emulator, so no service account key has to
+sit on a developer's machine and nothing you do locally can touch real customer data:
+
+```sh
+firebase emulators:start --only firestore
+```
+
+With `FIRESTORE_EMULATOR_HOST="127.0.0.1:8080"` set in `.env`, the Admin SDK talks to
+localhost and never authenticates. Comment that line out to point at the real project.
 
 ```sh
 npm run dev
@@ -136,36 +95,16 @@ several things in this app behave differently there than in a desktop browser.
 ## 5. Deploy to Vercel
 
 1. Import the project.
-2. Add every variable from your `.env` to the Vercel project settings.
+2. Add every variable from your `.env` to the Vercel project settings, except
+   `FIRESTORE_EMULATOR_HOST` — setting that in production would point the live site at a
+   database that does not exist.
 3. `vercel.json` already pins functions to `fra1`. Leave it that way, matching the
-   Supabase region. Serving from a US region makes every query cross the Atlantic twice.
-
-### The daily cron
-
-`vercel.json` registers `/api/cron/heartbeat` to run once a day at 04:00 UTC.
-
-A free Supabase project **pauses after seven days with no database activity**, and a
-paused project takes live invitations down with it. The cron writes one row a day, which
-is enough to keep it awake. Vercel Hobby allows exactly one cron per day, which is
-exactly what this needs.
-
-Set `CRON_SECRET` in the Vercel environment. Vercel then sends it as a bearer token and
-the route rejects anything else.
-
-Verify after the first deploy:
-
-```sh
-curl -H "Authorization: Bearer YOUR_CRON_SECRET" https://qlty.events/api/cron/heartbeat
-```
-
-You should get `{"ok":true,...}` with a count that goes up each time.
-
----
+   Firestore location. Serving from a US region makes every query cross the Atlantic twice.
 
 ## 6. Backups
 
-**The free Supabase plan has no backups.** This table holds wedding dates and customer
-phone numbers. Losing it is not something you recover from by apologising.
+**The Firestore free tier has no scheduled export.** These documents hold wedding dates
+and customer phone numbers. Losing them is not something you recover from by apologising.
 
 Run one now:
 
@@ -173,12 +112,13 @@ Run one now:
 npm run backup
 ```
 
-That writes every row to `backups/qlty-backup-YYYYMMDD-HHMM.json`. The `backups` folder
-is excluded from version control.
+That writes every invitation and review to `backups/qlty-backup-YYYYMMDD-HHMM.json`,
+with Timestamps rendered as ISO strings so the file can be read and restored without the
+Admin SDK. The `backups` folder is excluded from version control.
 
 ### Scheduling it
 
-The daily Vercel cron slot is taken by the heartbeat, and a Vercel function has nowhere
+A Vercel function has nowhere
 durable to write anyway. So the schedule has to live somewhere you control. Two options
 that work:
 
@@ -190,18 +130,19 @@ cmd /c cd /d "C:\Users\Mega Store\Desktop\quality\invitation app" && npm run bac
 
 Simple, and the file lands on a disk you own. It only runs when the machine is on.
 
-**A scheduled job on a service you already pay for**, running the same command against
-`DIRECT_URL`. More reliable, more setup.
+**A scheduled job on a service you already pay for**, running the same command with the
+service account credentials in its environment. More reliable, more setup.
 
 Either way: **copy the output off the machine that made it.** A backup sitting on the
 same laptop as everything else is not a backup. Point a cloud sync folder at `backups/`
 and the problem is solved.
 
-For a full schema and data dump rather than a row export, with Postgres client tools
-installed:
+For a managed export rather than a JSON file, Firestore can write straight to a Cloud
+Storage bucket. It needs billing enabled on the project, which the free tier does not
+have:
 
 ```sh
-pg_dump "$DIRECT_URL" -Fc -f backups/full.dump
+gcloud firestore export gs://YOUR_BUCKET --project qlty-invitations
 ```
 
 ---
@@ -240,8 +181,9 @@ Nothing breaks.
 
 | Concern | Value |
 |---|---|
-| Runtime queries | `DATABASE_URL`, pooler, port 6543, pool capped at one connection |
-| Migrations | `DIRECT_URL`, direct, port 5432, read from `prisma.config.ts` |
+| Database | Firestore, `eur3`, reached with the Admin SDK over HTTPS |
+| Credentials | Service account, three `FIREBASE_*` variables |
+| Local database | Firestore emulator, `FIRESTORE_EMULATOR_HOST` |
+| Indexes and rules | `firestore.indexes.json`, `firestore.rules`, `firebase deploy --only firestore` |
+| Admin login | Firebase Auth, one account, session cookie for two weeks |
 | Vercel functions | `fra1`, pinned in `vercel.json` |
-| Supabase | Frankfurt, `eu-central-1` |
-| Cron | `/api/cron/heartbeat`, daily, bearer token |

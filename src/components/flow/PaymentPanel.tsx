@@ -16,7 +16,7 @@ import {
 } from '@/lib/constants';
 import { buildPaymentLink } from '@/lib/whatsapp';
 import type { Dictionary } from '@/i18n/ui';
-import type { Lang, Package } from '@/generated/prisma/enums';
+import type { Lang, Package } from '@/lib/types';
 
 /**
  * wa.me on a desktop browser opens WhatsApp Web, and if the visitor is not already

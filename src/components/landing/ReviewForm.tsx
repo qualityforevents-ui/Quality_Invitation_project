@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { REVIEW_MAX_BODY, REVIEW_MAX_NAME } from '@/lib/constants';
 import type { Dictionary } from '@/i18n/ui';
-import type { Lang } from '@/generated/prisma/enums';
+import type { Lang } from '@/lib/types';
 
 /**
  * Collapsed until asked for, so it never competes with the buy buttons above it.

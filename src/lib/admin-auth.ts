@@ -1,32 +1,34 @@
+import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { createSupabaseServerClient } from './supabase/server';
-import { isSupabaseConfigured } from './supabase/config';
+import { ADMIN_SESSION_COOKIE, isAuthConfigured, verifySessionCookie } from './firebase/auth';
 
 export type Operator = { id: string; email: string | null };
 
 /**
  * The signed in operator, or null.
  *
- * Uses getUser rather than getSession. getSession reads the cookie and believes it;
- * getUser sends the token to Supabase to be verified. A cookie is something the
- * browser hands over, so on a surface that can activate invitations and read customer
- * phone numbers, it gets verified.
+ * The cookie is verified against Firebase on every call rather than merely decoded,
+ * and the check includes whether the account has been revoked since. A cookie is
+ * something the browser hands over, so on a surface that can activate invitations and
+ * read customer phone numbers, it gets verified.
  */
 export async function getOperator(): Promise<Operator | null> {
-  if (!isSupabaseConfigured()) return null;
+  if (!isAuthConfigured()) return null;
 
-  const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase.auth.getUser();
+  const store = await cookies();
+  const cookie = store.get(ADMIN_SESSION_COOKIE)?.value;
+  if (!cookie) return null;
 
-  if (error || !data.user) return null;
-
-  return { id: data.user.id, email: data.user.email ?? null };
+  return verifySessionCookie(cookie);
 }
 
 /**
- * Guards an admin page or action. Every admin route calls this on the server. The
- * middleware refreshes the session but is not the check: middleware can be bypassed by
- * routing quirks, so authorisation lives next to the thing being protected.
+ * Guards an admin page or action. Every admin route calls this on the server.
+ *
+ * Authorisation lives next to the thing being protected rather than in the proxy,
+ * because a proxy can be bypassed by routing quirks. That was true when the proxy also
+ * refreshed Supabase tokens, and it is still true now that the proxy does nothing but
+ * rewrite the admin subdomain.
  */
 export async function requireOperator(): Promise<Operator> {
   const operator = await getOperator();

@@ -1,7 +1,7 @@
 'use client';
 
 import { cn } from '@/lib/cn';
-import type { Lang } from '@/generated/prisma/enums';
+import type { Lang } from '@/lib/types';
 
 /**
  * النتيجة ornaments: the torn calendar page edge, pulp board tile, and header punch bands.

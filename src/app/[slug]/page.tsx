@@ -7,7 +7,7 @@ import { getBySlug } from '@/lib/invitations';
 import { isValidSlug } from '@/lib/slug';
 import { toInvitationView } from '@/lib/invitation-view';
 import { formatEventDate } from '@/lib/format';
-import type { Invitation } from '@/generated/prisma/client';
+import type { Invitation } from '@/lib/types';
 
 type Params = { params: Promise<{ slug: string }> };
 

@@ -5,7 +5,7 @@ import { invitationFontVariables } from '@/lib/fonts';
 import { buildSampleView } from '@/lib/sample';
 import { getThemeComponents } from '@/themes/components';
 import { getTheme, isValidThemeId, themeStyle } from '@/themes/registry';
-import type { Lang } from '@/generated/prisma/enums';
+import type { Lang } from '@/lib/types';
 
 export const dynamic = 'force-dynamic';
 

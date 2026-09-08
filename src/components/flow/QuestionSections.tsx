@@ -17,7 +17,7 @@ import { BRIEF_MAX, MESSAGE_MAX, TIME_PATTERN } from '@/lib/flow/values';
 import { invitationFontVariables } from '@/lib/fonts';
 import { NO_VERSE_ID, VERSES, verseLabel } from '@/lib/verses';
 import type { Dictionary } from '@/i18n/ui';
-import type { EventType, Lang, Package } from '@/generated/prisma/enums';
+import type { EventType, Lang, Package } from '@/lib/types';
 
 /**
  * A form wrapper, so the soft keyboard's own blue Next key advances the flow.

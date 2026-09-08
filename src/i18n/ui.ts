@@ -1,4 +1,4 @@
-import type { Lang } from '@/generated/prisma/enums';
+import type { Lang } from '@/lib/types';
 
 /**
  * Every piece of customer facing copy lives here, never inline in a component.

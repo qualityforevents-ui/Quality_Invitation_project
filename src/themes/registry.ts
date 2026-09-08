@@ -1,5 +1,5 @@
 import type { CSSProperties } from 'react';
-import type { Lang } from '@/generated/prisma/enums';
+import type { Lang } from '@/lib/types';
 
 /**
  * A theme is a set of values, not a second copy of the markup.

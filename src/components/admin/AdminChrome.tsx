@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { signOut } from '@/app/admin/login/actions';
 import { cn } from '@/lib/cn';
 import { formatShortDateTime } from '@/lib/format';
-import type { Invitation } from '@/generated/prisma/client';
+import type { Invitation } from '@/lib/types';
 
 const STATUS_LABELS: Record<string, string> = {
   DRAFT: 'مسودة',

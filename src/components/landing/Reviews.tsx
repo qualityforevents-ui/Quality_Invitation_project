@@ -1,8 +1,8 @@
 import { ReviewForm } from './ReviewForm';
 import { formatShortDateTime } from '@/lib/format';
 import type { Dictionary } from '@/i18n/ui';
-import type { Lang } from '@/generated/prisma/enums';
-import type { Review } from '@/generated/prisma/client';
+import type { Lang } from '@/lib/types';
+import type { Review } from '@/lib/types';
 
 /**
  * What customers have actually said.

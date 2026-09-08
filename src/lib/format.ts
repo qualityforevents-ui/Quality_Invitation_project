@@ -1,5 +1,5 @@
 import { EVENT_TIMEZONE } from './constants';
-import type { Lang } from '@/generated/prisma/enums';
+import type { Lang } from '@/lib/types';
 
 /**
  * Egyptian invitations print Western digits even in Arabic text, so every formatter

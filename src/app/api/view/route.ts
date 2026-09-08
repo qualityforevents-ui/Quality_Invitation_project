@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/db';
+import { FieldValue, invitations } from '@/lib/db';
 import { isValidSlug } from '@/lib/slug';
 
 export const runtime = 'nodejs';
@@ -24,10 +24,17 @@ export async function POST(request: Request) {
       return new NextResponse(null, { status: 204 });
     }
 
-    await prisma.invitation.updateMany({
-      where: { slug, status: 'ACTIVE' },
-      data: { viewCount: { increment: 1 } },
-    });
+    const live = await invitations()
+      .where('slug', '==', slug)
+      .where('status', '==', 'ACTIVE')
+      .limit(1)
+      .get();
+
+    // FieldValue.increment is applied by the server, so two guests opening the card at
+    // the same moment both count. Reading the number and writing it back would lose one.
+    if (!live.empty) {
+      await live.docs[0].ref.update({ viewCount: FieldValue.increment(1) });
+    }
   } catch (error) {
     console.error('[api/view] failed', error);
   }

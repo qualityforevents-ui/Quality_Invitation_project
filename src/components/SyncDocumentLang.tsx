@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { dirFor, htmlLangFor } from '@/i18n/ui';
-import type { Lang } from '@/generated/prisma/enums';
+import type { Lang } from '@/lib/types';
 
 /**
  * Brings the html element's lang and dir into line with whatever is being rendered.

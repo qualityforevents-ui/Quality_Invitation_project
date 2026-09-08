@@ -1,8 +1,23 @@
-import { prisma } from './db';
+import { reviews, toDateOr } from './db';
 import { REVIEW_MAX_BODY, REVIEW_MAX_NAME } from './constants';
-import type { Review } from '@/generated/prisma/client';
+import type { DocumentData, DocumentSnapshot } from 'firebase-admin/firestore';
+import type { Review } from './types';
 
 export { REVIEW_MAX_BODY, REVIEW_MAX_NAME } from './constants';
+
+function mapReview(doc: DocumentSnapshot<DocumentData>): Review {
+  const data = doc.data() ?? {};
+
+  return {
+    id: doc.id,
+    status: data.status ?? 'PENDING',
+    name: String(data.name ?? ''),
+    city: data.city ?? null,
+    body: String(data.body ?? ''),
+    invitationId: data.invitationId ?? null,
+    createdAt: toDateOr(data.createdAt, new Date(0)),
+  };
+}
 
 /**
  * The reviews shown publicly.
@@ -16,11 +31,13 @@ export { REVIEW_MAX_BODY, REVIEW_MAX_NAME } from './constants';
  */
 export async function getApprovedReviews(limit = 12): Promise<Review[]> {
   try {
-    return await prisma.review.findMany({
-      where: { status: 'APPROVED' },
-      orderBy: { createdAt: 'desc' },
-      take: limit,
-    });
+    const snapshot = await reviews()
+      .where('status', '==', 'APPROVED')
+      .orderBy('createdAt', 'desc')
+      .limit(limit)
+      .get();
+
+    return snapshot.docs.map(mapReview);
   } catch (error) {
     console.error('[reviews] could not load approved reviews', error);
     return [];
@@ -28,15 +45,18 @@ export async function getApprovedReviews(limit = 12): Promise<Review[]> {
 }
 
 export async function getPendingReviews(): Promise<Review[]> {
-  return prisma.review.findMany({
-    where: { status: 'PENDING' },
-    orderBy: { createdAt: 'desc' },
-    take: 100,
-  });
+  const snapshot = await reviews()
+    .where('status', '==', 'PENDING')
+    .orderBy('createdAt', 'desc')
+    .limit(100)
+    .get();
+
+  return snapshot.docs.map(mapReview);
 }
 
 export async function getAllReviews(): Promise<Review[]> {
-  return prisma.review.findMany({ orderBy: { createdAt: 'desc' }, take: 200 });
+  const snapshot = await reviews().orderBy('createdAt', 'desc').limit(200).get();
+  return snapshot.docs.map(mapReview);
 }
 
 export type ReviewInput = {
@@ -47,14 +67,15 @@ export type ReviewInput = {
 };
 
 export async function createReview(input: ReviewInput): Promise<Review> {
-  return prisma.review.create({
-    data: {
-      name: input.name.slice(0, REVIEW_MAX_NAME),
-      city: input.city?.slice(0, 60) || null,
-      body: input.body.slice(0, REVIEW_MAX_BODY),
-      invitationId: input.invitationId,
-      // Everything starts hidden. The operator decides what goes on the page.
-      status: 'PENDING',
-    },
+  const ref = await reviews().add({
+    name: input.name.slice(0, REVIEW_MAX_NAME),
+    city: input.city?.slice(0, 60) || null,
+    body: input.body.slice(0, REVIEW_MAX_BODY),
+    invitationId: input.invitationId,
+    // Everything starts hidden. The operator decides what goes on the page.
+    status: 'PENDING',
+    createdAt: new Date(),
   });
+
+  return mapReview(await ref.get());
 }

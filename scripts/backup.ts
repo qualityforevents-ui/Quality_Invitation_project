@@ -2,22 +2,22 @@
  * Writes every row this business cannot afford to lose into a timestamped JSON file
  * under ./backups.
  *
- * The free Supabase plan has no backups at all. This table holds wedding dates and
- * customer phone numbers, so losing it is not a recoverable event, and a restore path
- * that exists on day one is worth more than a better one written later.
+ * The Firestore free tier has no scheduled export. These documents hold wedding dates
+ * and customer phone numbers, so losing them is not a recoverable event, and a restore
+ * path that exists on day one is worth more than a better one written later.
  *
  * Run with: npm run backup
  *
  * Scheduling this is a decision only the operator can make, because it has to write
  * somewhere they control. SETUP.md covers the two practical options.
  */
-// Loaded explicitly. Next.js and the Prisma CLI read .env by themselves, but a plain
-// tsx script does not, so without this the client below throws "DATABASE_URL is not
-// set" on a machine where it is very much set.
+// Loaded explicitly. Next.js reads .env by itself, but a plain tsx script does not, so
+// without this the Admin SDK below throws "FIREBASE_PROJECT_ID is not set" on a machine
+// where it is very much set.
 import 'dotenv/config';
 import { writeFile, mkdir } from 'node:fs/promises';
 import path from 'node:path';
-import { prisma } from '../src/lib/db';
+import { invitations as invitationsCollection, reviews } from '../src/lib/db';
 
 const BACKUP_DIR = path.resolve(process.cwd(), 'backups');
 
@@ -37,23 +37,38 @@ function stamp(): string {
 async function main() {
   console.log('Reading invitations from the database');
 
-  const [invitations, heartbeat] = await Promise.all([
-    prisma.invitation.findMany({ orderBy: { createdAt: 'asc' } }),
-    prisma.heartbeat.findUnique({ where: { id: 1 } }),
+  const [invitationDocs, reviewDocs] = await Promise.all([
+    invitationsCollection().orderBy('createdAt', 'asc').get(),
+    reviews().orderBy('createdAt', 'asc').get(),
   ]);
+
+  // Dumped as stored, with Timestamps turned into ISO strings so the file is readable
+  // and restorable without the Admin SDK to decode it.
+  const invitations = invitationDocs.docs.map((doc) => ({
+    id: doc.id,
+    ...JSON.parse(JSON.stringify(doc.data(), (_key, value) =>
+      value && typeof value === 'object' && '_seconds' in value
+        ? new Date(value._seconds * 1000).toISOString()
+        : value,
+    )),
+  }));
+
+  const reviewRows = reviewDocs.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 
   const payload = {
     takenAt: new Date().toISOString(),
     schemaNote:
-      'Row dump of the Invitation table. Restore with scripts/restore.ts or by hand through Prisma.',
+      'Document dump of the invitations and reviews collections. Restore by writing each document back under its own id.',
     counts: {
       invitations: invitations.length,
+      reviews: reviewRows.length,
       byStatus: invitations.reduce<Record<string, number>>((acc, invitation) => {
-        acc[invitation.status] = (acc[invitation.status] ?? 0) + 1;
+        const status = String(invitation.status ?? 'UNKNOWN');
+        acc[status] = (acc[status] ?? 0) + 1;
         return acc;
       }, {}),
     },
-    heartbeat,
+    reviews: reviewRows,
     invitations,
   };
 
@@ -66,11 +81,9 @@ async function main() {
   console.log('Copy this file somewhere off this machine. A backup on one disk is not a backup.');
 }
 
-main()
-  .catch((error) => {
-    console.error('Backup failed:', error);
-    process.exitCode = 1;
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+// Nothing to disconnect. Firestore is an HTTP client, so the process exits on its own
+// once the writes are flushed, where the Postgres pool had to be closed by hand.
+main().catch((error) => {
+  console.error('Backup failed:', error);
+  process.exitCode = 1;
+});

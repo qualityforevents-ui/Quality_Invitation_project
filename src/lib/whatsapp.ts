@@ -1,6 +1,6 @@
 import { whatsappLink } from './constants';
 import { getPackage } from './packages';
-import type { Lang, Package } from '@/generated/prisma/enums';
+import type { Lang, Package } from '@/lib/types';
 
 /**
  * The message the customer sends the operator alongside their transfer.

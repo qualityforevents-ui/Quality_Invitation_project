@@ -4,7 +4,7 @@ import { ImageResponse } from 'next/og';
 import { formatEventDate } from './format';
 import { getInvitationCopy } from '@/i18n/invitation';
 import { getTheme } from '@/themes/registry';
-import type { EventType, Lang } from '@/generated/prisma/enums';
+import type { EventType, Lang } from '@/lib/types';
 
 export const OG_SIZE = { width: 1200, height: 630 };
 export const OG_CONTENT_TYPE = 'image/png';
