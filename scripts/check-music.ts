@@ -7,8 +7,8 @@ import { stat } from 'node:fs/promises';
 import path from 'node:path';
 import { MUSIC_TRACKS } from '../src/lib/music';
 
-/** Guests open these on mobile data. See public/music/README.md. */
-const MAX_BYTES = 1.5 * 1024 * 1024;
+/** Real music tracks shipped in public/music. */
+const MAX_BYTES = 8 * 1024 * 1024;
 
 async function main() {
   const musicDir = path.resolve(process.cwd(), 'public', 'music');

@@ -22,78 +22,67 @@ export type MusicTrack = {
 
 export const MUSIC_TRACKS: MusicTrack[] = [
   {
-    id: 'oud-nights',
-    file: 'oud-nights.mp3',
-    nameAr: 'ليالي العود',
-    nameEn: 'Oud Nights',
-    moodAr: 'عود كلاسيكي، هادي',
-    moodEn: 'Classical oud, calm',
+    id: 'fostanek-al-abyad',
+    file: 'Hussain Al Jassmi - Fostanek Al abyad  حسين الجسمي - فستانك الأبيض من حفل زفاف هشام جمال وليلى زاهر.mp3',
+    nameAr: 'حسين الجسمي - فستانك الأبيض',
+    nameEn: 'Hussain Al Jassmi - Fostanek Al Abyad',
+    moodAr: 'رومانسي، زفة العروسة',
+    moodEn: 'Romantic bridal entrance',
   },
   {
-    id: 'piano-vows',
-    file: 'piano-vows.mp3',
-    nameAr: 'وعد',
-    nameEn: 'Vows',
-    moodAr: 'بيانو ناعم',
-    moodEn: 'Soft piano',
+    id: 'el-leila',
+    file: 'Amr Diab - El Leila - Video Clip  عمرو دياب - الليلة - فيديو كليب.mp3',
+    nameAr: 'عمرو دياب - الليلة',
+    nameEn: 'Amr Diab - El Leila',
+    moodAr: 'حماسي، فرح واحتفال',
+    moodEn: 'Upbeat celebration',
   },
   {
-    id: 'strings-morning',
-    file: 'strings-morning.mp3',
-    nameAr: 'صباح الفرح',
-    nameEn: 'Morning Strings',
-    moodAr: 'وتريات خفيفة',
-    moodEn: 'Light orchestral strings',
+    id: 'ya-lela-beda',
+    file: 'شيرين - ياليله بيضا (حصريا 2025)  - sherine Ya Lela Beda.mp3',
+    nameAr: 'شيرين - يا ليلة بيضا',
+    nameEn: 'Sherine - Ya Lela Beda',
+    moodAr: 'طربي مبهج، ليلة العمر',
+    moodEn: 'Celebratory tarab',
   },
   {
-    id: 'modern-romance',
-    file: 'modern-romance.mp3',
-    nameAr: 'حكاية',
-    nameEn: 'A Story',
-    moodAr: 'رومانسي عصري',
-    moodEn: 'Modern romantic',
+    id: 'elfarh-malena',
+    file: 'Hamada Helal - Elfarh Malena (Official Music Video)  حماده هلال - الفرح مالينا - الكليب الرسمي.mp3',
+    nameAr: 'حماده هلال - الفرح مالينا',
+    nameEn: 'Hamada Helal - Elfarh Malena',
+    moodAr: 'فرحة وبهجة مصرية',
+    moodEn: 'Joyful Egyptian wedding',
   },
   {
-    id: 'joyful-zaffa',
-    file: 'joyful-zaffa.mp3',
-    nameAr: 'زفة الفرح',
-    nameEn: 'Joyful Zaffa',
-    moodAr: 'إيقاع مبهج، مناسب للخطوبة',
-    moodEn: 'Upbeat, suits engagements',
-  },
-  {
-    id: 'baladi-wedding',
-    file: 'baladi-wedding.mp3',
-    nameAr: 'فرح بلدي',
-    nameEn: 'Baladi Wedding',
-    moodAr: 'مصري تقليدي',
-    moodEn: 'Traditional Egyptian',
-  },
-  {
-    id: 'qanun-serenade',
-    file: 'qanun-serenade.mp3',
-    nameAr: 'همس القانون',
-    nameEn: 'Qanun Serenade',
-    moodAr: 'قانون وناي، شرقي',
-    moodEn: 'Qanun and ney, oriental',
-  },
-  {
-    id: 'cinematic-forever',
-    file: 'cinematic-forever.mp3',
-    nameAr: 'للأبد',
-    nameEn: 'Forever',
-    moodAr: 'سينمائي واسع',
-    moodEn: 'Cinematic, wide',
+    id: 'hatgawz',
+    file: 'الأغنية الرسمية لأي فرح - أغنية هتجوز غناء سعد الصغير.mp3',
+    nameAr: 'سعد الصغير - هتجوز',
+    nameEn: 'Saad El Soghayar - Hatgawz',
+    moodAr: 'شعبي مصري، رقص وفرفشة',
+    moodEn: 'Egyptian shaabi, dance',
   },
 ];
 
-export const DEFAULT_MUSIC_TRACK_ID = 'oud-nights';
+export const DEFAULT_MUSIC_TRACK_ID = 'fostanek-al-abyad';
 
 const TRACKS_BY_ID = new Map(MUSIC_TRACKS.map((track) => [track.id, track]));
 
+/** Backward-compatibility aliases for earlier track ids. */
+const TRACK_ALIASES: Record<string, string> = {
+  'oud-nights': 'ya-lela-beda',
+  'piano-vows': 'fostanek-al-abyad',
+  'strings-morning': 'fostanek-al-abyad',
+  'cinematic-forever': 'fostanek-al-abyad',
+  'qanun-serenade': 'ya-lela-beda',
+  'baladi-wedding': 'hatgawz',
+  'modern-romance': 'el-leila',
+  'joyful-zaffa': 'elfarh-malena',
+};
+
 export function getTrack(id: string | null | undefined): MusicTrack {
   if (id) {
-    const found = TRACKS_BY_ID.get(id);
+    const resolvedId = TRACK_ALIASES[id] ?? id;
+    const found = TRACKS_BY_ID.get(resolvedId);
     if (found) return found;
   }
   // An unknown id means a track was retired after an invitation chose it. Falling
@@ -102,11 +91,11 @@ export function getTrack(id: string | null | undefined): MusicTrack {
 }
 
 export function isValidTrackId(id: string): boolean {
-  return TRACKS_BY_ID.has(id);
+  return TRACKS_BY_ID.has(id) || id in TRACK_ALIASES;
 }
 
 export function trackUrl(track: MusicTrack): string {
-  return `/music/${track.file}`;
+  return `/music/${encodeURIComponent(track.file)}`;
 }
 
 export function trackName(track: MusicTrack, lang: 'AR' | 'EN'): string {
