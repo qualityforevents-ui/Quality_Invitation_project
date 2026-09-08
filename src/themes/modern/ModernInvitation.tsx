@@ -49,17 +49,20 @@ export function ModernInvitation({ view, copy }: { view: InvitationView; copy: I
 
         <Rule />
 
-        <Reveal delay={0.05}>
-          <p className="font-inv-body text-sm leading-[2.1] text-inv-muted text-pretty">
-            {copy.poetry}
-          </p>
-
-          <p className="mt-8 font-inv-body text-sm leading-relaxed text-inv-ink text-pretty">
-            {copy.inviteLine[view.eventType]}
-          </p>
-
-          <RolesBlock view={view} copy={copy} className="mt-10" nameClassName="text-lg font-light" />
-        </Reveal>
+        {/* Empty when the couple chose no line. */}
+        {copy.poetry ? (
+          <Reveal delay={0.05}>
+            <p className="font-inv-body text-sm leading-[2.1] text-inv-muted text-pretty">
+              {copy.poetry}
+            </p>
+  
+            <p className="mt-8 font-inv-body text-sm leading-relaxed text-inv-ink text-pretty">
+              {copy.inviteLine[view.eventType]}
+            </p>
+  
+            <RolesBlock view={view} copy={copy} className="mt-10" nameClassName="text-lg font-light" />
+          </Reveal>
+        ) : null}
 
         {/* 5. Photo, when there is one. */}
         <Reveal className="my-12">

@@ -31,7 +31,16 @@ export const INSTAPAY_NAME = process.env.NEXT_PUBLIC_INSTAPAY_NAME || 'QLTY EVEN
  * configured is worse than one that is missing: it takes the customer into an app with
  * nowhere to send the money.
  */
-export const INSTAPAY_APP_LINK = process.env.NEXT_PUBLIC_INSTAPAY_LINK || 'instapay://';
+/**
+ * The InstaPay payment link, e.g. https://ipn.eg/S/<handle>/instapay/<code>.
+ *
+ * Empty by default, and deliberately not `instapay://`. That bare scheme was the
+ * default here for a long time and it is not a link to anything: it opens the app on
+ * its own home screen with no recipient, no amount and nothing to confirm, which every
+ * customer reads as the pay button being broken. An unset link now renders no button at
+ * all, and the address underneath — which is what they actually need — is promoted.
+ */
+export const INSTAPAY_APP_LINK = process.env.NEXT_PUBLIC_INSTAPAY_LINK || '';
 
 export const VODAFONE_CASH_NUMBER = process.env.NEXT_PUBLIC_VODAFONE_CASH_NUMBER || '';
 

@@ -184,11 +184,14 @@ export function NetigaInvitation({ view, copy }: { view: InvitationView; copy: I
         ) : null}
 
         {/* LEAF 3: POETRY */}
-        <Leaf index={3} secondaryNumber={formatNetigaDigits('03', view.lang)}>
-          <p className="text-center font-inv-body text-base leading-[1.9] text-inv-muted text-pretty">
-            {copy.poetry}
-          </p>
-        </Leaf>
+        {/* Empty when the couple chose no line. */}
+        {copy.poetry ? (
+          <Leaf index={3} secondaryNumber={formatNetigaDigits('03', view.lang)}>
+            <p className="text-center font-inv-body text-base leading-[1.9] text-inv-muted text-pretty">
+              {copy.poetry}
+            </p>
+          </Leaf>
+        ) : null}
 
         {/* LEAF 4: INVITATION LINE */}
         <Leaf index={4} secondaryNumber={formatNetigaDigits('04', view.lang)}>

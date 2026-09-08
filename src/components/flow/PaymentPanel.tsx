@@ -123,11 +123,28 @@ export function PaymentPanel({
       <p className="mt-5 text-sm font-medium">{t.payment.methodsLabel}</p>
 
       <div className="mt-2 flex flex-col gap-2">
-        <Button asChild size="lg" className="w-full rounded-full text-base">
-          <a href={INSTAPAY_APP_LINK} onClick={() => handlePay(INSTAPAY_ADDRESS)}>
-            {t.payment.payInstapay}
-          </a>
-        </Button>
+        {/*
+          No link configured means no button. A button that opens InstaPay's home
+          screen with no recipient is worse than none: the customer believes they have
+          started a payment, and comes back asking where their money went. The address
+          below is the working path either way, and copying it is what the tap does.
+        */}
+        {INSTAPAY_APP_LINK ? (
+          <Button asChild size="lg" className="w-full rounded-full text-base">
+            <a href={INSTAPAY_APP_LINK} target="_blank" rel="noopener noreferrer" onClick={() => handlePay(INSTAPAY_ADDRESS)}>
+              {t.payment.payInstapay}
+            </a>
+          </Button>
+        ) : (
+          <Button
+            type="button"
+            size="lg"
+            className="w-full rounded-full text-base"
+            onClick={() => handlePay(INSTAPAY_ADDRESS)}
+          >
+            {t.payment.copyAddress}
+          </Button>
+        )}
         {/* The destination in one quiet line under the button it belongs to. The app
             link is the fast path, not the only one: if it opens on its own home screen,
             this is what the customer needs and it must not be a screen away. */}

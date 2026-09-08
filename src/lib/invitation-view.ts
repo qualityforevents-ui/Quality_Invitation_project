@@ -24,7 +24,14 @@ export type InvitationView = {
   eventInstantMs: number;
   venueName: string;
   venueMapUrl: string | null;
+  /**
+   * Always null. The couple's words live in `quote` and render in the card's quote
+   * slot; this stays on the type because every theme guards a block on it, and those
+   * blocks are what would otherwise print the same line a second time near the footer.
+   */
   customMessage: string | null;
+  /** The line the couple chose, or null for none. Reaches the card as `copy.poetry`. */
+  quote: string | null;
   themeId: string;
   /**
    * Which verse the card carries, or `none`. See src/lib/verses.ts.
@@ -68,7 +75,8 @@ export function toInvitationView(invitation: Invitation): InvitationView {
     eventInstantMs: getEventInstant(eventDate, eventTime).getTime(),
     venueName: invitation.venueName,
     venueMapUrl: invitation.venueMapUrl,
-    customMessage: invitation.customMessage,
+    customMessage: null,
+    quote: invitation.customMessage,
     themeId: invitation.themeId,
     verseId: invitation.verseId,
     musicUrl: trackUrl(track),

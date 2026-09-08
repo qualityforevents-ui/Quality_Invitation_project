@@ -31,7 +31,15 @@ export type InvitationCopy = {
    */
   verse: string | null;
   verseSource: string | null;
-  /** A line of classical verse in Arabic, a short line of its own in English. */
+  /**
+   * The line the couple chose, or empty when they chose none.
+   *
+   * This used to be one fixed line of classical verse, identical on every card, while
+   * the words the couple actually wrote sat separately near the footer. That is one
+   * question now: the sample they picked and the message they typed are the same
+   * string, and it renders in the place the card was already designed to give a line
+   * of writing. Empty is a real answer, so every theme guards this block.
+   */
   poetry: string;
   /** The formal line that names the occasion. */
   inviteLine: EventCopy;
@@ -175,8 +183,12 @@ const COPY: Record<Lang, InvitationCopy> = { AR, EN };
  * verse can actually appear, the id comes off the invitation — `InvitationView` carries
  * it for exactly that reason.
  */
-export function getInvitationCopy(lang: Lang, verseId?: string | null): InvitationCopy {
-  const base = COPY[lang] ?? AR;
+export function getInvitationCopy(
+  lang: Lang,
+  options: { verseId?: string | null; quote?: string | null } = {},
+): InvitationCopy {
+  const { verseId, quote } = options;
+  const base = { ...(COPY[lang] ?? AR), poetry: quote ?? '' };
 
   // The English card has no verse in any variation of it, so there is nothing to swap.
   if (base.verse === null) return base;

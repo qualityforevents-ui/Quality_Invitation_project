@@ -51,17 +51,20 @@ export function FloralInvitation({ view, copy }: { view: InvitationView; copy: I
 
         <FloralDivider className="my-10" />
 
-        <Reveal delay={0.05}>
-          <p className="font-inv-body text-[0.9375rem] leading-[2] text-inv-muted italic text-pretty">
-            {copy.poetry}
-          </p>
-
-          <p className="mt-7 font-inv-body text-sm leading-relaxed text-inv-ink text-pretty">
-            {copy.inviteLine[view.eventType]}
-          </p>
-
-          <RolesBlock view={view} copy={copy} className="mt-8" />
-        </Reveal>
+        {/* Empty when the couple chose no line. */}
+        {copy.poetry ? (
+          <Reveal delay={0.05}>
+            <p className="font-inv-body text-[0.9375rem] leading-[2] text-inv-muted italic text-pretty">
+              {copy.poetry}
+            </p>
+  
+            <p className="mt-7 font-inv-body text-sm leading-relaxed text-inv-ink text-pretty">
+              {copy.inviteLine[view.eventType]}
+            </p>
+  
+            <RolesBlock view={view} copy={copy} className="mt-8" />
+          </Reveal>
+        ) : null}
 
         {/* 5. Photo, when there is one. */}
         <Reveal className="my-10">

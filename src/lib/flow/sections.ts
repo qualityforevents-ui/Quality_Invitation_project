@@ -19,10 +19,14 @@ export const SECTION_ORDER = [
   'eventTime',
   'venue',
   'map',
-  'message',
   'language',
-  // Straight after the language, because it is the language that decides whether this
-  // question exists at all: the verse and the Bismillah are on the Arabic card only.
+  // The words the couple choose, and then the verse, next to each other because they
+  // are the two pieces of writing on the card and choosing them together is how you
+  // tell whether they sit well side by side.
+  'message',
+  // The verse cannot come before the language question: it is the language that decides
+  // whether this question exists at all, since the verse and the Bismillah are on the
+  // Arabic card only.
   'verse',
   'theme',
   'music',

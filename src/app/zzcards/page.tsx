@@ -44,7 +44,7 @@ export default async function CardReviewPage({
 
   const view = buildSampleView(invitationLang, themeId);
   const definition = getTheme(themeId);
-  const copy = getInvitationCopy(invitationLang, view.verseId);
+  const copy = getInvitationCopy(invitationLang, { verseId: view.verseId, quote: view.quote });
   const { Card } = getThemeComponents(themeId);
 
   return (

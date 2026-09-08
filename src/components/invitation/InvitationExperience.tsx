@@ -28,7 +28,7 @@ export function InvitationExperience({
   const [opened, setOpened] = useState(false);
 
   const audio = useInvitationAudio(view.musicUrl);
-  const copy = getInvitationCopy(view.lang, view.verseId);
+  const copy = getInvitationCopy(view.lang, { verseId: view.verseId, quote: view.quote });
   const { Cover, Card } = getThemeComponents(view.themeId);
   const theme = getTheme(view.themeId);
 

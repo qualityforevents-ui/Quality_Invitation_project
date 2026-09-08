@@ -42,6 +42,10 @@ export function buildSampleView(lang: Lang, themeId?: string, verseId?: string):
     lang,
     eventType: 'ENGAGEMENT',
     ...content,
+    // The specimen shows the merged line where the card now puts it, and nothing in
+    // the old footer slot, exactly as a real invitation does.
+    customMessage: null,
+    quote: content.customMessage,
     eventDate,
     eventTime,
     eventInstantMs: getEventInstant(eventDate, eventTime).getTime(),

@@ -448,11 +448,14 @@ export function GhouroubInvitation({ view, copy }: { view: InvitationView; copy:
 
       {/* 3. The line of verse, alone in its band. */}
       <Band index={1} side="below" sky={HORIZON_SKY[1]} progress={scrollYProgress} reduced={reduced}>
-        <Reveal>
-          <p className="font-inv-body text-[1.125rem] leading-[2] text-inv-muted text-pretty">
-            {copy.poetry}
-          </p>
-        </Reveal>
+        {/* Empty when the couple chose no line. */}
+        {copy.poetry ? (
+          <Reveal>
+            <p className="font-inv-body text-[1.125rem] leading-[2] text-inv-muted text-pretty">
+              {copy.poetry}
+            </p>
+          </Reveal>
+        ) : null}
       </Band>
 
       {/* 4 and 5. The invitation and the two people it comes from — the last content

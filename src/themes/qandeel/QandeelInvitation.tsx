@@ -199,11 +199,14 @@ export function QandeelInvitation({ view, copy }: { view: InvitationView; copy: 
         ) : null}
 
         {/* 3. POETRY — hung on 62px line */}
-        <HungBlock drop={PLUMB_LENGTHS.poetry}>
-          <p className="font-inv-body text-lg leading-[1.9] text-inv-muted text-pretty">
-            {copy.poetry}
-          </p>
-        </HungBlock>
+        {/* Empty when the couple chose no line. */}
+        {copy.poetry ? (
+          <HungBlock drop={PLUMB_LENGTHS.poetry}>
+            <p className="font-inv-body text-lg leading-[1.9] text-inv-muted text-pretty">
+              {copy.poetry}
+            </p>
+          </HungBlock>
+        ) : null}
 
         {/* 4. INVITATION LINE — hung on 130px line (longest drop) */}
         <HungBlock drop={PLUMB_LENGTHS.invite}>

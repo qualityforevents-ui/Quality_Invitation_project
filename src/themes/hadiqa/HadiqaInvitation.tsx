@@ -404,11 +404,14 @@ export function HadiqaInvitation({ view, copy }: { view: InvitationView; copy: I
           ) : null}
 
           {/* ------------------------------------------------------------ 3. poetry */}
-          <Block>
-            <p className="font-inv-body text-[1.125rem] leading-[1.9] text-inv-muted text-pretty">
-              {copy.poetry}
-            </p>
-          </Block>
+          {/* Empty when the couple chose no line. */}
+          {copy.poetry ? (
+            <Block>
+              <p className="font-inv-body text-[1.125rem] leading-[1.9] text-inv-muted text-pretty">
+                {copy.poetry}
+              </p>
+            </Block>
+          ) : null}
 
           {/* --------------------------------------------------- 4. invitation line */}
           <Block className="mt-10">

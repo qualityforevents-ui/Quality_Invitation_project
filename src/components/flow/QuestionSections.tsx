@@ -16,6 +16,7 @@ import { formatEventDate, formatEventTimeParts, fromDateInputValue } from '@/lib
 import { BRIEF_MAX, MESSAGE_MAX, TIME_PATTERN } from '@/lib/flow/values';
 import { invitationFontVariables } from '@/lib/fonts';
 import { NO_VERSE_ID, VERSES, verseLabel } from '@/lib/verses';
+import { sampleQuotes } from '@/lib/quotes';
 import type { Dictionary } from '@/i18n/ui';
 import type { EventType, Lang, Package } from '@/lib/types';
 
@@ -651,43 +652,138 @@ export function MapSection({
 
 /* ------------------------------------------------------------------ message */
 
+/**
+ * The one line of writing the couple choose.
+ *
+ * This used to be a bare textarea, and separately every card carried a fixed line of
+ * classical verse that nobody picked. Two pieces of writing, only one of them theirs.
+ * They are the same question now: tap a line you like, or write your own.
+ *
+ * The samples are shown in full and in the card's own language, for the same reason the
+ * verses are — nobody chooses words from a label. Picking one and then typing is
+ * allowed and means what it looks like: the typed version wins, and the sample it came
+ * from stops being highlighted.
+ */
 export function MessageSection({
   t,
+  lang,
   value,
   onChange,
   onNext,
   onSkip,
 }: {
   t: Dictionary;
+  /** The invitation's language, not the builder's: these words go on the card. */
+  lang: Lang;
   value: string;
   onChange: (next: string) => void;
   onNext: () => void;
   onSkip: () => void;
 }) {
+  const samples = sampleQuotes(lang);
+  const [writingOwn, setWritingOwn] = useState(value.length > 0 && !samples.includes(value));
+
   return (
     <SectionShell
       title={t.flow.messageTitle}
+      hint={t.flow.messageHint}
       onNext={onNext}
       nextLabel={t.flow.next}
       onSkip={onSkip}
       skipLabel={t.flow.messageSkip}
     >
-      <div className="flex flex-col gap-1.5">
-        <div className="flex items-baseline justify-end">
-          <span className="text-xs text-muted-foreground">
-            <span className="numeric">{MESSAGE_MAX - value.length}</span> {t.build.charactersLeft}
+      <div role="radiogroup" aria-label={t.flow.messageTitle} className="flex flex-col gap-2">
+        {samples.map((sample) => {
+          const selected = !writingOwn && value === sample;
+
+          return (
+            <button
+              key={sample}
+              type="button"
+              role="radio"
+              aria-checked={selected}
+              onClick={() => {
+                setWritingOwn(false);
+                onChange(sample);
+              }}
+              className={cn(
+                'press tap-target flex w-full gap-3 rounded-xl border px-3 py-3 text-start transition',
+                selected ? 'border-primary bg-secondary' : 'border-border bg-card',
+              )}
+            >
+              <span
+                className={cn(
+                  'mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full border',
+                  selected ? 'border-primary bg-primary' : 'border-border',
+                )}
+                aria-hidden="true"
+              >
+                {selected ? <Check className="size-3 text-primary-foreground" /> : null}
+              </span>
+
+              {/*
+                Held at the invitation's direction, not the builder's. Somebody building
+                an Arabic card from an English interface is choosing Arabic words, and
+                letting the surrounding direction reach them reorders the line.
+              */}
+              <span
+                lang={lang === 'AR' ? 'ar' : 'en'}
+                dir={lang === 'AR' ? 'rtl' : 'ltr'}
+                className="flex-1 text-sm leading-relaxed text-foreground"
+              >
+                {sample}
+              </span>
+            </button>
+          );
+        })}
+
+        <button
+          type="button"
+          role="radio"
+          aria-checked={writingOwn}
+          onClick={() => {
+            setWritingOwn(true);
+            if (samples.includes(value)) onChange('');
+          }}
+          className={cn(
+            'press tap-target flex w-full gap-3 rounded-xl border px-3 py-3 text-start transition',
+            writingOwn ? 'border-primary bg-secondary' : 'border-border bg-card',
+          )}
+        >
+          <span
+            className={cn(
+              'mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full border',
+              writingOwn ? 'border-primary bg-primary' : 'border-border',
+            )}
+            aria-hidden="true"
+          >
+            {writingOwn ? <Check className="size-3 text-primary-foreground" /> : null}
           </span>
-        </div>
-        <Textarea
-          autoFocus
-          value={value}
-          onChange={(event) => onChange(event.target.value)}
-          placeholder={t.build.customMessagePlaceholder}
-          maxLength={MESSAGE_MAX}
-          rows={3}
-          aria-label={t.flow.messageTitle}
-          className="resize-none"
-        />
+          <span className="flex-1 text-sm font-medium text-foreground">{t.flow.messageOwn}</span>
+        </button>
+
+        {writingOwn ? (
+          <div className="rise flex flex-col gap-1.5">
+            <div className="flex items-baseline justify-end">
+              <span className="text-xs text-muted-foreground">
+                <span className="numeric">{MESSAGE_MAX - value.length}</span>{' '}
+                {t.build.charactersLeft}
+              </span>
+            </div>
+            <Textarea
+              autoFocus
+              value={value}
+              onChange={(event) => onChange(event.target.value)}
+              placeholder={t.flow.messageOwnPlaceholder}
+              maxLength={MESSAGE_MAX}
+              rows={3}
+              lang={lang === 'AR' ? 'ar' : 'en'}
+              dir={lang === 'AR' ? 'rtl' : 'ltr'}
+              aria-label={t.flow.messageTitle}
+              className="resize-none"
+            />
+          </div>
+        ) : null}
       </div>
     </SectionShell>
   );

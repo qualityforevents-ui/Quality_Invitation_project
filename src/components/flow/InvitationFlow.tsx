@@ -380,6 +380,7 @@ export function InvitationFlow({
         return (
           <MessageSection
             t={t}
+            lang={values.invitationLang}
             value={values.customMessage}
             onChange={(next) => set({ customMessage: next })}
             onNext={() => advance('message')}

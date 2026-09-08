@@ -160,35 +160,38 @@ export function RizmaInvitation({ view, copy }: { view: InvitationView; copy: In
         </InsertCard>
 
         {/* ================= CARD 2: INVITATION (286px) ================= */}
-        <InsertCard measure={286}>
-          <p className="font-inv-body text-base leading-[1.9] text-inv-muted text-pretty">
-            {copy.poetry}
-          </p>
-
-          <p className="mt-5 font-inv-body text-[15px] leading-relaxed text-inv-ink text-pretty">
-            {copy.inviteLine[view.eventType]}
-          </p>
-
-          {/* Roles */}
-          <div className="mt-6 grid grid-cols-2 gap-3 border-t border-inv-line/40 pt-4">
-            <div>
-              <span className="font-inv-body text-[11px] text-inv-muted [word-spacing:0.3em] uppercase">
-                {copy.roleGroom}
-              </span>
-              <p className="mt-1 font-inv-body text-base font-bold text-inv-ink">
-                {view.name1}
-              </p>
+        {/* Empty when the couple chose no line. */}
+        {copy.poetry ? (
+          <InsertCard measure={286}>
+            <p className="font-inv-body text-base leading-[1.9] text-inv-muted text-pretty">
+              {copy.poetry}
+            </p>
+  
+            <p className="mt-5 font-inv-body text-[15px] leading-relaxed text-inv-ink text-pretty">
+              {copy.inviteLine[view.eventType]}
+            </p>
+  
+            {/* Roles */}
+            <div className="mt-6 grid grid-cols-2 gap-3 border-t border-inv-line/40 pt-4">
+              <div>
+                <span className="font-inv-body text-[11px] text-inv-muted [word-spacing:0.3em] uppercase">
+                  {copy.roleGroom}
+                </span>
+                <p className="mt-1 font-inv-body text-base font-bold text-inv-ink">
+                  {view.name1}
+                </p>
+              </div>
+              <div>
+                <span className="font-inv-body text-[11px] text-inv-muted [word-spacing:0.3em] uppercase">
+                  {copy.roleBride}
+                </span>
+                <p className="mt-1 font-inv-body text-base font-bold text-inv-ink">
+                  {view.name2}
+                </p>
+              </div>
             </div>
-            <div>
-              <span className="font-inv-body text-[11px] text-inv-muted [word-spacing:0.3em] uppercase">
-                {copy.roleBride}
-              </span>
-              <p className="mt-1 font-inv-body text-base font-bold text-inv-ink">
-                {view.name2}
-              </p>
-            </div>
-          </div>
-        </InsertCard>
+          </InsertCard>
+        ) : null}
 
         {/* ================= CARD 3: PHOTO / CREST CARD ================= */}
         {hasPhoto ? (

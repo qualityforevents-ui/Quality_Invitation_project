@@ -82,33 +82,36 @@ export function ClassicInvitation({ view, copy }: { view: InvitationView; copy: 
         ) : null}
 
         {/* 3 and 4. The line of verse and the formal invitation, read as one thought. */}
-        <Reveal delay={0.05}>
-          <p className="font-inv-body text-[0.9375rem] leading-[2] text-inv-muted italic text-pretty">
-            {copy.poetry}
-          </p>
-
-          <p className="mt-7 font-inv-body text-sm leading-relaxed text-inv-ink text-pretty">
-            {copy.inviteLine[view.eventType]}
-          </p>
-
-          {/* Roles sit under a rule each, rather than either side of one. */}
-          <div className="mt-8 grid grid-cols-2 gap-5">
-            {[
-              { role: copy.roleGroom, name: view.name1 },
-              { role: copy.roleBride, name: view.name2 },
-            ].map((person) => (
-              <div key={person.role}>
-                <p className="font-inv-body text-[0.6875rem] tracking-[0.2em] text-inv-accent">
-                  {person.role}
-                </p>
-                <span className="mx-auto mt-2 block h-px w-10 bg-inv-line" aria-hidden="true" />
-                <p className="mt-2.5 font-inv-display text-xl leading-snug text-inv-ink text-balance">
-                  {person.name}
-                </p>
-              </div>
-            ))}
-          </div>
-        </Reveal>
+        {/* Empty when the couple chose no line. */}
+        {copy.poetry ? (
+          <Reveal delay={0.05}>
+            <p className="font-inv-body text-[0.9375rem] leading-[2] text-inv-muted italic text-pretty">
+              {copy.poetry}
+            </p>
+  
+            <p className="mt-7 font-inv-body text-sm leading-relaxed text-inv-ink text-pretty">
+              {copy.inviteLine[view.eventType]}
+            </p>
+  
+            {/* Roles sit under a rule each, rather than either side of one. */}
+            <div className="mt-8 grid grid-cols-2 gap-5">
+              {[
+                { role: copy.roleGroom, name: view.name1 },
+                { role: copy.roleBride, name: view.name2 },
+              ].map((person) => (
+                <div key={person.role}>
+                  <p className="font-inv-body text-[0.6875rem] tracking-[0.2em] text-inv-accent">
+                    {person.role}
+                  </p>
+                  <span className="mx-auto mt-2 block h-px w-10 bg-inv-line" aria-hidden="true" />
+                  <p className="mt-2.5 font-inv-display text-xl leading-snug text-inv-ink text-balance">
+                    {person.name}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </Reveal>
+        ) : null}
 
         {/* 5. Photo, when there is one, under an arch. */}
         {view.photoUrl ? (

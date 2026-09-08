@@ -159,12 +159,15 @@ export function MashrabiyaInvitation({ view, copy }: { view: InvitationView; cop
 
         {/* 3. POETRY: small center void, 200px tall with bobbin divider */}
         <Reveal>
-          <HexagonalVoid align="center" className="min-h-[200px] flex flex-col justify-center">
-            <BobbinDivider className="my-2" />
-            <p className="font-inv-body text-base leading-[1.9] text-inv-muted text-pretty">
-              {copy.poetry}
-            </p>
-          </HexagonalVoid>
+          {/* Empty when the couple chose no line. */}
+          {copy.poetry ? (
+            <HexagonalVoid align="center" className="min-h-[200px] flex flex-col justify-center">
+              <BobbinDivider className="my-2" />
+              <p className="font-inv-body text-base leading-[1.9] text-inv-muted text-pretty">
+                {copy.poetry}
+              </p>
+            </HexagonalVoid>
+          ) : null}
         </Reveal>
 
         {/* 4. INVITATION LINE: inline-end hung void */}

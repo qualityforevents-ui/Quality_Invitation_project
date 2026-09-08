@@ -145,14 +145,17 @@ export function KhayamiyaInvitation({ view, copy }: { view: InvitationView; copy
         <SteppedMerlonBorder side="left" />
         <SteppedMerlonBorder side="right" />
 
-        <Reveal className="max-w-[420px]">
-          <div className="mb-4">
-            <LotusPalmette size={40} />
-          </div>
-          <p className="font-inv-body text-lg font-medium leading-[1.9] text-inv-muted text-pretty">
-            {copy.poetry}
-          </p>
-        </Reveal>
+        {/* Empty when the couple chose no line. */}
+        {copy.poetry ? (
+          <Reveal className="max-w-[420px]">
+            <div className="mb-4">
+              <LotusPalmette size={40} />
+            </div>
+            <p className="font-inv-body text-lg font-medium leading-[1.9] text-inv-muted text-pretty">
+              {copy.poetry}
+            </p>
+          </Reveal>
+        ) : null}
       </section>
 
       <RunningStitchSeam />

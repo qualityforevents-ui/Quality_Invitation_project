@@ -155,12 +155,15 @@ export function ZarfInvitation({ view, copy }: { view: InvitationView; copy: Inv
           ) : null}
 
           {/* Poetry with wax drip rule */}
-          <Reveal>
-            <WaxDripRule />
-            <p className="font-inv-body text-base leading-[1.9] text-inv-muted text-pretty text-center">
-              {copy.poetry}
-            </p>
-          </Reveal>
+          {/* Empty when the couple chose no line. */}
+          {copy.poetry ? (
+            <Reveal>
+              <WaxDripRule />
+              <p className="font-inv-body text-base leading-[1.9] text-inv-muted text-pretty text-center">
+                {copy.poetry}
+              </p>
+            </Reveal>
+          ) : null}
 
           {/* Formal Invitation Line */}
           <Reveal>
