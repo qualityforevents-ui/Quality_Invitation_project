@@ -7,7 +7,6 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogTitle,
 } from '@/components/ui/dialog';
 import type { Dictionary } from '@/i18n/ui';
@@ -32,11 +31,19 @@ export function StartOverButton({ t }: { t: Dictionary }) {
 
   return (
     <>
-      <div className="mt-6 flex justify-center">
+      {/*
+        Close to the last answer rather than adrift below it, and a bordered control
+        rather than small underlined text. It stays visually secondary — muted, outline,
+        never the filled primary — because everything else on this screen moves the
+        customer forward and this one throws their work away. But it was reading as a
+        footnote: too far from the flow to look like part of it, and too small to be
+        confident about tapping.
+      */}
+      <div className="mt-3 flex justify-center">
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="press tap-target rounded-full px-3 py-2 text-xs text-muted-foreground underline underline-offset-4 hover:text-foreground"
+          className="press tap-target rounded-full border border-border bg-card px-5 py-2.5 text-sm text-muted-foreground transition hover:border-destructive/40 hover:text-foreground"
         >
           {t.flow.startOver}
         </button>
@@ -52,7 +59,14 @@ export function StartOverButton({ t }: { t: Dictionary }) {
             {t.flow.startOverBody}
           </DialogDescription>
 
-          <DialogFooter className="mt-5 flex-col gap-2">
+          {/*
+            A plain div, not DialogFooter. That component carries
+            `sm:flex-row sm:justify-end`, and a media query rule beats a plain
+            `flex-col` passed in as a class, so above 640px the two buttons laid
+            themselves out in a row and — both being w-full — the first one rendered
+            outside the dialog entirely. These two always stack.
+          */}
+          <div className="mt-5 flex flex-col gap-2">
             {/*
               The safe choice is the big one and it comes first, so the thumb that is
               already moving lands on "keep going" rather than on the destructive answer.
@@ -75,7 +89,7 @@ export function StartOverButton({ t }: { t: Dictionary }) {
             >
               {isPending ? t.common.saving : t.flow.startOverConfirm}
             </Button>
-          </DialogFooter>
+          </div>
         </DialogContent>
       </Dialog>
     </>
