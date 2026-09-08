@@ -16,3 +16,8 @@
 backups/
 firebase-debug.log
 firestore-debug.log
+
+# Belt and braces: a key that somehow lands in the tree must not reach a deployment.
+secrets/
+*service-account*.json
+*firebase-adminsdk*.json
