@@ -144,23 +144,21 @@ export type RequiredForPreview = {
   name2: string;
   venueName: string;
   eventTime: string;
-  eventDate: Date;
+  eventDate: Date | null;
 };
 
 /**
- * `eventDate` is checked against today rather than against emptiness, because it can
- * never be empty: it is a non-null column and `createDraft` writes today plus sixty days
- * into every row it creates. That default is indistinguishable from a chosen date on the
- * server, and no validation fixes that without a schema change.
+ * `eventDate` is checked for being unset and for being in the past.
  *
- * What this does catch is the case that is actually reachable: a draft created in
- * January carrying a March placeholder, abandoned, and resumed in June would otherwise
- * report itself ready with a date that has already been and gone.
+ * It used to be checkable only for the second of those. The column was non-null and
+ * `createDraft` wrote today plus sixty days into every row it made, so a placeholder
+ * was indistinguishable from a chosen date and the comment here said no validation
+ * fixed that without a schema change. It is fixed now: a draft is created with no date
+ * and no time at all, and the question opens empty because it genuinely is.
  *
- * The thing that keeps a customer from buying a date they never chose is the flow, not
- * this function. `eventDate` starts empty in `emptyValues`, the date question is not
- * answered until it matches the date pattern, and a resumed session is never let past an
- * unanswered date. Those three are the guard; this is the backstop.
+ * The stale case still matters and is still caught here: a draft created in January
+ * carrying a March date, abandoned, and resumed in June would otherwise report itself
+ * ready with a date that has already been and gone.
  */
 export function missingRequiredFields(
   invitation: RequiredForPreview,
@@ -174,10 +172,16 @@ export function missingRequiredFields(
   if (!invitation.eventTime.trim()) missing.push('eventTime');
 
   const stored = invitation.eventDate;
-  const iso = `${stored.getUTCFullYear().toString().padStart(4, '0')}-${(stored.getUTCMonth() + 1)
-    .toString()
-    .padStart(2, '0')}-${stored.getUTCDate().toString().padStart(2, '0')}`;
-  if (iso < todayIso) missing.push('eventDate');
+
+  if (!stored) {
+    // Not chosen at all, which is now a state a draft can genuinely be in.
+    missing.push('eventDate');
+  } else {
+    const iso = `${stored.getUTCFullYear().toString().padStart(4, '0')}-${(stored.getUTCMonth() + 1)
+      .toString()
+      .padStart(2, '0')}-${stored.getUTCDate().toString().padStart(2, '0')}`;
+    if (iso < todayIso) missing.push('eventDate');
+  }
 
   return missing;
 }

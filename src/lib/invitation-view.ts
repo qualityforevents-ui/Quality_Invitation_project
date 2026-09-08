@@ -49,14 +49,23 @@ export type InvitationView = {
 export function toInvitationView(invitation: Invitation): InvitationView {
   const track = getTrack(invitation.musicTrackId);
 
+  /*
+   * A card cannot be drawn without a date, and a draft can now genuinely be without
+   * one. Nothing reaches here in that state — the readiness check gates the preview and
+   * activation both — so this fills in rather than throws, and the preview built from
+   * the flow's own values does exactly the same.
+   */
+  const eventDate = invitation.eventDate ?? new Date();
+  const eventTime = invitation.eventTime || '20:00';
+
   return {
     lang: invitation.invitationLang,
     eventType: invitation.eventType,
     name1: invitation.name1,
     name2: invitation.name2,
-    eventDate: invitation.eventDate,
-    eventTime: invitation.eventTime,
-    eventInstantMs: getEventInstant(invitation.eventDate, invitation.eventTime).getTime(),
+    eventDate,
+    eventTime,
+    eventInstantMs: getEventInstant(eventDate, eventTime).getTime(),
     venueName: invitation.venueName,
     venueMapUrl: invitation.venueMapUrl,
     customMessage: invitation.customMessage,

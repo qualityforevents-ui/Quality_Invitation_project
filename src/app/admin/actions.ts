@@ -43,9 +43,13 @@ export async function activateInvitation(formData: FormData): Promise<void> {
    * miserable thing to do to somebody. The paid tiers simply never expire.
    */
   const tier = getPackage(invitation.package);
-  const expiresAt = tier.permanent
-    ? null
-    : new Date(invitation.eventDate.getTime() + DEFAULT_EXPIRY_DAYS_AFTER_EVENT * DAY_MS);
+  // No date means no expiry to compute from. The readiness check will not let an
+  // invitation reach activation without one, so this is a guard rather than a case:
+  // never expiring is the harmless way to be wrong about it.
+  const expiresAt =
+    tier.permanent || !invitation.eventDate
+      ? null
+      : new Date(invitation.eventDate.getTime() + DEFAULT_EXPIRY_DAYS_AFTER_EVENT * DAY_MS);
 
   const updated = await updateInvitation(id, {
       status: 'ACTIVE',

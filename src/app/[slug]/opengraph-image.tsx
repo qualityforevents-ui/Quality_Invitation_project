@@ -25,7 +25,7 @@ export default async function InvitationOgImage({ params }: { params: Promise<{ 
   // A slug with no live invitation still has to return an image, because the metadata
   // already promised one. A neutral card is better than a broken image icon sitting in
   // a WhatsApp thread.
-  if (!invitation || invitation.status !== 'ACTIVE') {
+  if (!invitation || invitation.status !== 'ACTIVE' || !invitation.eventDate) {
     const fallback = buildSampleView('AR');
     return renderOgImage({
       name1: 'qlty',

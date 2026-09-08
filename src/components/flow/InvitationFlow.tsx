@@ -453,7 +453,15 @@ export function InvitationFlow({
           <PhotoSection
             t={t}
             enabled={photoEnabled}
-            initialPhotoPath={initialValues.photoFileId}
+            /*
+              The live values, not the ones the page was loaded with.
+              This read initialValues, which is the draft as it was when the page was
+              opened. A photo uploaded during this session is not in there, so reopening
+              the question remounted the uploader knowing nothing about it: no thumbnail,
+              "choose a photo" instead of "change it", and no way to remove it.
+            */
+            initialPhotoPath={values.photoFileId}
+            initialCrop={values.photoCrop}
             hasPhoto={values.photoFileId !== null}
             onSaved={({ photoPath, crop }) => {
               set({ photoFileId: photoPath, photoCrop: crop });

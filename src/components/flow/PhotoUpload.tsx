@@ -4,7 +4,7 @@ import { useRef, useState } from 'react';
 import { PhotoCropper } from './PhotoCropper';
 import { Button } from '@/components/ui/button';
 import { preparePhoto, uploadToImageKit, type PreparedPhoto } from '@/lib/photo';
-import type { PhotoCrop } from '@/lib/photo-url';
+import { buildPhotoUrl, type PhotoCrop } from '@/lib/photo-url';
 import type { Dictionary } from '@/i18n/ui';
 
 type Stage = 'idle' | 'preparing' | 'cropping' | 'uploading';
@@ -29,10 +29,16 @@ const ERROR_KEYS: Record<string, keyof Dictionary['errors']> = {
 export function PhotoUpload({
   t,
   initialPhotoPath,
+  initialCrop,
   onSaved,
 }: {
   t: Dictionary;
   initialPhotoPath: string | null;
+  /**
+   * The framing already chosen, so the thumbnail shows the photo as the card will
+   * crop it rather than as it came off the phone.
+   */
+  initialCrop: PhotoCrop | null;
   onSaved: (value: { photoPath: string | null; crop: PhotoCrop | null }) => void;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -42,6 +48,7 @@ export function PhotoUpload({
   const [photo, setPhoto] = useState<PreparedPhoto | null>(null);
   const [crop, setCrop] = useState<PhotoCrop | null>(null);
   const [savedPath, setSavedPath] = useState<string | null>(initialPhotoPath);
+  const [savedCrop, setSavedCrop] = useState<PhotoCrop | null>(initialCrop);
 
   async function handleFile(file: File) {
     setError(null);
@@ -67,6 +74,7 @@ export function PhotoUpload({
     try {
       const uploaded = await uploadToImageKit(photo);
       setSavedPath(uploaded.filePath);
+      setSavedCrop(crop);
       onSaved({ photoPath: uploaded.filePath, crop });
 
       URL.revokeObjectURL(photo.previewUrl);
@@ -83,6 +91,7 @@ export function PhotoUpload({
     if (photo) URL.revokeObjectURL(photo.previewUrl);
     setPhoto(null);
     setSavedPath(null);
+    setSavedCrop(null);
     setCrop(null);
     setStage('idle');
     onSaved({ photoPath: null, crop: null });
@@ -134,7 +143,25 @@ export function PhotoUpload({
           </div>
         </>
       ) : (
-        <div className="flex gap-2">
+        <div className="flex items-center gap-3">
+          {/*
+            The photo itself, once there is one.
+            Without it the question said "change the photo" and showed nothing, so the
+            only way to check which photo was on the card was to open the full preview.
+            Cropped exactly as the card will crop it, because a thumbnail of the
+            uncropped original would answer a question nobody asked.
+          */}
+          {savedPath ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={buildPhotoUrl(savedPath, savedCrop, { width: 160, height: 160 })}
+              alt={t.flow.photoAdded}
+              width={56}
+              height={56}
+              className="size-14 shrink-0 rounded-xl border border-border object-cover"
+            />
+          ) : null}
+
           <Button
             type="button"
             variant="outline"

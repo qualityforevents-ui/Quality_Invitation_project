@@ -73,8 +73,17 @@ export type Invitation = {
   eventType: EventType;
   name1: string;
   name2: string;
-  eventDate: Date;
-  /** "20:00". */
+  /**
+   * Null until the customer picks one.
+   *
+   * A draft is created on the first keystroke, long before this question is asked, and
+   * it used to be born holding a date sixty days out. Stored, that is indistinguishable
+   * from a chosen date: the question opened pre-filled, the guard that blocks an empty
+   * answer saw a valid one, and somebody could walk to payment with a wedding booked on
+   * a day they never picked.
+   */
+  eventDate: Date | null;
+  /** "20:00", or empty until chosen — for the same reason as eventDate. */
   eventTime: string;
   venueName: string;
   venueMapUrl: string | null;

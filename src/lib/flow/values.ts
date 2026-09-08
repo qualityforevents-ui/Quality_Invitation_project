@@ -93,7 +93,7 @@ export function valuesFromInvitation(
     name1: invitation.name1,
     name2: invitation.name2,
     eventType: invitation.eventType,
-    eventDate: toDateInputValue(invitation.eventDate),
+    eventDate: invitation.eventDate ? toDateInputValue(invitation.eventDate) : '',
     eventTime: invitation.eventTime,
     venueName: invitation.venueName,
     venueMapUrl: invitation.venueMapUrl ?? '',

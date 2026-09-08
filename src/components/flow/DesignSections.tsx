@@ -292,6 +292,7 @@ export function PhotoSection({
   t,
   enabled,
   initialPhotoPath,
+  initialCrop,
   hasPhoto,
   onSaved,
   onNext,
@@ -301,6 +302,7 @@ export function PhotoSection({
   /** False until the ImageKit keys are set, which keeps the question usable without them. */
   enabled: boolean;
   initialPhotoPath: string | null;
+  initialCrop: PhotoCrop | null;
   hasPhoto: boolean;
   onSaved: (value: { photoPath: string | null; crop: PhotoCrop | null }) => void;
   onNext: () => void;
@@ -315,7 +317,12 @@ export function PhotoSection({
       skipLabel={hasPhoto ? undefined : t.flow.photoSkip}
     >
       {enabled ? (
-        <PhotoUpload t={t} initialPhotoPath={initialPhotoPath} onSaved={onSaved} />
+        <PhotoUpload
+          t={t}
+          initialPhotoPath={initialPhotoPath}
+          initialCrop={initialCrop}
+          onSaved={onSaved}
+        />
       ) : (
         <p className="rounded-xl border border-dashed bg-muted/40 px-4 py-5 text-center text-xs text-muted-foreground">
           {t.theme.photoNotConfigured}

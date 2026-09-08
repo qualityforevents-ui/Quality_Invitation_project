@@ -47,8 +47,8 @@ export function mapInvitation(doc: DocumentSnapshot<DocumentData>): Invitation {
     eventType: data.eventType ?? 'ENGAGEMENT',
     name1: String(data.name1 ?? ''),
     name2: String(data.name2 ?? ''),
-    eventDate: toDateOr(data.eventDate, epoch),
-    eventTime: String(data.eventTime ?? '20:00'),
+    eventDate: toDate(data.eventDate),
+    eventTime: String(data.eventTime ?? ''),
     venueName: String(data.venueName ?? ''),
     venueMapUrl: data.venueMapUrl ?? null,
     customMessage: data.customMessage ?? null,
@@ -77,12 +77,6 @@ async function findOneBy(field: string, value: string): Promise<Invitation | nul
   if (!value) return null;
   const snapshot = await invitations().where(field, '==', value).limit(1).get();
   return snapshot.empty ? null : mapInvitation(snapshot.docs[0]);
-}
-
-function defaultEventDate(): Date {
-  // Far enough out that the date picker does not open on something already invalid.
-  const now = new Date();
-  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 60));
 }
 
 /**
@@ -179,8 +173,10 @@ export async function createDraft(patch: InvitationPatch, uiLang: Lang): Promise
       eventType: patch.eventType ?? 'ENGAGEMENT',
       name1,
       name2,
-      eventDate: eventDate ?? defaultEventDate(),
-      eventTime: patch.eventTime ?? '20:00',
+      // Null and empty, not a guess. Nothing here has been asked yet, and a default
+      // written now is a default the customer is later shown as their own answer.
+      eventDate: eventDate ?? null,
+      eventTime: patch.eventTime ?? '',
       venueName: patch.venueName ?? '',
       venueMapUrl: patch.venueMapUrl ?? null,
       customMessage: patch.customMessage ?? null,

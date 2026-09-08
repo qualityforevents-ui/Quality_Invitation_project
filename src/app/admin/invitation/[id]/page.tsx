@@ -56,7 +56,7 @@ export default async function ApprovalPage({ params, searchParams }: Props) {
             lang={invitation.invitationLang}
             name1={invitation.name1}
             name2={invitation.name2}
-            eventDate={invitation.eventDate}
+            eventDate={invitation.eventDate ?? new Date()}
             eventType={invitation.eventType}
           />
         </div>
@@ -71,8 +71,8 @@ export default async function ApprovalPage({ params, searchParams }: Props) {
             </span>
           </Row>
           <Row label="التاريخ">
-            {formatEventDate(invitation.eventDate, 'AR')} ·{' '}
-            {formatEventTime(invitation.eventTime, 'AR')}
+            {invitation.eventDate ? formatEventDate(invitation.eventDate, 'AR') : '—'} ·{' '}
+            {invitation.eventTime ? formatEventTime(invitation.eventTime, 'AR') : '—'}
           </Row>
           <Row label="المكان">{invitation.venueName || '—'}</Row>
           <Row label="الموسيقى">{trackName(getTrack(invitation.musicTrackId), 'AR')}</Row>
