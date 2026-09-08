@@ -23,7 +23,7 @@ export type MusicTrack = {
 export const MUSIC_TRACKS: MusicTrack[] = [
   {
     id: 'fostanek-al-abyad',
-    file: 'Hussain Al Jassmi - Fostanek Al abyad  حسين الجسمي - فستانك الأبيض من حفل زفاف هشام جمال وليلى زاهر.mp3',
+    file: 'fostanek-al-abyad.mp3',
     nameAr: 'حسين الجسمي - فستانك الأبيض',
     nameEn: 'Hussain Al Jassmi - Fostanek Al Abyad',
     moodAr: 'رومانسي، زفة العروسة',
@@ -31,7 +31,7 @@ export const MUSIC_TRACKS: MusicTrack[] = [
   },
   {
     id: 'el-leila',
-    file: 'Amr Diab - El Leila - Video Clip  عمرو دياب - الليلة - فيديو كليب.mp3',
+    file: 'el-leila.mp3',
     nameAr: 'عمرو دياب - الليلة',
     nameEn: 'Amr Diab - El Leila',
     moodAr: 'حماسي، فرح واحتفال',
@@ -39,7 +39,7 @@ export const MUSIC_TRACKS: MusicTrack[] = [
   },
   {
     id: 'ya-lela-beda',
-    file: 'شيرين - ياليله بيضا (حصريا 2025)  - sherine Ya Lela Beda.mp3',
+    file: 'ya-lela-beda.mp3',
     nameAr: 'شيرين - يا ليلة بيضا',
     nameEn: 'Sherine - Ya Lela Beda',
     moodAr: 'طربي مبهج، ليلة العمر',
@@ -47,7 +47,7 @@ export const MUSIC_TRACKS: MusicTrack[] = [
   },
   {
     id: 'elfarh-malena',
-    file: 'Hamada Helal - Elfarh Malena (Official Music Video)  حماده هلال - الفرح مالينا - الكليب الرسمي.mp3',
+    file: 'elfarh-malena.mp3',
     nameAr: 'حماده هلال - الفرح مالينا',
     nameEn: 'Hamada Helal - Elfarh Malena',
     moodAr: 'فرحة وبهجة مصرية',
@@ -55,7 +55,7 @@ export const MUSIC_TRACKS: MusicTrack[] = [
   },
   {
     id: 'hatgawz',
-    file: 'الأغنية الرسمية لأي فرح - أغنية هتجوز غناء سعد الصغير.mp3',
+    file: 'hatgawz.mp3',
     nameAr: 'سعد الصغير - هتجوز',
     nameEn: 'Saad El Soghayar - Hatgawz',
     moodAr: 'شعبي مصري، رقص وفرفشة',
