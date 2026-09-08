@@ -161,9 +161,16 @@ export function NetigaInvitation({ view, copy }: { view: InvitationView; copy: I
           </div>
         </Leaf>
 
+        {/* LEAF 4: INVITATION LINE */}
+        <Leaf index={2} secondaryNumber={formatNetigaDigits('02', view.lang)}>
+          <p className="text-center font-inv-body text-[15px] leading-relaxed text-inv-ink text-pretty">
+            {copy.inviteLine[view.eventType]}
+          </p>
+        </Leaf>
+
         {/* LEAF 2: BISMILLAH + VERSE (Dedicated UN-NUMBERED leaf, sacred text) */}
         {copy.bismillah && copy.verse ? (
-          <Leaf index={2}>
+          <Leaf index={3}>
             <div className="text-center py-2">
               <p
                 className="font-inv-verse text-2xl text-inv-accent"
@@ -186,19 +193,13 @@ export function NetigaInvitation({ view, copy }: { view: InvitationView; copy: I
         {/* LEAF 3: POETRY */}
         {/* Empty when the couple chose no line. */}
         {copy.poetry ? (
-          <Leaf index={3} secondaryNumber={formatNetigaDigits('03', view.lang)}>
+          <Leaf index={4} secondaryNumber={formatNetigaDigits('04', view.lang)}>
             <p className="text-center font-inv-body text-base leading-[1.9] text-inv-muted text-pretty">
               {copy.poetry}
             </p>
           </Leaf>
         ) : null}
 
-        {/* LEAF 4: INVITATION LINE */}
-        <Leaf index={4} secondaryNumber={formatNetigaDigits('04', view.lang)}>
-          <p className="text-center font-inv-body text-[15px] leading-relaxed text-inv-ink text-pretty">
-            {copy.inviteLine[view.eventType]}
-          </p>
-        </Leaf>
 
         {/* LEAF 5: ROLES */}
         <Leaf
@@ -250,9 +251,9 @@ export function NetigaInvitation({ view, copy }: { view: InvitationView; copy: I
         ) : (
           /* NO PHOTO: Second date leaf with loud countdown */
           <Leaf
-            index={6}
+            index={7}
             headerTitle={copy.labels.countdownHeading[view.eventType]}
-            secondaryNumber={formatNetigaDigits('06', view.lang)}
+            secondaryNumber={formatNetigaDigits('07', view.lang)}
           >
             <div className="py-2">
               <NetigaCountdown targetMs={view.eventInstantMs} copy={copy} eventType={view.eventType} lang={view.lang} large />
@@ -262,9 +263,9 @@ export function NetigaInvitation({ view, copy }: { view: InvitationView; copy: I
 
         {/* LEAF 7: THE HERO DATE LEAF */}
         <Leaf
-          index={7}
+          index={8}
           headerTitle={date.weekday}
-          secondaryNumber={formatNetigaDigits('07', view.lang)}
+          secondaryNumber={formatNetigaDigits('08', view.lang)}
         >
           <div className="flex flex-col items-center justify-center py-2 text-center">
             {/* 180px day numeral */}
@@ -279,7 +280,7 @@ export function NetigaInvitation({ view, copy }: { view: InvitationView; copy: I
         </Leaf>
 
         {/* LEAF 8: TIME */}
-        <Leaf index={8} secondaryNumber={formatNetigaDigits('08', view.lang)}>
+        <Leaf index={9} secondaryNumber={formatNetigaDigits('09', view.lang)}>
           <div className="flex items-center justify-center gap-2 text-center font-inv-body text-base text-inv-ink">
             <span className="text-xs text-inv-muted">{copy.labels.time}:</span>
             <span className="font-semibold">
@@ -291,9 +292,9 @@ export function NetigaInvitation({ view, copy }: { view: InvitationView; copy: I
 
         {/* LEAF 9: VENUE */}
         <Leaf
-          index={9}
+          index={10}
           headerTitle={copy.labels.venue}
-          secondaryNumber={formatNetigaDigits('09', view.lang)}
+          secondaryNumber={formatNetigaDigits('10', view.lang)}
         >
           <div className="text-center py-1">
             <p className="font-inv-body text-base font-semibold text-inv-ink text-balance">
@@ -324,9 +325,9 @@ export function NetigaInvitation({ view, copy }: { view: InvitationView; copy: I
         {/* LEAF 10: COUNTDOWN (rendered if photo was present above) */}
         {hasPhoto ? (
           <Leaf
-            index={10}
+            index={11}
             headerTitle={copy.labels.countdownHeading[view.eventType]}
-            secondaryNumber={formatNetigaDigits('10', view.lang)}
+            secondaryNumber={formatNetigaDigits('11', view.lang)}
           >
             <div className="py-2">
               <NetigaCountdown targetMs={view.eventInstantMs} copy={copy} eventType={view.eventType} lang={view.lang} />
@@ -336,7 +337,7 @@ export function NetigaInvitation({ view, copy }: { view: InvitationView; copy: I
 
         {/* LEAF 11: MESSAGE */}
         {view.customMessage ? (
-          <Leaf index={11} secondaryNumber={formatNetigaDigits('11', view.lang)}>
+          <Leaf index={12} secondaryNumber={formatNetigaDigits('12', view.lang)}>
             <p className="text-center font-inv-body text-sm leading-relaxed text-inv-muted text-pretty">
               {view.customMessage}
             </p>
@@ -344,7 +345,7 @@ export function NetigaInvitation({ view, copy }: { view: InvitationView; copy: I
         ) : null}
 
         {/* LEAF 12: FOOTER */}
-        <Leaf index={12}>
+        <Leaf index={13}>
           <div className="text-center">
             <a
               href={SITE_URL}

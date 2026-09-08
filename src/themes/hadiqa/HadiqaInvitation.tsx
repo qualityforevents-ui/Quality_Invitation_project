@@ -376,6 +376,13 @@ export function HadiqaInvitation({ view, copy }: { view: InvitationView; copy: I
           </Reveal>
         </div>
 
+          {/* --------------------------------------------------- 4. invitation line */}
+          <Block className="mt-10">
+            <p className="font-inv-body text-[1.0625rem] leading-relaxed text-inv-ink text-pretty">
+              {copy.inviteLine[view.eventType]}
+            </p>
+          </Block>
+
         <div className="relative z-10">
           {/* -------------------------------------------------- 2. bismillah and verse */}
           {copy.bismillah && copy.verse ? (
@@ -413,12 +420,6 @@ export function HadiqaInvitation({ view, copy }: { view: InvitationView; copy: I
             </Block>
           ) : null}
 
-          {/* --------------------------------------------------- 4. invitation line */}
-          <Block className="mt-10">
-            <p className="font-inv-body text-[1.0625rem] leading-relaxed text-inv-ink text-pretty">
-              {copy.inviteLine[view.eventType]}
-            </p>
-          </Block>
 
           {/* ------------------------------------------------------------- 5. roles */}
           {/*

@@ -112,6 +112,12 @@ export function KhayamiyaInvitation({ view, copy }: { view: InvitationView; copy
         </Reveal>
       </section>
 
+        <Reveal className="max-w-[420px]">
+          <p className="font-inv-body text-[17px] leading-relaxed text-inv-ink text-pretty">
+            {copy.inviteLine[view.eventType]}
+          </p>
+        </Reveal>
+
       <RunningStitchSeam />
 
       {/* ================= 2. BISMILLAH + VERSE: 24vh panel field (Unpatterned cloth) ================= */}
@@ -165,11 +171,6 @@ export function KhayamiyaInvitation({ view, copy }: { view: InvitationView; copy
         <SteppedMerlonBorder side="left" />
         <SteppedMerlonBorder side="right" />
 
-        <Reveal className="max-w-[420px]">
-          <p className="font-inv-body text-[17px] leading-relaxed text-inv-ink text-pretty">
-            {copy.inviteLine[view.eventType]}
-          </p>
-        </Reveal>
       </section>
 
       <RunningStitchSeam />

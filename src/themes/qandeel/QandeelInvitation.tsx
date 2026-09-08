@@ -176,6 +176,13 @@ export function QandeelInvitation({ view, copy }: { view: InvitationView; copy: 
           </HungBlock>
         </div>
 
+        {/* 4. INVITATION LINE — hung on 130px line (longest drop) */}
+        <HungBlock drop={PLUMB_LENGTHS.invite}>
+          <p className="font-inv-body text-[17px] leading-relaxed text-inv-ink text-pretty">
+            {copy.inviteLine[view.eventType]}
+          </p>
+        </HungBlock>
+
         {/* 2. BISMILLAH + VERSE — hung on 96px line, parallax explicitly disabled */}
         {copy.bismillah && copy.verse ? (
           <HungBlock drop={PLUMB_LENGTHS.verse}>
@@ -208,12 +215,6 @@ export function QandeelInvitation({ view, copy }: { view: InvitationView; copy: 
           </HungBlock>
         ) : null}
 
-        {/* 4. INVITATION LINE — hung on 130px line (longest drop) */}
-        <HungBlock drop={PLUMB_LENGTHS.invite}>
-          <p className="font-inv-body text-[17px] leading-relaxed text-inv-ink text-pretty">
-            {copy.inviteLine[view.eventType]}
-          </p>
-        </HungBlock>
 
         {/* 5. ROLES — hung on 78px line with 26px solid lamp */}
         <HungBlock drop={PLUMB_LENGTHS.roles}>

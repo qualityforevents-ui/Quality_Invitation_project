@@ -138,6 +138,10 @@ export function RizmaInvitation({ view, copy }: { view: InvitationView; copy: In
             {copy.eventName[view.eventType]}
           </p>
 
+          <p className="mt-5 font-inv-body text-[15px] leading-relaxed text-inv-ink text-pretty">
+            {copy.inviteLine[view.eventType]}
+          </p>
+
           {/* Bismillah + Verse */}
           {copy.bismillah && copy.verse ? (
             <div className="mt-6 border-t border-inv-line/40 pt-5">
@@ -167,9 +171,6 @@ export function RizmaInvitation({ view, copy }: { view: InvitationView; copy: In
               {copy.poetry}
             </p>
   
-            <p className="mt-5 font-inv-body text-[15px] leading-relaxed text-inv-ink text-pretty">
-              {copy.inviteLine[view.eventType]}
-            </p>
   
             {/* Roles */}
             <div className="mt-6 grid grid-cols-2 gap-3 border-t border-inv-line/40 pt-4">

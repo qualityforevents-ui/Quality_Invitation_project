@@ -258,6 +258,13 @@ export function IwanInvitation({ view, copy }: { view: InvitationView; copy: Inv
             />
           </Course>
 
+          {/* ------------------------------------------------- 4. invitation line */}
+          <Course tier={0} className="mt-10">
+            <p className="text-center font-inv-body text-[1.0625rem] leading-relaxed text-inv-ink text-pretty">
+              {copy.inviteLine[view.eventType]}
+            </p>
+          </Course>
+
           {/* ----------------------------------------------- 2. bismillah and verse */}
           {/*
             The springing zone: a course of the lighter stone laid from wall to wall.
@@ -312,12 +319,6 @@ export function IwanInvitation({ view, copy }: { view: InvitationView; copy: Inv
             </Course>
           ) : null}
 
-          {/* ------------------------------------------------- 4. invitation line */}
-          <Course tier={0} className="mt-10">
-            <p className="text-center font-inv-body text-[1.0625rem] leading-relaxed text-inv-ink text-pretty">
-              {copy.inviteLine[view.eventType]}
-            </p>
-          </Course>
 
           {/* ----------------------------------------------------------- 5. roles */}
           <Haunch />

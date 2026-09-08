@@ -135,6 +135,15 @@ export function MashrabiyaInvitation({ view, copy }: { view: InvitationView; cop
           </HexagonalVoid>
         </Reveal>
 
+        {/* 4. INVITATION LINE: inline-end hung void */}
+        <Reveal>
+          <HexagonalVoid align="end">
+            <p className="font-inv-body text-[17px] leading-relaxed text-inv-ink text-pretty py-2">
+              {copy.inviteLine[view.eventType]}
+            </p>
+          </HexagonalVoid>
+        </Reveal>
+
         {/* 2. BISMILLAH + VERSE: inline-start hung void, 300px tall */}
         {copy.bismillah && copy.verse ? (
           <Reveal>
@@ -170,14 +179,6 @@ export function MashrabiyaInvitation({ view, copy }: { view: InvitationView; cop
           ) : null}
         </Reveal>
 
-        {/* 4. INVITATION LINE: inline-end hung void */}
-        <Reveal>
-          <HexagonalVoid align="end">
-            <p className="font-inv-body text-[17px] leading-relaxed text-inv-ink text-pretty py-2">
-              {copy.inviteLine[view.eventType]}
-            </p>
-          </HexagonalVoid>
-        </Reveal>
 
         {/* 5. ROLES: center void with bobbin divider */}
         <Reveal>

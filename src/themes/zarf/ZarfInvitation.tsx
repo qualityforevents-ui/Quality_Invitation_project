@@ -125,6 +125,13 @@ export function ZarfInvitation({ view, copy }: { view: InvitationView; copy: Inv
           </Reveal>
         </section>
 
+          {/* Formal Invitation Line */}
+          <Reveal>
+            <p className="font-inv-body text-[1.0625rem] leading-relaxed text-inv-ink text-pretty text-center">
+              {copy.inviteLine[view.eventType]}
+            </p>
+          </Reveal>
+
         {/* CREASE 1: Dividing Top Flap from Middle Panel */}
         <motion.div style={{ opacity: crease1Opacity }}>
           <CreaseDivider />
@@ -165,12 +172,6 @@ export function ZarfInvitation({ view, copy }: { view: InvitationView; copy: Inv
             </Reveal>
           ) : null}
 
-          {/* Formal Invitation Line */}
-          <Reveal>
-            <p className="font-inv-body text-[1.0625rem] leading-relaxed text-inv-ink text-pretty text-center">
-              {copy.inviteLine[view.eventType]}
-            </p>
-          </Reveal>
 
           {/* Roles */}
           <Reveal>

@@ -417,6 +417,13 @@ export function GhouroubInvitation({ view, copy }: { view: InvitationView; copy:
           />
         </Reveal>
 
+        {/* Directly under the names, in the same band, before the sacred text. */}
+        <Reveal immediate delay={0.1} className="mt-12">
+          <p className="font-inv-body text-[1.0625rem] leading-[1.9] text-inv-ink text-pretty">
+            {copy.inviteLine[view.eventType]}
+          </p>
+        </Reveal>
+
         {/* Arabic card only: all three are null in English, so the whole block goes. */}
         {copy.bismillah && copy.verse ? (
           <Reveal immediate delay={0.15} className="mt-24">
@@ -461,11 +468,6 @@ export function GhouroubInvitation({ view, copy }: { view: InvitationView; copy:
       {/* 4 and 5. The invitation and the two people it comes from — the last content
           that hangs below the line. Everything after this sits above it. */}
       <Band index={2} side="below" sky={HORIZON_SKY[2]} progress={scrollYProgress} reduced={reduced}>
-        <Reveal>
-          <p className="font-inv-body text-[1.0625rem] leading-[1.9] text-inv-ink text-pretty">
-            {copy.inviteLine[view.eventType]}
-          </p>
-        </Reveal>
 
         <Reveal delay={0.05} className="mt-24">
           {/* Two rows rather than two columns. A pair of columns is a table, and the
