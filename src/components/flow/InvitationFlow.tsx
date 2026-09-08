@@ -340,6 +340,7 @@ export function InvitationFlow({
         return (
           <DateSection
             t={t}
+            lang={lang}
             today={today}
             value={values.eventDate}
             onChange={(next) => set({ eventDate: next })}

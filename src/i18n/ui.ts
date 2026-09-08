@@ -123,6 +123,7 @@ const AR = {
     occasionSummary: 'المناسبة',
 
     dateTitle: 'الفرح إمتى؟',
+    dateHint: 'اضغط على الخانة واختار التاريخ من النتيجة.',
     dateSummary: 'التاريخ',
 
     timeTitle: 'الساعة كام؟',
@@ -450,6 +451,7 @@ const EN: Dictionary = {
     occasionSummary: 'Occasion',
 
     dateTitle: 'When is it?',
+    dateHint: 'Tap the field and pick the date from the calendar.',
     dateSummary: 'Date',
 
     timeTitle: 'What time does it start?',

@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/cn';
 import { PACKAGES } from '@/lib/packages';
 import { isGoogleMapsUrl } from '@/lib/validation';
-import { formatEventTimeParts } from '@/lib/format';
+import { formatEventDate, formatEventTimeParts, fromDateInputValue } from '@/lib/format';
 import { BRIEF_MAX, MESSAGE_MAX, TIME_PATTERN } from '@/lib/flow/values';
 import { invitationFontVariables } from '@/lib/fonts';
 import { NO_VERSE_ID, VERSES, verseLabel } from '@/lib/verses';
@@ -366,12 +366,15 @@ function VerseOption({
 
 export function DateSection({
   t,
+  lang,
   today,
   value,
   onChange,
   onNext,
 }: {
   t: Dictionary;
+  /** The builder's language, which the native picker does not speak. */
+  lang: Lang;
   /** Today in Cairo, resolved on the server so both sides agree what day it is. */
   today: string;
   value: string;
@@ -384,6 +387,10 @@ export function DateSection({
   return (
     <SectionShell
       title={t.flow.dateTitle}
+      // The field starts genuinely empty now, and an empty native date input on iOS
+      // draws a blank box with no placeholder at all — nothing says it is tappable or
+      // what it wants.
+      hint={t.flow.dateHint}
       onNext={() => {
         setTouched(true);
         if (!missing) onNext();
@@ -413,6 +420,22 @@ export function DateSection({
           aria-invalid={touched && missing ? true : undefined}
           className="h-12 text-center"
         />
+
+        {/*
+          The date again, in the language the card is being built in.
+
+          A native date input renders in the PHONE's locale, not the page's, and nothing
+          the page can set changes that — no lang attribute, no CSS. So an Egyptian
+          customer with an English handset picks their wedding day and the form answers
+          "18 Dec 2026" in the middle of an Arabic form. This line is the confirmation
+          they can actually read, in the same wording the answered row and the card use,
+          so the value they see here is the value they will see on the invitation.
+        */}
+        {!missing ? (
+          <p className="mt-2 text-center text-sm font-medium text-foreground">
+            {formatEventDate(fromDateInputValue(value) ?? new Date(), lang)}
+          </p>
+        ) : null}
       </QuestionForm>
     </SectionShell>
   );
@@ -509,6 +532,14 @@ export function TimeSection({
             aria-label={t.flow.timeTitle}
             className="h-12 text-center"
           />
+
+          {/* Same reason as the date: the native picker says "9:00 PM" whatever the
+              page language is. This says it the way the four buttons above say it. */}
+          {!missing ? (
+            <p className="mt-2 text-center text-sm font-medium text-foreground">
+              <bdi>{label(value)}</bdi>
+            </p>
+          ) : null}
         </div>
       ) : null}
     </SectionShell>
