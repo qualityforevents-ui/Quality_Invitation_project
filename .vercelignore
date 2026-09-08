@@ -1,0 +1,18 @@
+# Never ship the local environment file.
+#
+# `vercel deploy` from a developer's machine uploads the working directory, and .env
+# being gitignored does not exclude it from that upload. Shipped, it does two harmful
+# things: it bakes the service account key into the deployment bundle instead of
+# keeping it in Vercel's encrypted environment, and it carries FIRESTORE_EMULATOR_HOST
+# into production, which points every database call at 127.0.0.1 and hangs the function
+# until it times out.
+#
+# Production configuration belongs in the Vercel project's environment variables, which
+# is also the only way a deployment built from GitHub gets configured at all.
+.env
+.env.*
+!.env.example
+
+backups/
+firebase-debug.log
+firestore-debug.log
