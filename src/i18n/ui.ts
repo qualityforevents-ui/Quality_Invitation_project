@@ -192,7 +192,7 @@ const AR = {
     phoneHint: 'عشان نبعتلك رابط دعوتك أول ما يتفعّل.',
     phoneSummary: 'رقم الواتساب',
 
-    payTitle: 'فاضل الدفع بس',
+    payTitle: 'فاضل خطوة واحدة',
   },
 
   build: {
@@ -257,7 +257,7 @@ const AR = {
 
   payment: {
     heading: 'خطوة أخيرة',
-    sub: 'حوّل المبلغ على إنستاباي، وابعتلنا صورة التحويل على واتساب.',
+    sub: 'ابعتلنا الطلب على واتساب وإحنا هنظبط معاك الدفع وهنبعتلك الرابط.',
     amountLabel: 'المبلغ',
     packageLabel: 'الباقة',
     customRequestLabel: 'اكتبلنا التصميم اللي في بالك',
@@ -267,7 +267,7 @@ const AR = {
     payInstapay: 'ادفع بإنستاباي',
     payVodafone: 'ادفع بفودافون كاش',
     addressCopied: 'العنوان اتنسخ. الصقه في التطبيق وحوّل المبلغ.',
-    afterPayLabel: 'بعد ما تحوّل، اضغط هنا وحد من الفريق هيكلمك على طول',
+    afterPayLabel: 'اضغط هنا وابعتلنا الطلب، وحد من الفريق هيرد عليك على طول',
     instapayTitle: 'حوّل على إنستاباي',
     copyAddress: 'انسخ عنوان إنستاباي',
     instapayAddress: 'عنوان إنستاباي',
@@ -278,12 +278,12 @@ const AR = {
     phonePlaceholder: 'مثال: 01012345678',
     phoneError: 'اكتب رقم موبايل مصري صحيح',
     whatsappCta: 'كلمنا على واتساب دلوقتي',
-    attachReminder: 'ابعتله صورة التحويل، وهو هيبعتلك رابط دعوتك مفعّل وجاهز تبعته لضيوفك.',
+    attachReminder: 'هنتفق معاك على طريقة الدفع على واتساب، وأول ما يتم هنبعتلك رابط دعوتك مفعّل وجاهز تبعته لضيوفك.',
     afterTitle: 'وبعد ما تبعت؟',
     afterBody:
-      'المحادثة بتفتح والرسالة متكتوبة فيها كل تفاصيل طلبك، فمش محتاج تكتب حاجة. بنراجع التحويل بإيدينا وبنفعّل الرابط ونبعتهولك في نفس المحادثة.',
+      'المحادثة بتفتح والرسالة متكتوبة فيها كل تفاصيل طلبك، فمش محتاج تكتب حاجة. بنكمل معاك الدفع في نفس المحادثة، وبعدها بنفعّل الرابط ونبعتهولك فيها.',
     desktopTitle: 'انت على الكمبيوتر',
-    desktopNote: 'انت على الكمبيوتر. افتح الصفحة دي من موبايلك عشان أزرار الدفع والواتساب تشتغل.',
+    desktopNote: 'انت على الكمبيوتر. افتح الصفحة دي من موبايلك عشان زرار الواتساب يشتغل.',
     copyMessage: 'انسخ الرسالة',
     notSaved:
       'مقدرناش نحفظ دعوتك، فمفيش رقم طلب لسه. متحوّلش دلوقتي، لأن من غير الرقم مش هنعرف نربط تحويلك بدعوتك. اتأكد من النت وجرب تاني.',
@@ -592,7 +592,7 @@ const EN: Dictionary = {
 
   payment: {
     heading: 'One last step',
-    sub: 'Send the amount over InstaPay, then send us the transfer screenshot on WhatsApp.',
+    sub: 'Send us the request on WhatsApp and we will sort the payment out with you there.',
     amountLabel: 'Amount',
     packageLabel: 'Package',
     customRequestLabel: 'Tell us about the design you want',
@@ -602,7 +602,7 @@ const EN: Dictionary = {
     payInstapay: 'Pay with InstaPay',
     payVodafone: 'Pay with Vodafone Cash',
     addressCopied: 'Address copied. Paste it in the app and send the amount.',
-    afterPayLabel: 'Once you have paid, tap here and someone from the team will message you straight away',
+    afterPayLabel: 'Tap here to send us the request, and someone from the team will reply straight away',
     instapayTitle: 'Pay with InstaPay',
     copyAddress: 'Copy the InstaPay address',
     instapayAddress: 'InstaPay address',
@@ -613,12 +613,12 @@ const EN: Dictionary = {
     phonePlaceholder: 'e.g. 01012345678',
     phoneError: 'Enter a valid Egyptian mobile number',
     whatsappCta: 'Message us on WhatsApp now',
-    attachReminder: 'Send them the transfer screenshot and they will send back your invitation link, live and ready to share.',
+    attachReminder: 'We will agree the payment with you on WhatsApp, and the moment it is done we will send back your invitation link, live and ready to share.',
     afterTitle: 'What happens next',
     afterBody:
-      'The chat opens with your request details already written in it, so there is nothing for you to type. We check the transfer by hand, activate the link, and send it back in the same conversation.',
+      'The chat opens with your request details already written in it, so there is nothing for you to type. We settle the payment with you in that same conversation, then activate the link and send it back there.',
     desktopTitle: 'You are on a computer',
-    desktopNote: 'You are on a computer. Open this page on your phone so the pay and WhatsApp buttons work.',
+    desktopNote: 'You are on a computer. Open this page on your phone so the WhatsApp button works.',
     copyMessage: 'Copy the message',
     notSaved:
       'We could not save your invitation, so it has no request number yet. Please do not transfer anything: without that number we cannot match your payment to your invitation. Check your connection and try again.',

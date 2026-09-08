@@ -38,7 +38,7 @@ export function buildPaymentMessage({
       `الباقة: ${tier.nameAr}`,
       `المبلغ: ${tier.price} جنيه`,
       '',
-      'برجاء إرفاق صورة التحويل مع الرسالة',
+      'عايز أكمل الطلب ده',
     ].join('\n');
   }
 
@@ -49,7 +49,7 @@ export function buildPaymentMessage({
     `Package: ${tier.nameEn}`,
     `Amount: ${tier.price} EGP`,
     '',
-    'Please attach the transfer screenshot with this message',
+    'I would like to go ahead with this request',
   ].join('\n');
 }
 

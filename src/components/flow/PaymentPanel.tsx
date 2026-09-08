@@ -3,26 +3,17 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AlertTriangle } from 'lucide-react';
-import { toast } from 'sonner';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import { copyText } from '@/lib/clipboard';
 import { getPackage } from '@/lib/packages';
-import {
-  INSTAPAY_ADDRESS,
-  INSTAPAY_APP_LINK,
-  VODAFONE_CASH_LINK,
-  VODAFONE_CASH_NUMBER,
-} from '@/lib/constants';
 import { buildPaymentLink } from '@/lib/whatsapp';
 import type { Dictionary } from '@/i18n/ui';
 import type { Lang, Package } from '@/lib/types';
 
 /**
  * wa.me on a desktop browser opens WhatsApp Web, and if the visitor is not already
- * logged in there it shows a QR code. The pay buttons are worse off still: an app link
- * has nothing to open. Both are the same instruction, so desktop gets one line telling
- * somebody to finish this on their phone.
+ * logged in there it shows a QR code rather than a chat. So desktop gets one line
+ * telling somebody to finish this on their phone.
  */
 function useIsDesktop(): boolean {
   const [isDesktop, setIsDesktop] = useState(false);
@@ -39,17 +30,16 @@ function useIsDesktop(): boolean {
 }
 
 /**
- * The end of the flow: the amount, two ways to pay it, and one way to tell us.
+ * The end of the flow: the amount, and one button that hands the request to a human.
  *
- * Deliberately three buttons and almost no reading. Everything that used to be here, the
- * tier list, the copyable address, the recipient name, the request id, the whole message
- * printed out for checking, was the customer doing by hand what the buttons now do:
- * carrying values between this page and two other apps. The tier is question one and can
- * be changed from its own row; the address rides in the clipboard; the request id rides
- * in the WhatsApp message and is shown on the screen this hands off to.
+ * It used to carry the payment itself — an InstaPay button, a Vodafone Cash button, the
+ * address copied to the clipboard, and an instruction to come back with a screenshot.
+ * That is three apps and four steps for a customer to get wrong, and every way it went
+ * wrong produced the same message: money sent somewhere, and nobody sure where.
  *
- * What is left is the shape of the task. Pay with one of these. Then send us the
- * screenshot on that. Nothing else on screen competes with those two sentences.
+ * Payment is a conversation now. The button opens WhatsApp with the request id, the
+ * couple, the tier and the amount already written, and the rest is settled by a person
+ * who can answer a question. Nothing on this screen competes with that one sentence.
  */
 export function PaymentPanel({
   t,
@@ -86,12 +76,6 @@ export function PaymentPanel({
    * the navigation for a promise would cost the gesture the browser needs to hand an
    * app link over.
    */
-  function handlePay(value: string) {
-    void copyText(value).then((ok) => {
-      if (ok) toast.success(t.payment.addressCopied);
-    });
-  }
-
   /**
    * The status moves before WhatsApp opens. keepalive lets that request finish even
    * though this tab is navigating to the waiting screen at the same moment, and the
@@ -119,54 +103,6 @@ export function PaymentPanel({
         </p>
       ) : null}
 
-      {/* One. Pay. */}
-      <p className="mt-5 text-sm font-medium">{t.payment.methodsLabel}</p>
-
-      <div className="mt-2 flex flex-col gap-2">
-        {/*
-          No link configured means no button. A button that opens InstaPay's home
-          screen with no recipient is worse than none: the customer believes they have
-          started a payment, and comes back asking where their money went. The address
-          below is the working path either way, and copying it is what the tap does.
-        */}
-        {INSTAPAY_APP_LINK ? (
-          <Button asChild size="lg" className="w-full rounded-full text-base">
-            <a href={INSTAPAY_APP_LINK} target="_blank" rel="noopener noreferrer" onClick={() => handlePay(INSTAPAY_ADDRESS)}>
-              {t.payment.payInstapay}
-            </a>
-          </Button>
-        ) : (
-          <Button
-            type="button"
-            size="lg"
-            className="w-full rounded-full text-base"
-            onClick={() => handlePay(INSTAPAY_ADDRESS)}
-          >
-            {t.payment.copyAddress}
-          </Button>
-        )}
-        {/* The destination in one quiet line under the button it belongs to. The app
-            link is the fast path, not the only one: if it opens on its own home screen,
-            this is what the customer needs and it must not be a screen away. */}
-        <p dir="ltr" className="text-center text-xs text-muted-foreground">
-          <bdi>{INSTAPAY_ADDRESS}</bdi>
-        </p>
-
-        {VODAFONE_CASH_NUMBER ? (
-          <>
-            <Button asChild size="lg" variant="outline" className="mt-2 w-full rounded-full text-base">
-              <a href={VODAFONE_CASH_LINK} onClick={() => handlePay(VODAFONE_CASH_NUMBER)}>
-                {t.payment.payVodafone}
-              </a>
-            </Button>
-            <p dir="ltr" className="text-center text-xs text-muted-foreground">
-              <bdi>{VODAFONE_CASH_NUMBER}</bdi>
-            </p>
-          </>
-        ) : null}
-      </div>
-
-      {/* Two. Tell us. */}
       <p className="mt-6 text-sm font-medium">{t.payment.afterPayLabel}</p>
       <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
         {t.payment.attachReminder}
