@@ -1,6 +1,16 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
+  /*
+   * firebase-admin must be required from node_modules, not bundled.
+   *
+   * It pulls in jwks-rsa, which `require()`s `jose`, and jose is ESM only. Bundled, the
+   * result is ERR_REQUIRE_ESM at runtime and every admin page returns a 500. This does
+   * not reproduce with `next start` locally — only on the deployed build — so it is the
+   * kind of thing that is found in production or not at all.
+   */
+  serverExternalPackages: ['firebase-admin'],
+
   images: {
     remotePatterns: [{ protocol: 'https', hostname: 'ik.imagekit.io' }],
   },
