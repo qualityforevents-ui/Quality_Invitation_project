@@ -47,20 +47,31 @@ export function PreviewDialog({
       <DialogContent
         showCloseButton={false}
         aria-describedby={undefined}
-        // Tall and narrow, close to the proportion of the phone a guest opens it on.
-        // Overflow is owned here and nowhere else: the shell keeps `min-h-full` and no
-        // scroller of its own, so there is exactly one scrolling box.
-        className="h-[85dvh] gap-0 overflow-hidden rounded-2xl p-0 sm:max-w-sm"
+        /*
+         * Tall and narrow, close to the proportion of the phone a guest opens it on.
+         * Overflow is owned here and nowhere else: the shell keeps `min-h-full` and no
+         * scroller of its own, so there is exactly one scrolling box.
+         *
+         * The height is written once, as a variable, and the class reads it back. The
+         * closed cover sizes itself from the same variable — see the note in
+         * InvitationExperience — so the card is exactly this panel tall, with its
+         * ornament centred and its open button on the bottom edge, rather than stacked
+         * at the top of a box the height of its own text.
+         */
+        style={
+          {
+            '--inv-panel-height': '85dvh',
+            // The mute toggle sits above the panel's own bottom edge, not the phone's.
+            '--inv-toggle-offset': '1rem',
+          } as CSSProperties
+        }
+        className="h-[var(--inv-panel-height)] gap-0 overflow-hidden rounded-2xl p-0 sm:max-w-sm"
       >
         {/* Radix needs a title or it warns and hands screen readers an unnamed dialog.
             Visually hidden, because a heading over the card is chrome. */}
         <DialogTitle className="sr-only">{t.flow.previewTitle}</DialogTitle>
 
-        <div
-          className="h-full overflow-y-auto overscroll-contain"
-          // The toggle sits above the panel's own bottom edge rather than the phone's.
-          style={{ '--inv-toggle-offset': '1rem' } as CSSProperties}
-        >
+        <div className="h-full overflow-y-auto overscroll-contain">
           <InvitationShell view={view} contained />
         </div>
 

@@ -56,11 +56,25 @@ export function InvitationExperience({
   return (
     <MotionConfig reducedMotion="user">
       <div
+        /*
+         * The closed cover is exactly one panel tall, and the panel says how tall that
+         * is.
+         *
+         * Every cover asks for `h-full`, and a percentage height needs an ancestor with
+         * a real one to resolve against. The shell above carries a floor — `min-h` — so
+         * the opened card can be as long as it likes, which left every cover quietly
+         * falling back to its own content height: in the builder's popup the card sat at
+         * the top with a band of theme coloured nothing under it, `justify-between`
+         * collapsed and the open button pinned under the date instead of at the bottom
+         * edge.
+         *
+         * `--inv-panel-height` is the fix and the whole of it. The popup sets it to its
+         * own height; on a guest's phone nothing sets it and the fallback is the screen.
+         * Either way this box is definite, so `h-full` inside every cover resolves.
+         */
         className={
           !opened
-            ? contained
-              ? 'h-full max-h-full w-full overflow-hidden flex flex-col'
-              : 'h-dvh max-h-dvh w-full overflow-hidden flex flex-col'
+            ? 'h-[var(--inv-panel-height,100dvh)] max-h-[var(--inv-panel-height,100dvh)] w-full overflow-hidden flex flex-col'
             : ''
         }
       >
