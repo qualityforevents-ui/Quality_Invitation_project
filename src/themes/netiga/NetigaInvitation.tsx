@@ -18,46 +18,66 @@ import type { InvitationView } from '@/lib/invitation-view';
 /**
  * النتيجة, revealed. The axis is DATED LEAVES.
  *
- * Uniform bound leaves at 342px measure sitting on a board.
- * Every leaf is dated furniture carrying a header band and secondary index,
- * except the verse leaf which stands alone as un-numbered sacred text.
- * All numerals consistently formatted with Arabic-Indic digits for Arabic cards.
+ * Uniform bound leaves at one 342px measure sitting on a board, torn top edge, red
+ * binding band. The three rules that hold the pad together, and that a change here
+ * must not break:
+ *
+ * 1. ONE MEASURE. Every leaf is `max-w-[342px]` and every leaf pads its content by
+ *    `p-5`, so the text edge of the names, the verse, the venue and the footer all
+ *    land on the same line. Per-leaf padding would destroy the pad.
+ * 2. EVERY LEAF IS BANDED AND NUMBERED — one exception, stated. The verse leaf alone
+ *    carries no band and no number, because sacred text is not dated furniture. That
+ *    single exception is the rule; a band that appears on some other leaves and not
+ *    on others is what makes a pad read as an accident. Numbers run consecutively
+ *    from a counter, so a card without a photo or without a message still counts
+ *    1, 2, 3 rather than showing a gap where a leaf was not rendered.
+ * 3. ONE VERTICAL RHYTHM: 32px between leaves (LEAF_RHYTHM below), 40-48px of bare
+ *    board above the first leaf and below the last. Nothing else sets a section gap.
+ *
+ * Centring the leaves' contents on a common axis, flattening them into a single
+ * scroll, or dropping the band would each erase the pad.
  */
 
+/**
+ * The pad's rhythm, in one place.
+ *
+ * `gap-8` on the leaf column is the ONLY thing that separates two leaves; the torn
+ * edge eats 14px of it, so 32px leaves 18px of visible board. Leaves carry no margins
+ * of their own — that is what keeps the pitch even when a leaf is conditional.
+ */
+const LEAF_RHYTHM = 'flex w-full max-w-[342px] flex-col items-center gap-8';
+
 function Leaf({
-  index,
+  slot,
   headerTitle,
-  secondaryNumber,
+  indexLabel,
+  bare = false,
   children,
-  className,
 }: {
-  index: number;
+  /** Position in the pad. Drives the alternating tilt only. */
+  slot: number;
   headerTitle?: string;
-  secondaryNumber?: string;
+  /** The leaf's number, already in the card's digits. Omitted only on the verse leaf. */
+  indexLabel?: string;
+  /** The verse leaf: no band, no number. */
+  bare?: boolean;
   children: React.ReactNode;
-  className?: string;
 }) {
-  // Alternating slight 0.4° tilt
-  const tilt = index % 2 === 0 ? 'rotate-[0.35deg]' : '-rotate-[0.35deg]';
+  // Alternating slight 0.35° tilt, so the pad reads as hand-torn rather than printed.
+  const tilt = slot % 2 === 0 ? 'rotate-[0.35deg]' : '-rotate-[0.35deg]';
 
   return (
-    <Reveal className={cn('relative my-6 w-full max-w-[342px]', tilt, className)}>
+    <Reveal className={cn('relative w-full max-w-[342px]', tilt)}>
       <div className="relative rounded-sm border border-inv-line/50 bg-inv-panel shadow-md">
         <TornEdge className="absolute -top-3.5 inset-x-0" />
-        {headerTitle ? (
-          <CalendarHeaderBand title={headerTitle} />
-        ) : (
+
+        {bare ? (
           <div className="h-3" />
+        ) : (
+          <CalendarHeaderBand title={headerTitle} index={indexLabel} />
         )}
 
-        <div className="relative p-5">
-          {secondaryNumber ? (
-            <span className="absolute top-2 start-3 font-inv-body text-[10px] text-inv-muted/70">
-              {secondaryNumber}
-            </span>
-          ) : null}
-          {children}
-        </div>
+        <div className="p-5">{children}</div>
       </div>
     </Reveal>
   );
@@ -80,14 +100,29 @@ function NetigaCountdown({
   const { totalSeconds, hasPassed } = useCountdownParts(targetMs);
 
   if (hasPassed) {
-    return <p className="font-inv-display text-xl text-inv-accent">{copy.labels.started[eventType]}</p>;
+    return (
+      <p className="text-center font-inv-display text-xl leading-snug text-inv-accent">
+        {copy.labels.started[eventType]}
+      </p>
+    );
   }
 
+  /*
+   * Days are NOT zero padded. The clock fields are, because ٠٨ is how a clock is read;
+   * a padded day count is not, and ٠٥ يوم sets the Arabic-Indic zero as a low dot that
+   * a guest reads as punctuation.
+   */
   const cells = [
-    { value: Math.floor(totalSeconds / 86400), label: copy.labels.countdownDays },
-    { value: Math.floor((totalSeconds % 86400) / 3600), label: copy.labels.countdownHours },
-    { value: Math.floor((totalSeconds % 3600) / 60), label: copy.labels.countdownMinutes },
-    { value: totalSeconds % 60, label: copy.labels.countdownSeconds },
+    { value: String(Math.floor(totalSeconds / 86400)), label: copy.labels.countdownDays },
+    {
+      value: String(Math.floor((totalSeconds % 86400) / 3600)).padStart(2, '0'),
+      label: copy.labels.countdownHours,
+    },
+    {
+      value: String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0'),
+      label: copy.labels.countdownMinutes,
+    },
+    { value: String(totalSeconds % 60).padStart(2, '0'), label: copy.labels.countdownSeconds },
   ];
 
   return (
@@ -96,13 +131,13 @@ function NetigaCountdown({
         <div key={cell.label} className="flex flex-col items-center">
           <span
             className={cn(
-              'font-inv-display font-black leading-none text-inv-accent',
-              large ? 'text-4xl' : 'text-2xl',
+              'numeric font-inv-display font-black leading-none text-inv-accent',
+              large ? 'text-[2.25rem]' : 'text-2xl',
             )}
           >
-            {formatNetigaDigits(cell.value.toString().padStart(2, '0'), lang)}
+            {formatNetigaDigits(cell.value, lang)}
           </span>
-          <span className="mt-1 font-inv-body text-[10px] text-inv-muted leading-tight">
+          <span className="mt-2 font-inv-body text-xs leading-normal text-inv-muted">
             {cell.label}
           </span>
         </div>
@@ -117,9 +152,24 @@ export function NetigaInvitation({ view, copy }: { view: InvitationView; copy: I
 
   const date = formatEventDateParts(view.eventDate, view.lang);
   const time = formatEventTimeParts(view.eventTime, view.lang);
+  const digits = (value: string) => formatNetigaDigits(value, view.lang);
+
+  /*
+   * Two counters, advanced as the leaves are created.
+   *
+   * `slot` counts every leaf and only drives the alternating tilt. `numbered` is what
+   * the guest sees in the band, and it skips the verse leaf, so the visible sequence
+   * has no hole in it whether or not this card has a verse, a photo, a message or a
+   * line from the couple. React creates elements in source order within one render
+   * pass, so both are deterministic and match between server and client.
+   */
+  let slot = 0;
+  let numbered = 0;
+  const nextSlot = () => (slot += 1);
+  const nextNumber = () => digits(String((numbered += 1)));
 
   return (
-    <div className="relative min-h-dvh overflow-hidden bg-inv-bg px-4 py-12 text-inv-ink flex flex-col items-center">
+    <div className="relative flex min-h-dvh flex-col items-center overflow-hidden bg-inv-bg px-4 pt-6 pb-10 text-inv-ink">
       {/* Background board texture */}
       <div
         className="pointer-events-none absolute inset-0 opacity-80"
@@ -128,103 +178,102 @@ export function NetigaInvitation({ view, copy }: { view: InvitationView; copy: I
       />
 
       {/* Top hanger board nail hole */}
-      <div className="relative z-10 mb-4 flex flex-col items-center">
+      <div className="relative z-10 mb-6 flex flex-col items-center">
         <div className="h-4 w-4 rounded-full border-2 border-inv-line/80 bg-inv-ink/20 shadow-inner" />
         <div className="h-2 w-0.5 bg-inv-line/60" />
       </div>
 
-      <div className="relative z-10 w-full max-w-[342px] flex flex-col items-center">
-        {/* LEAF 1: NAMES */}
+      <div className={cn('relative z-10', LEAF_RHYTHM)}>
+        {/* LEAF 1: NAMES. The band carries the occasion — the masthead a guest reads. */}
         <Leaf
-          index={1}
-          headerTitle={view.lang === 'AR' ? 'الأسماء' : 'The Couple'}
-          secondaryNumber={formatNetigaDigits('01', view.lang)}
+          slot={nextSlot()}
+          indexLabel={nextNumber()}
+          headerTitle={copy.eventName[view.eventType]}
         >
-          <div className="text-center pt-2 pb-1">
+          <div className="text-center">
             {copy.familiesPrefix ? (
-              <p className="mb-2 font-inv-body text-[11px] tracking-wide text-inv-muted">
+              <p className="mb-4 font-inv-body text-[0.8125rem] leading-relaxed text-inv-muted">
                 {copy.familiesPrefix}
               </p>
             ) : null}
 
-            <h1 className="font-inv-display text-[2.5rem] font-bold leading-tight text-inv-ink text-balance">
+            <h1 className="font-inv-display text-[2.5rem] font-bold leading-[1.2] text-inv-ink text-balance">
               <span className="block">{view.name1}</span>
-              <span className="my-1 block text-lg text-inv-accent font-normal" aria-hidden="true">
+              <span className="my-1 block text-xl font-normal text-inv-accent" aria-hidden="true">
                 {copy.nameSeparator}
               </span>
               <span className="block">{view.name2}</span>
             </h1>
-
-            <p className="mt-3 font-inv-body text-xs text-inv-muted tracking-wider uppercase">
-              {copy.eventName[view.eventType]}
-            </p>
           </div>
         </Leaf>
 
-        {/* LEAF 4: INVITATION LINE */}
-        <Leaf index={2} secondaryNumber={formatNetigaDigits('02', view.lang)}>
-          <p className="text-center font-inv-body text-[15px] leading-relaxed text-inv-ink text-pretty">
+        {/* LEAF 2: INVITATION LINE */}
+        <Leaf slot={nextSlot()} indexLabel={nextNumber()}>
+          <p className="text-center font-inv-body text-[0.9375rem] leading-[1.9] text-inv-ink text-pretty">
             {copy.inviteLine[view.eventType]}
           </p>
         </Leaf>
 
-        {/* LEAF 2: BISMILLAH + VERSE (Dedicated UN-NUMBERED leaf, sacred text) */}
+        {/* LEAF 3: BISMILLAH + VERSE. The one leaf that is not dated furniture. */}
         {copy.bismillah && copy.verse ? (
-          <Leaf index={3}>
-            <div className="text-center py-2">
+          <Leaf slot={nextSlot()} bare>
+            <div className="text-center">
+              {/*
+                U+FDFD is around eleven times wider than its font size, so it is capped
+                against the viewport as well as set in rem — at 342px of leaf the plain
+                2.375rem the spec asks for is 200px wider than the measure.
+              */}
               <p
-                className="font-inv-verse text-2xl text-inv-accent"
+                className="font-inv-verse text-[length:min(1.4375rem,5.75vw)] leading-none text-inv-accent"
                 aria-label="بسم الله الرحمن الرحيم"
               >
                 {copy.bismillah}
               </p>
-              <p className="mt-4 font-inv-verse text-[1.0625rem] leading-[2.1] text-inv-ink text-pretty">
+
+              <p className="mt-6 font-inv-verse text-[1.0625rem] leading-[2.1] text-inv-ink text-pretty">
                 {copy.verse}
               </p>
+
               {copy.verseSource ? (
-                <p className="mt-2 font-inv-body text-xs text-inv-muted">
-                  {copy.verseSource}
+                <p className="mt-4 font-inv-body text-xs leading-relaxed text-inv-muted">
+                  {digits(copy.verseSource)}
                 </p>
               ) : null}
             </div>
           </Leaf>
         ) : null}
 
-        {/* LEAF 3: POETRY */}
-
-
-        {/* LEAF 5: ROLES */}
+        {/* LEAF 4: ROLES. Two ruled rows, not two columns — a column pair at this
+            measure pushes both names to the outer edges and leaves the leaf hollow. */}
         <Leaf
-          index={5}
+          slot={nextSlot()}
+          indexLabel={nextNumber()}
           headerTitle={view.lang === 'AR' ? 'العريس والعروس' : 'The Wedding Party'}
-          secondaryNumber={formatNetigaDigits('05', view.lang)}
         >
-          <div className="grid grid-cols-2 gap-4 text-center py-1">
-            <div>
-              <span className="font-inv-body text-[11px] text-inv-muted uppercase tracking-wider">
+          <div className="text-center">
+            <div className="pb-4">
+              <p className="font-inv-body text-[0.8125rem] leading-relaxed text-inv-muted">
                 {copy.roleGroom}
-              </span>
-              <p className="mt-1 font-inv-body text-base font-bold text-inv-ink">
+              </p>
+              <p className="mt-1 font-inv-body text-xl font-semibold leading-snug text-inv-ink text-balance">
                 {view.name1}
               </p>
             </div>
-            <div>
-              <span className="font-inv-body text-[11px] text-inv-muted uppercase tracking-wider">
+
+            <div className="border-t border-inv-line pt-4">
+              <p className="font-inv-body text-[0.8125rem] leading-relaxed text-inv-muted">
                 {copy.roleBride}
-              </span>
-              <p className="mt-1 font-inv-body text-base font-bold text-inv-ink">
+              </p>
+              <p className="mt-1 font-inv-body text-xl font-semibold leading-snug text-inv-ink text-balance">
                 {view.name2}
               </p>
             </div>
           </div>
         </Leaf>
 
-        {/* LEAF 6: PHOTO or SECOND DATE LEAF (COUNTDOWN FLAGSHIP) */}
+        {/* LEAF 5: PHOTO, or the loud second date leaf when there is none. */}
         {hasPhoto ? (
-          <Leaf
-            index={6}
-            secondaryNumber={formatNetigaDigits('06', view.lang)}
-          >
+          <Leaf slot={nextSlot()} indexLabel={nextNumber()}>
             <div className="relative mx-auto max-w-[240px] rotate-2 rounded border border-inv-line/40 bg-white p-2.5 shadow-sm">
               {/* Corner photo mounting triangles */}
               <span className="absolute -top-1 -start-1 h-4 w-4 border-t-2 border-s-2 border-inv-accent-soft" />
@@ -241,55 +290,55 @@ export function NetigaInvitation({ view, copy }: { view: InvitationView; copy: I
             </div>
           </Leaf>
         ) : (
-          /* NO PHOTO: Second date leaf with loud countdown */
           <Leaf
-            index={7}
+            slot={nextSlot()}
+            indexLabel={nextNumber()}
             headerTitle={copy.labels.countdownHeading[view.eventType]}
-            secondaryNumber={formatNetigaDigits('07', view.lang)}
           >
-            <div className="py-2">
-              <NetigaCountdown targetMs={view.eventInstantMs} copy={copy} eventType={view.eventType} lang={view.lang} large />
-            </div>
+            <NetigaCountdown
+              targetMs={view.eventInstantMs}
+              copy={copy}
+              eventType={view.eventType}
+              lang={view.lang}
+              large
+            />
           </Leaf>
         )}
 
-        {/* LEAF 7: THE HERO DATE LEAF */}
-        <Leaf
-          index={8}
-          headerTitle={date.weekday}
-          secondaryNumber={formatNetigaDigits('08', view.lang)}
-        >
-          <div className="flex flex-col items-center justify-center py-2 text-center">
-            {/* 180px day numeral */}
-            <span className="font-inv-display text-[9.5rem] font-black leading-none text-inv-accent select-none">
-              {formatNetigaDigits(date.day, view.lang)}
+        {/* LEAF 6: THE HERO DATE LEAF. The only place besides the bands that is red. */}
+        <Leaf slot={nextSlot()} indexLabel={nextNumber()} headerTitle={date.weekday}>
+          <div className="flex flex-col items-center text-center">
+            <span className="numeric font-inv-display text-[9.5rem] font-black leading-none text-inv-accent select-none">
+              {digits(date.day)}
             </span>
 
-            <p className="mt-2 font-inv-display text-lg font-bold text-inv-ink">
-              {date.month} <span>{formatNetigaDigits(date.year, view.lang)}</span>
+            {/* The step down off the hero: 152px, then 28, then 20, then the 13px band. */}
+            <p className="mt-3 font-inv-display text-[1.75rem] font-bold leading-snug text-inv-ink">
+              {date.month}{' '}
+              <span className="numeric text-xl font-normal text-inv-muted">
+                {digits(date.year)}
+              </span>
             </p>
           </div>
         </Leaf>
 
-        {/* LEAF 8: TIME */}
-        <Leaf index={9} secondaryNumber={formatNetigaDigits('09', view.lang)}>
-          <div className="flex items-center justify-center gap-2 text-center font-inv-body text-base text-inv-ink">
-            <span className="text-xs text-inv-muted">{copy.labels.time}:</span>
-            <span className="font-semibold">
-              {formatNetigaDigits(time.clock, view.lang)}
-            </span>
-            <span>{time.period}</span>
+        {/* LEAF 7: TIME. The label lives in the band, which leaves the leaf to set the
+            clock at a size worth a page of the pad. */}
+        <Leaf slot={nextSlot()} indexLabel={nextNumber()} headerTitle={copy.labels.time}>
+          <div className="text-center">
+            <p className="numeric font-inv-display text-[2rem] font-bold leading-none text-inv-ink">
+              {digits(time.clock)}
+            </p>
+            <p className="mt-2 font-inv-body text-[0.9375rem] leading-relaxed text-inv-muted">
+              {time.period}
+            </p>
           </div>
         </Leaf>
 
-        {/* LEAF 9: VENUE */}
-        <Leaf
-          index={10}
-          headerTitle={copy.labels.venue}
-          secondaryNumber={formatNetigaDigits('10', view.lang)}
-        >
-          <div className="text-center py-1">
-            <p className="font-inv-body text-base font-semibold text-inv-ink text-balance">
+        {/* LEAF 8: VENUE */}
+        <Leaf slot={nextSlot()} indexLabel={nextNumber()} headerTitle={copy.labels.venue}>
+          <div className="text-center">
+            <p className="font-inv-body text-xl font-semibold leading-snug text-inv-ink text-balance">
               {view.venueName}
             </p>
 
@@ -298,9 +347,9 @@ export function NetigaInvitation({ view, copy }: { view: InvitationView; copy: I
                 href={view.venueMapUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="tap-target press mt-4 inline-flex w-full items-center justify-center gap-2 rounded bg-inv-accent px-4 py-2.5 font-inv-body text-xs font-semibold text-white shadow-xs transition hover:opacity-90 active:scale-95"
+                className="tap-target press mt-5 inline-flex w-full items-center justify-center gap-2 rounded-sm bg-inv-accent px-4 py-3 font-inv-body text-[0.8125rem] font-semibold text-white shadow-xs hover:opacity-90"
               >
-                <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4 shrink-0" aria-hidden="true">
                   <path
                     d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11Z"
                     stroke="currentColor"
@@ -314,45 +363,48 @@ export function NetigaInvitation({ view, copy }: { view: InvitationView; copy: I
           </div>
         </Leaf>
 
-        {/* LEAF 10: COUNTDOWN (rendered if photo was present above) */}
+        {/* LEAF 9: COUNTDOWN, when the photo took the loud leaf above. */}
         {hasPhoto ? (
           <Leaf
-            index={11}
+            slot={nextSlot()}
+            indexLabel={nextNumber()}
             headerTitle={copy.labels.countdownHeading[view.eventType]}
-            secondaryNumber={formatNetigaDigits('11', view.lang)}
           >
-            <div className="py-2">
-              <NetigaCountdown targetMs={view.eventInstantMs} copy={copy} eventType={view.eventType} lang={view.lang} />
-            </div>
+            <NetigaCountdown
+              targetMs={view.eventInstantMs}
+              copy={copy}
+              eventType={view.eventType}
+              lang={view.lang}
+            />
           </Leaf>
         ) : null}
 
-        {/* LEAF 11: MESSAGE */}
+        {/* LEAF 10: MESSAGE */}
         {view.customMessage ? (
-          <Leaf index={12} secondaryNumber={formatNetigaDigits('12', view.lang)}>
-            <p className="text-center font-inv-body text-sm leading-relaxed text-inv-muted text-pretty">
+          <Leaf slot={nextSlot()} indexLabel={nextNumber()}>
+            <p className="text-center font-inv-body text-[0.9375rem] leading-[1.9] text-inv-muted text-pretty">
               {view.customMessage}
             </p>
           </Leaf>
         ) : null}
 
-        {/* LEAF 12: FOOTER */}
-        {/* Empty when the couple chose no line. */}
+        {/* LEAF 11: THE COUPLE'S OWN LINE. Empty when they chose none. */}
         {copy.poetry ? (
-          <Leaf index={4} secondaryNumber={formatNetigaDigits('04', view.lang)}>
+          <Leaf slot={nextSlot()} indexLabel={nextNumber()}>
             <p className="text-center font-inv-body text-base leading-[1.9] text-inv-muted text-pretty">
               {copy.poetry}
             </p>
           </Leaf>
         ) : null}
 
-        <Leaf index={13}>
+        {/* LEAF 12: FOOTER. The credit is a link, so it is a thumb-sized one. */}
+        <Leaf slot={nextSlot()} indexLabel={nextNumber()}>
           <div className="text-center">
             <a
               href={SITE_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="font-inv-body text-xs text-inv-muted transition hover:text-inv-accent"
+              className="tap-target press inline-flex items-center justify-center rounded-sm px-4 font-inv-body text-xs leading-relaxed text-inv-muted hover:text-inv-accent"
             >
               {view.lang === 'AR' ? 'صنع بواسطة qlty.events' : 'Made with qlty.events'}
             </a>

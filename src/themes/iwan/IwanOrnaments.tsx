@@ -114,17 +114,26 @@ function band(b: Band) {
 
   const opening = `${intradosWithJambs} Z`;
 
-  /** The ablaq half of the course: every other stone filled, keystone included. */
+  /**
+   * Both halves of the ablaq course, and both of them are stone.
+   *
+   * `stones` is the dark course, `stonesAlt` the light one. They used to be one array
+   * and the odd voussoirs were left unfilled, which is what a mason would call a hole:
+   * at phone size an unfilled trapezoid between two filled ones stops reading as the
+   * lighter stone and starts reading as a missing fill, so the arch head came out
+   * crenellated. Every stone is laid; two tones, not one tone and a gap.
+   */
   const stones: string[] = [];
-  for (let i = 0; i < b.count; i += 2) {
+  const stonesAlt: string[] = [];
+  for (let i = 0; i < b.count; i += 1) {
     const t0 = a0 + i * step;
     const t1 = t0 + step;
-    stones.push(
+    const d =
       `M ${xy(inn(t0))} L ${xy(out(t0))}` +
-        ` A ${f(b.rxo)} ${f(b.ryo)} 0 0 0 ${xy(out(t1))}` +
-        ` L ${xy(inn(t1))}` +
-        ` A ${f(b.rxi)} ${f(b.ryi)} 0 0 1 ${xy(inn(t0))} Z`,
-    );
+      ` A ${f(b.rxo)} ${f(b.ryo)} 0 0 0 ${xy(out(t1))}` +
+      ` L ${xy(inn(t1))}` +
+      ` A ${f(b.rxi)} ${f(b.ryi)} 0 0 1 ${xy(inn(t0))} Z`;
+    (i % 2 === 0 ? stones : stonesAlt).push(d);
   }
 
   const joints: string[] = [];
@@ -139,7 +148,18 @@ function band(b: Band) {
     `M ${xy(inn(a1))} L ${xy(out(a1))}`,
   ];
 
-  return { extrados, intradosArc, intradosWithJambs, opening, stones, joints, imposts, out, inn };
+  return {
+    extrados,
+    intradosArc,
+    intradosWithJambs,
+    opening,
+    stones,
+    stonesAlt,
+    joints,
+    imposts,
+    out,
+    inn,
+  };
 }
 
 /* -------------------------------------------------------------------------------- */
@@ -237,9 +257,13 @@ export function IwanCrown({
     >
       {filled ? <path d={crown.opening} className="fill-inv-panel" /> : null}
 
-      {/* Ablaq: alternate voussoirs are laid in the darker stone. Never a text ground. */}
+      {/* Ablaq: alternate voussoirs are laid in the darker stone, the rest in the
+          lighter one. Never a text ground. */}
       {crown.stones.map((d) => (
         <path key={d} d={d} fill="currentColor" opacity="0.18" />
+      ))}
+      {crown.stonesAlt.map((d) => (
+        <path key={d} d={d} fill="currentColor" opacity="0.07" />
       ))}
 
       <path d={crown.extrados} stroke="currentColor" strokeWidth="2" />
@@ -501,6 +525,29 @@ export function IwanLegs({ className, style }: { className?: string; style?: CSS
         strokeDasharray={100}
         style={{ strokeDashoffset: 100 }}
       >
+        {/*
+          The wall as built, under the wall as drawn.
+
+          The stroke above it is bound to scroll, which means that for a reader sitting
+          at the top of the card the legs stop partway down the page — and they stopped,
+          every time, at the head of the verse field, because that is a full width change
+          of ground and the eye reads the two edges as one event. A frame that ends where
+          the layout changes is not a frame; it is a rule that broke. So the whole wall is
+          laid first at a quarter strength, and the accent draws itself down over it as
+          you descend. The measure is continuous from the crown to the plinth at every
+          scroll position, and the signature still belongs to the reader's own thumb.
+
+          `strokeDasharray` is set on the svg and inherits, so this path has to turn it
+          off explicitly or it would be dashed along with its twin.
+        */}
+        <path
+          d={legsPath(geometry)}
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeDasharray="none"
+          opacity="0.24"
+        />
+
         <path
           ref={pathRef}
           d={legsPath(geometry)}
@@ -531,17 +578,28 @@ const STUB = [
  *
  * This theme has no rules and no hairlines — the arch is the only structure on the page —
  * so a change of subject is marked by three stones laid across the measure instead.
+ *
+ * `keystone` is the same mark with the two springers taken away, and it exists so that
+ * the end of the card is not the fourth identical copy of the third. Three stones say
+ * "a new subject"; the keystone alone says "the last of them", and it is the only place
+ * on the card it is used — directly above the plinth, where the two legs meet anyway.
  */
-export function IwanVoussoirStub({ className }: { className?: string }) {
+export function IwanVoussoirStub({
+  className,
+  keystone = false,
+}: {
+  className?: string;
+  keystone?: boolean;
+}) {
   return (
     <div className={cn('flex justify-center', className)} aria-hidden="true">
       <svg
-        viewBox="0 0 96 24"
+        viewBox={keystone ? '29 0 38 24' : '0 0 96 24'}
         fill="none"
         role="presentation"
-        className="pointer-events-none h-6 w-24 text-inv-accent"
+        className={cn('pointer-events-none h-6 text-inv-accent', keystone ? 'w-[38px]' : 'w-24')}
       >
-        {STUB.map((d, i) => (
+        {(keystone ? [STUB[1]] : STUB).map((d, i) => (
           <path
             key={d}
             d={d}
@@ -626,11 +684,23 @@ const DOME_CELLS = [
  * This is the strongest object in the theme and it exists only on the card without a
  * photo, which is the commoner card. That inverts the usual apology: the couple who did
  * not upload a picture get the better page, not a gap where one was meant to go.
+ *
+ * Two things it does not do, and both are corrections.
+ *
+ * It carries no ablaq ground. Fourteen pixel courses behind an eleven cell dome are a
+ * second horizontal rhythm laid across the first, and at phone density their edges land
+ * on fractional device pixels: what came out was not masonry, it was banding, and it read
+ * as a failed gradient. The cells alternate shaded and plain already — that IS the ablaq
+ * at this scale, and drawing it twice is what broke it.
+ *
+ * And it stands at the same width as the photograph rather than at 190px. The window in
+ * the wall is one opening with two possible contents, so it cannot change size depending
+ * on which one it got; at 190 inside a 275px measure it also left a band of bare ground
+ * on both sides that no other block on the card has.
  */
 export function IwanHalfDome({ className }: { className?: string }) {
   return (
-    <div className={cn('relative mx-auto w-full max-w-[190px] overflow-hidden bg-inv-panel', className)}>
-      <AblaqCourses />
+    <div className={cn('relative mx-auto w-full max-w-[272px] overflow-hidden bg-inv-panel', className)}>
       <svg
         viewBox={`0 0 ${DOME_VB.w} ${DOME_VB.h}`}
         fill="none"
@@ -738,8 +808,13 @@ export function IwanPhotoArch({
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 h-full w-full text-inv-accent"
         >
+          {/* Both courses, for the reason the crown lays both: an unfilled voussoir at
+              this size is a hole in the arch head, not the lighter stone. */}
           {photoBand.stones.map((d) => (
             <path key={d} d={d} fill="currentColor" opacity="0.18" />
+          ))}
+          {photoBand.stonesAlt.map((d) => (
+            <path key={d} d={d} fill="currentColor" opacity="0.07" />
           ))}
           <path d={photoBand.extrados} stroke="currentColor" strokeWidth="2" />
           <path d={photoBand.intradosWithJambs} stroke="currentColor" strokeWidth="2" />

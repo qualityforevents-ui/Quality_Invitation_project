@@ -1,5 +1,6 @@
 'use client';
 
+import { useId } from 'react';
 import { cn } from '@/lib/cn';
 
 /**
@@ -13,16 +14,22 @@ import { cn } from '@/lib/cn';
 /**
  * CONNECTIVE: Running stitch seam between two cloths.
  * A 3px dashed stroke with round caps in cream.
+ *
+ * Drawn in real pixels rather than through a `viewBox` with `preserveAspectRatio="none"`.
+ * That box was 400 units wide and 4 tall stretched onto a 360-to-430px element three
+ * pixels high, which scaled the stitch by a different factor on each axis: the dash
+ * pitch drifted with the width of the phone and the 3px thread came out at 2.25. A seam
+ * is the theme's one connective mark and it has to be the same stitch on every device.
  */
 export function RunningStitchSeam({ className }: { className?: string }) {
   return (
     <div className={cn('relative h-[3px] w-full overflow-hidden', className)} aria-hidden="true">
-      <svg viewBox="0 0 400 4" preserveAspectRatio="none" className="h-full w-full">
+      <svg className="h-full w-full">
         <line
           x1="0"
-          y1="2"
-          x2="400"
-          y2="2"
+          y1="1.5"
+          x2="100%"
+          y2="1.5"
           stroke="var(--inv-ink)"
           strokeWidth="3"
           strokeDasharray="8 6"
@@ -35,6 +42,17 @@ export function RunningStitchSeam({ className }: { className?: string }) {
 
 /**
  * Stepped merlon (شرافة) border for field edges.
+ *
+ * A TILE, repeated every 32px down the edge of the cloth. It used to be a `viewBox` of
+ * 0 0 16 32 with `preserveAspectRatio="none"`, which meant the one stepped shape in the
+ * pattern was stretched over the entire height of the field: a 400px-tall staircase with
+ * three steps in it, which is why the tabs read as clipped rectangles rather than as
+ * appliqué. With no viewBox the SVG user unit is the CSS pixel, so the pattern tiles at
+ * the size it was drawn at and the battlement repeats the way cut cloth does.
+ *
+ * `side` is start/end, not physical: "left" is the inline start, which is the right hand
+ * edge on the Arabic card. The end copy is mirrored so the two edges of a field are a
+ * pair facing each other rather than the same profile twice.
  */
 export function SteppedMerlonBorder({
   side = 'left',
@@ -43,6 +61,10 @@ export function SteppedMerlonBorder({
   side?: 'left' | 'right';
   className?: string;
 }) {
+  /* One <pattern> per instance, and a field carries two. Sanitised because React's
+     generated ids are not all valid inside a url(#…) reference. */
+  const patternId = `merlon-${useId().replace(/[^a-zA-Z0-9]/g, '')}`;
+
   return (
     <div
       className={cn(
@@ -50,20 +72,23 @@ export function SteppedMerlonBorder({
         side === 'left' ? 'start-0' : 'end-0',
         className,
       )}
+      style={side === 'left' ? undefined : { transform: 'scaleX(-1)' }}
       aria-hidden="true"
     >
-      <svg
-        viewBox="0 0 16 32"
-        preserveAspectRatio="none"
-        className="h-full w-full text-inv-accent/40"
-      >
-        <pattern id={`merlon-${side}`} width="16" height="32" patternUnits="userSpaceOnUse">
-          <path
-            d="M 0 0 L 16 0 L 16 8 L 10 8 L 10 16 L 4 16 L 4 24 L 0 24 Z"
-            fill="currentColor"
-          />
-        </pattern>
-        <rect width="16" height="100%" fill={`url(#merlon-${side})`} />
+      <svg className="h-full w-full text-inv-accent/40">
+        <defs>
+          <pattern id={patternId} width="16" height="32" patternUnits="userSpaceOnUse">
+            {/* A stepped pyramid anchored on the cloth edge, symmetric about the middle
+                of the tile, so the repeat reads as a row of merlons standing on a 6px
+                selvedge. The earlier profile was a one-way staircase, which at a real
+                repeat pitch would read as a sawtooth rather than as a battlement. */}
+            <path
+              d="M 0 0 L 6 0 L 6 6 L 11 6 L 11 12 L 16 12 L 16 20 L 11 20 L 11 26 L 6 26 L 6 32 L 0 32 Z"
+              fill="currentColor"
+            />
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill={`url(#${patternId})`} />
       </svg>
     </div>
   );

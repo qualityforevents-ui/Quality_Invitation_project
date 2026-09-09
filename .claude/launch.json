@@ -2,28 +2,10 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "qlty-attach",
-      "url": "http://localhost:3000"
-    },
-    {
       "name": "qlty-dev",
       "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "dev"
-      ],
-      "port": 3000,
-      "autoPort": true
-    },
-    {
-      "name": "qlty-prod",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "start"
-      ],
-      "port": 3000,
-      "autoPort": true
+      "runtimeArgs": ["run", "dev"],
+      "port": 3000
     }
   ]
 }

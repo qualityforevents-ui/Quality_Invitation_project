@@ -5,8 +5,10 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 import {
   JasmineBlossom,
   JasmineBud,
+  JasmineTendril,
   LEAF_TILE,
   LeafNode,
+  LeafSprig,
   OpenFlower,
   STEM_SEGMENTS,
   STEM_VIEWBOX,
@@ -55,37 +57,98 @@ const GUTTER = 'ps-14'; // 56px — the vine's margin.
 const MEASURE = 'max-w-[306px]'; // The text column, start-aligned inside it.
 
 /**
- * Where each growth sits on the stem, as a fraction of the scroll rather than a pixel.
+ * The names, and the names only, are allowed a wider box than the measure — but only at
+ * the LEADING edge.
  *
- * Absolute positions drift the moment a couple writes a long custom message or a name
- * wraps to a third line: the content below the change moves and the ornament marking it
- * does not, so every node ends up marking the wrong block. Fractions of the container's
- * own height cannot drift, because the container is what grew.
+ * 306 + 32 with a 32px negative start margin, so the hero reaches 32px back into the
+ * gutter and its TRAILING edge lands on exactly the same pixel as every paragraph below
+ * it. Before this it was `-ms-2 max-w-[352px]`, which let the block run past the column's
+ * own end padding: the names finished nearer the edge of the phone than any other line on
+ * the card, and two different outer margins on one page read as a mistake rather than as
+ * a composed overhang. The overhang is the point; the ragged outer edge was not.
  */
-const GROWTH = {
-  names: 0.04,
-  verse: 0.17,
-  poetry: 0.29,
-  roles: 0.4,
-  photo: 0.52,
-  date: 0.63,
-  venue: 0.73,
-  countdown: 0.82,
-  footer: 0.95,
-} as const;
+const HERO_MEASURE = '-ms-8 max-w-[338px]';
+
+/**
+ * THE VERTICAL RHYTHM. One unit of 40px, taken once, twice or three times, and no other
+ * gap anywhere on the card.
+ *
+ * Every gap here used to be its own decision — 40, 56 and 64 in three places each, with
+ * a 240px band of nothing in the middle of it — which is a collection of numbers rather
+ * than a beat. They are literal classes and are handed to `Block`, whose `cn` is
+ * tailwind-merge, so a passed step replaces the default rather than fighting it.
+ *
+ *   STEP_SM   40px  a block bound to the one directly above it — the invitation line
+ *                   belongs to the names and is set close enough to say so.
+ *   STEP      80px  one section to the next. The default, and most of the card.
+ *   STEP_LG  120px  the larger breath: opening the verse, and closing on the credit.
+ *
+ * The gaps are wide for a phone and that is the point: they are not empty. The vine runs
+ * through every one of them and puts a growth in most of them, so what reads as space in
+ * the column is the margin doing its work. This is also where the card's length comes
+ * from — closing the dead band gave 108px back and the rhythm spends it, which is the
+ * right way round. Space between sections is rhythm; space inside a section is a hole.
+ */
+const STEP_SM = 'mt-10';
+const STEP = 'mt-20';
+const STEP_LG = 'mt-30';
+
+/**
+ * THE TYPE SCALE. Six tiers, each about 1.3 times the one below it.
+ *
+ *   0.75rem   12  labels, verse source, countdown units, credit
+ *   1.0625rem 17  body copy — invitation line, verse, time, message
+ *   1.375rem  22  the sub-display tier: roles, venue, month and year, the separator
+ *   1.75rem   28  countdown numerals
+ *   2.875rem  46  the day numeral
+ *   3.5rem    56  the names
+ *
+ * The date block is what this scale was written for. It used to run an 11px weekday
+ * straight into a 64px numeral and then straight back down to a 16px month — a factor of
+ * six and then a factor of four, with nothing on either side of the numeral to step
+ * through, which is why a block holding three short facts read as broken. The numeral is
+ * still the largest thing below the names, but the month now sits on its baseline at the
+ * 22px tier, so the eye descends 46 → 22 → 17 → 12 instead of falling off a cliff.
+ *
+ * The only tier written as `text-*` shorthand is `text-xs`, which IS 0.75rem.
+ */
+
+/**
+ * WHERE EACH GROWTH SITS: on its own block, and not on a fraction of the scroll.
+ *
+ * The growths used to be laid out over the column as fractions — verse at 0.17, date at
+ * 0.63 — for a good reason, which was that absolute pixel offsets drift the moment a
+ * couple writes a long custom message and every node ends up marking the wrong block.
+ * The trouble is that a fraction only avoids that drift if the blocks happen to be
+ * evenly spread, and they are not: measured on the live card, every single mark sat
+ * between 70 and 170 pixels ABOVE the block it was supposed to be indexing, and the
+ * verse's leaf was level with the invitation line. An index that points at the wrong
+ * entry is worse than no index, and it drifts again on every content change — a photo
+ * alone moves everything below it by 228px, which is a tenth of the card.
+ *
+ * So each mark is now a child of the block it belongs to, positioned into the gutter
+ * beside it. That is the same guarantee the fractions were reaching for and a stronger
+ * one: a mark cannot drift away from a block it is inside. A long custom message pushes
+ * the block and its growth together, because they are the same element.
+ *
+ * See `Block`, which takes the mark and places it.
+ */
 
 /* ------------------------------------------------------------------- the vine */
 
 /**
- * One eighth of the stem, drawn as the viewport reaches it.
+ * One fourteenth of the stem, drawn as the viewport reaches it.
  *
- * Its own component purely so it can own a hook: eight `useTransform` calls cannot be
- * made in a loop, and eight of them written out by hand in the parent would be eight
- * chances to mistype an index.
+ * Its own component purely so it can own a hook: fourteen `useTransform` calls cannot be
+ * made in a loop, and fourteen of them written out by hand in the parent would be
+ * fourteen chances to mistype an index.
  *
  * The input range starts slightly before the segment's own share of the scroll and ends
  * slightly after, so the drawing runs a little ahead of the reader — the vine is always
- * growing into space you have not read yet, never catching up to you.
+ * growing into space you have not read yet, never catching up to you. The ranges overlap
+ * by design: segment n+1 begins before segment n has finished, so the drawn part of the
+ * vine is one unbroken run at every scroll position rather than a chain that can show
+ * daylight between its links.
  */
 function StemSegment({
   index,
@@ -98,7 +161,7 @@ function StemSegment({
 }) {
   const start = index / STEM_SEGMENTS.length;
   const end = (index + 1) / STEM_SEGMENTS.length;
-  const offset = useTransform(progress, [start - 0.07, end - 0.02], [1, 0], { clamp: true });
+  const offset = useTransform(progress, [start - 0.05, end - 0.01], [1, 0], { clamp: true });
 
   return (
     <motion.path
@@ -112,43 +175,6 @@ function StemSegment({
       // Reduced motion means the finished state, not a frozen half-drawn one.
       style={{ strokeDashoffset: reduced ? 0 : offset }}
     />
-  );
-}
-
-/**
- * A growth on the stem, appearing as the vine reaches it.
- *
- * The opacity is a step rather than a tween — the node is invisible until the stroke
- * passes it and then it is simply there. Seven nodes, one style change each, is a
- * different order of cost from seven things easing continuously for the length of the
- * scroll.
- */
-function Growth({
-  at,
-  progress,
-  reduced,
-  className,
-  children,
-}: {
-  at: number;
-  progress: MotionValue<number>;
-  reduced: boolean;
-  className?: string;
-  children: ReactNode;
-}) {
-  const opacity = useTransform(progress, [at - 0.03, at], [0, 1], { clamp: true });
-
-  return (
-    <motion.div
-      // Positioned physically from the top and logically from the start edge: the vine
-      // must move to the other margin under RTL, but "how far down the page" is not a
-      // direction.
-      className={cn('pointer-events-none absolute start-0 rtl:-scale-x-100', className)}
-      style={{ top: `${at * 100}%`, opacity: reduced ? 1 : opacity }}
-      aria-hidden="true"
-    >
-      {children}
-    </motion.div>
   );
 }
 
@@ -203,7 +229,11 @@ function HadiqaCountdown({ view, copy }: { view: InvitationView; copy: Invitatio
   const hasPassed = nowMs !== null && view.eventInstantMs - nowMs <= 0;
 
   if (hasPassed) {
-    return <p className="font-inv-display text-2xl text-inv-accent">{copy.labels.started[view.eventType]}</p>;
+    return (
+      <p className="font-inv-display text-[1.375rem] text-inv-accent">
+        {copy.labels.started[view.eventType]}
+      </p>
+    );
   }
 
   const cells = [
@@ -215,17 +245,20 @@ function HadiqaCountdown({ view, copy }: { view: InvitationView; copy: Invitatio
 
   return (
     <div>
-      <p className="font-inv-body text-sm text-inv-muted">{copy.labels.countdownHeading[view.eventType]}</p>
+      {/* Opened by the same accent label as every other block, rather than by a 14px
+          muted line that belonged to no tier. */}
+      <Label>{copy.labels.countdownHeading[view.eventType]}</Label>
 
-      <div className="mt-4 flex gap-6">
+      {/* gap-5 rather than gap-6: four cells and their unit words have to fit the 284px
+          measure a 360px Android leaves, and "minutes" on an English card is the widest
+          thing in the row. */}
+      <div className="mt-4 flex gap-5">
         {cells.map((cell) => (
           <div key={cell.label} className="text-start">
-            <span className="numeric block font-inv-body text-[2rem] leading-none font-semibold text-inv-ink">
+            <span className="numeric block font-inv-body text-[1.75rem] leading-none font-semibold text-inv-ink">
               {cell.value.toString().padStart(2, '0')}
             </span>
-            <span className="mt-1.5 block font-inv-body text-[0.625rem] text-inv-muted">
-              {cell.label}
-            </span>
+            <span className="mt-2 block font-inv-body text-xs text-inv-muted">{cell.label}</span>
           </div>
         ))}
       </div>
@@ -235,22 +268,51 @@ function HadiqaCountdown({ view, copy }: { view: InvitationView; copy: Invitatio
 
 /* -------------------------------------------------------------------- the card */
 
-/** A section of the column. No rule, no ornament — the break is out on the vine. */
-function Block({ children, className }: { children: ReactNode; className?: string }) {
+/**
+ * A section of the column, and its growth out on the vine.
+ *
+ * No rule and no ornament inside the column — the break happens in the margin, which is
+ * the whole reason this theme has not one horizontal divider in it.
+ *
+ * The mark is a CHILD of the block rather than a separately positioned node, so it is at
+ * the block's height by construction and there is no arithmetic left to get wrong. It is
+ * pulled a full gutter back with `-start-14` and centred in that 56px, which is where the
+ * stem's own centre line runs, so the growth reads as coming off the vine rather than
+ * floating in the margin beside it. It also inherits the block's own entrance: the
+ * section and the thing that indexes it arrive in one movement, which is what makes the
+ * pairing legible instead of decorative.
+ *
+ * The default gap is STEP; anything else passed in is one of the other two rhythm
+ * tokens. `cn` is tailwind-merge, so the passed class replaces the default outright.
+ */
+function Block({
+  children,
+  className,
+  mark,
+}: {
+  children: ReactNode;
+  className?: string;
+  mark?: ReactNode;
+}) {
   return (
-    <Reveal className={cn('mt-14', className)}>
-      <div className={cn(MEASURE, 'text-start')}>{children}</div>
+    <Reveal className={cn('relative', STEP, className)}>
+      {mark ? (
+        <div
+          className="pointer-events-none absolute -start-14 top-1 z-0 flex w-14 justify-center rtl:-scale-x-100"
+          aria-hidden="true"
+        >
+          {mark}
+        </div>
+      ) : null}
+
+      <div className={cn(MEASURE, 'relative z-10 text-start')}>{children}</div>
     </Reveal>
   );
 }
 
 /** The small label that opens a block. Word-spacing, never letter-spacing. */
 function Label({ children }: { children: ReactNode }) {
-  return (
-    <p className="font-inv-body text-[0.6875rem] text-inv-accent [word-spacing:0.3em]">
-      {children}
-    </p>
-  );
+  return <p className="font-inv-body text-xs text-inv-accent [word-spacing:0.3em]">{children}</p>;
 }
 
 export function HadiqaInvitation({ view, copy }: { view: InvitationView; copy: InvitationCopy }) {
@@ -276,7 +338,7 @@ export function HadiqaInvitation({ view, copy }: { view: InvitationView; copy: I
 
       <div
         ref={columnRef}
-        className={cn('@container relative mx-auto w-full max-w-[420px] pe-5 pt-16 pb-24', GUTTER)}
+        className={cn('@container relative mx-auto w-full max-w-[420px] pe-5 pt-24 pb-20', GUTTER)}
       >
         {/*
           The vine. One SVG spanning the whole column, stretched vertically.
@@ -299,43 +361,37 @@ export function HadiqaInvitation({ view, copy }: { view: InvitationView; copy: I
           className="pointer-events-none absolute inset-y-0 start-0 z-0 h-full w-14 text-inv-accent/70 rtl:-scale-x-100"
           aria-hidden="true"
         >
+          {/*
+            THE WHOLE STEM, ALWAYS THERE, AT A WHISPER. This is the layer that makes the
+            claim in the pitch true.
+
+            With only the scroll-drawn strokes above it, the vine on a real phone is a set
+            of separate marks: the part behind you is drawn, the part ahead of you is not,
+            and any capture of the card that is not one single instant — a scrolling
+            screenshot, a thumbnail, a print — shows a handful of disconnected fragments
+            with daylight between them, which is not a vine. Laid down first at a third of
+            the ink, the stem reads as one continuous line from the names to the footer at
+            every moment, and the scroll-drawn stroke on top of it stops being the thing
+            that makes the vine exist and becomes the thing that makes it grow. Same
+            gesture, and it can no longer fail.
+          */}
+          <g opacity="0.42">
+            {STEM_SEGMENTS.map((d, index) => (
+              <path
+                key={index}
+                d={d}
+                stroke="currentColor"
+                strokeWidth="1.4"
+                strokeLinecap="round"
+                vectorEffect="non-scaling-stroke"
+              />
+            ))}
+          </g>
+
           {STEM_SEGMENTS.map((_, index) => (
-            <StemSegment
-              key={index}
-              index={index}
-              progress={scrollYProgress}
-              reduced={reduced}
-            />
+            <StemSegment key={index} index={index} progress={scrollYProgress} reduced={reduced} />
           ))}
         </svg>
-
-        {/* The growths, each marking the block beside it. */}
-        <div className="pointer-events-none absolute inset-y-0 start-0 z-0 w-14" aria-hidden="true">
-          <Growth at={GROWTH.verse} progress={scrollYProgress} reduced={reduced} className="ms-3 h-[34px] w-[34px] text-inv-accent">
-            <LeafNode />
-          </Growth>
-          <Growth at={GROWTH.poetry} progress={scrollYProgress} reduced={reduced} className="ms-4 h-[30px] w-[30px] text-inv-accent-soft">
-            <LeafNode />
-          </Growth>
-          <Growth at={GROWTH.roles} progress={scrollYProgress} reduced={reduced} className="ms-2.5 h-[34px] w-[34px] text-inv-accent">
-            <LeafNode />
-          </Growth>
-          <Growth at={GROWTH.photo} progress={scrollYProgress} reduced={reduced} className="ms-3 h-[36px] w-[34px] text-inv-accent-soft">
-            <LeafNode />
-          </Growth>
-          <Growth at={GROWTH.date} progress={scrollYProgress} reduced={reduced} className="ms-4 h-[34px] w-[24px] text-inv-accent">
-            <JasmineBud />
-          </Growth>
-          <Growth at={GROWTH.venue} progress={scrollYProgress} reduced={reduced} className="ms-3 h-[30px] w-[30px] text-inv-accent-soft">
-            <LeafNode />
-          </Growth>
-          <Growth at={GROWTH.countdown} progress={scrollYProgress} reduced={reduced} className="ms-2 h-[38px] w-[38px] text-inv-accent">
-            <OpenFlower />
-          </Growth>
-          <Growth at={GROWTH.footer} progress={scrollYProgress} reduced={reduced} className="ms-4 h-[26px] w-[26px] text-inv-accent-soft">
-            <LeafNode />
-          </Growth>
-        </div>
 
         {/* ------------------------------------------------------------ 1. names */}
         {/*
@@ -347,7 +403,8 @@ export function HadiqaInvitation({ view, copy }: { view: InvitationView; copy: I
           hyphenating — both cost the theme its type ratio, which is most of what makes it
           look like a plate rather than a page. So the name block reaches into the margin
           and the stem passes behind the type. Everything else on the card respects the
-          measure exactly, which is what makes this one exception read as deliberate.
+          measure exactly, which is what makes this one exception read as deliberate — and
+          the reach is only at the leading edge: see HERO_MEASURE.
         */}
         <div className="relative z-10">
           <div
@@ -358,16 +415,14 @@ export function HadiqaInvitation({ view, copy }: { view: InvitationView; copy: I
           </div>
 
           <Reveal immediate>
-            <div className="relative -ms-2 max-w-[352px]">
+            <div className={cn('relative', HERO_MEASURE)}>
               {copy.familiesPrefix ? (
-                <p className="mb-4 font-inv-body text-[0.8125rem] text-inv-muted">
-                  {copy.familiesPrefix}
-                </p>
+                <p className="mb-4 font-inv-body text-xs text-inv-muted">{copy.familiesPrefix}</p>
               ) : null}
 
               <h1 className="font-inv-display text-inv-ink">
                 <span className="block text-[3.5rem] leading-[1.15] text-balance">{view.name1}</span>
-                <span className="my-1 block text-2xl text-inv-accent" aria-hidden="true">
+                <span className="my-1 block text-[1.375rem] text-inv-accent" aria-hidden="true">
                   {copy.nameSeparator}
                 </span>
                 <span className="block text-[3.5rem] leading-[1.15] text-balance">{view.name2}</span>
@@ -376,25 +431,36 @@ export function HadiqaInvitation({ view, copy }: { view: InvitationView; copy: I
           </Reveal>
         </div>
 
-          {/* --------------------------------------------------- 4. invitation line */}
-          <Block className="mt-10">
-            <p className="font-inv-body text-[1.0625rem] leading-relaxed text-inv-ink text-pretty">
+        <div className="relative z-10">
+          {/* --------------------------------------------------- 2. invitation line */}
+          {/* Bound to the names by the short step, and inside the same stacking context
+              as the rest of the column so it cannot be painted under the vine. */}
+          <Block className={STEP_SM}>
+            <p className="font-inv-body text-[1.0625rem] leading-[1.85] text-inv-ink text-pretty">
               {copy.inviteLine[view.eventType]}
             </p>
           </Block>
 
-        <div className="relative z-10">
-          {/* -------------------------------------------------- 2. bismillah and verse */}
+          {/* -------------------------------------------------- 3. bismillah and verse */}
           {copy.bismillah && copy.verse ? (
-            <Block className="mt-16">
+            <Block
+              className={STEP_LG}
+              mark={
+                <div className="h-[34px] w-[34px] text-inv-accent">
+                  <LeafNode />
+                </div>
+              }
+            >
               {/*
                 U+FDFD is a single ligature roughly eleven times wider than its font size,
                 so a size that suits ordinary text runs it off both edges of a phone. It
                 is sized against the column with a container query rather than against the
                 viewport, because the column stops growing and a desktop viewport does not.
+                8.5cqw rather than 9: at 360px the column's content box is 284px wide, and
+                nine gave the ligature the whole of it with nothing left for the margin.
               */}
               <p
-                className="font-inv-verse text-[length:min(2.375rem,9cqw)] leading-none text-inv-accent"
+                className="font-inv-verse text-[length:min(2.375rem,8.5cqw)] leading-none text-inv-accent"
                 aria-label="بسم الله الرحمن الرحيم"
               >
                 {copy.bismillah}
@@ -410,16 +476,19 @@ export function HadiqaInvitation({ view, copy }: { view: InvitationView; copy: I
             </Block>
           ) : null}
 
-          {/* ------------------------------------------------------------ 3. poetry */}
-
-
-          {/* ------------------------------------------------------------- 5. roles */}
+          {/* ------------------------------------------------------------- 4. roles */}
           {/*
             Two rows rather than two columns. A two-column grid halves the measure, and at
             306px that leaves 150px for a name — which is where "عبد الرحمن" starts
             breaking. Stacked, both names get the full column.
           */}
-          <Block>
+          <Block
+            mark={
+              <div className="h-[34px] w-[30px] text-inv-accent">
+                <JasmineTendril />
+              </div>
+            }
+          >
             <div className="flex flex-col gap-6">
               {[
                 { role: copy.roleGroom, name: view.name1 },
@@ -427,7 +496,7 @@ export function HadiqaInvitation({ view, copy }: { view: InvitationView; copy: I
               ].map((person) => (
                 <div key={person.role}>
                   <Label>{person.role}</Label>
-                  <p className="mt-1.5 font-inv-body text-[1.3125rem] leading-snug font-semibold text-inv-ink text-balance">
+                  <p className="mt-1.5 font-inv-body text-[1.375rem] leading-snug font-semibold text-inv-ink text-balance">
                     {person.name}
                   </p>
                 </div>
@@ -435,7 +504,7 @@ export function HadiqaInvitation({ view, copy }: { view: InvitationView; copy: I
             </div>
           </Block>
 
-          {/* ------------------------------------------------------------- 6. photo */}
+          {/* ------------------------------------------------------------- 5. photo */}
           {/*
             An arch: square at the bottom, a true semicircle on top. The one curved frame
             in the theme, and it is there because a garden gate is the right association
@@ -446,58 +515,96 @@ export function HadiqaInvitation({ view, copy }: { view: InvitationView; copy: I
             than a divider redrawn per section.
           */}
           {view.photoUrl ? (
-            <Reveal className="relative z-10 mt-14 -ms-14">
+            <Reveal className={cn('relative z-10 -ms-14', STEP)}>
               <PhotoArch view={view} />
             </Reveal>
           ) : (
             /*
-              NO PHOTO: the vine carries a longer leafed section filling the same 240px of
-              height, so the page rhythm is preserved exactly and nothing reflows.
+              NO PHOTO: the vine flowers where the photograph would have been.
+
+              The band keeps its height, because holding the page rhythm whether or not
+              there is a photograph is the point of it. What it no longer does is hold
+              nothing: it was 224px carrying a single 64px leaf pushed into a corner, so
+              roughly 170px of the tallest block on the card was empty, and it sat
+              directly above the date where the findings measured the hole. A band is not
+              rhythm if there is nothing in it. Now the vine flowers here — a 140px
+              blossom, the hero's mark at two thirds scale and full ink, reaching out of
+              the gutter the way the photograph would have.
             */
-            <div className="h-[240px] flex items-center justify-start ps-3" aria-hidden="true">
-              <div className="h-16 w-8 text-inv-accent-soft/80">
-                <LeafNode />
+            <div className={cn('relative -ms-14 flex h-[224px] items-center', STEP)} aria-hidden="true">
+              <div className="h-[140px] w-[140px] text-inv-accent/75 rtl:-scale-x-100">
+                <JasmineBlossom />
               </div>
             </div>
           )}
 
-          {/* -------------------------------------------------------- 7 and 8. date */}
-          <Block>
+          {/* -------------------------------------------------------- 6 and 7. date */}
+          <Block
+            mark={
+              <div className="h-[34px] w-[24px] text-inv-accent">
+                <JasmineBud />
+              </div>
+            }
+          >
             <Label>{date.weekday}</Label>
 
-            <p className="mt-2 font-inv-display text-[4rem] leading-none text-inv-accent">
-              <span className="numeric">{date.day}</span>
-            </p>
-
-            <p className="mt-2 font-inv-body text-base text-inv-ink">
-              {date.month} <span className="numeric">{date.year}</span>
+            {/*
+              The numeral and the month share a baseline rather than stacking, which is
+              what puts a step between them: 46 beside 22 instead of 64 above 16.
+              `flex-wrap` because a 320px phone renders this measure at 244px and an
+              English "September 2026" beside a two-digit numeral is close to that.
+            */}
+            <p className="mt-3 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+              <span className="numeric font-inv-display text-[2.875rem] leading-none text-inv-accent">
+                {date.day}
+              </span>
+              <span className="font-inv-body text-[1.375rem] leading-snug text-inv-ink">
+                {date.month} <span className="numeric">{date.year}</span>
+              </span>
             </p>
 
             {/* Only the clock is isolated left to right. The period beside it is a word,
                 and forcing it would seat it on the wrong side in Arabic. */}
-            <p className="mt-4 font-inv-body text-base text-inv-muted">
+            <p className="mt-4 font-inv-body text-[1.0625rem] text-inv-muted">
               {copy.labels.time}
               <span className="mx-2 text-inv-accent">·</span>
               <span className="numeric">{time.clock}</span> {time.period}
             </p>
           </Block>
 
-          {/* ------------------------------------------------------------- 9. venue */}
-          <Block>
+          {/* ------------------------------------------------------------- 8. venue */}
+          <Block
+            mark={
+              <div className="h-[32px] w-[28px] text-inv-accent-soft">
+                <JasmineTendril />
+              </div>
+            }
+          >
             <Label>{copy.labels.venue}</Label>
 
             <p className="mt-2 font-inv-display text-[1.375rem] leading-snug text-inv-ink text-balance">
               {view.venueName}
             </p>
 
+            {/*
+              Sized to its label and started at the measure's own start edge, not stretched
+              across the measure with the label centred inside it.
+
+              As a full-width bar it was the only element on the card whose text did not
+              begin on the column's text edge, and its outer edge stood 20px further out
+              than any paragraph ever reaches, so in a start-aligned page it read as the
+              one thing that had slipped. `w-fit` puts its first glyph exactly where every
+              line above it starts. `tap-target` holds the 44px floor; with the 17px label
+              and py-3 it comes out near 51.
+            */}
             {view.venueMapUrl ? (
               <a
                 href={view.venueMapUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="tap-target press mt-5 flex w-full items-center justify-center gap-2 rounded-full border border-inv-accent/55 px-6 font-inv-body text-sm text-inv-ink"
+                className="tap-target press mt-5 flex w-fit max-w-full items-center gap-2 rounded-full border border-inv-accent/55 px-6 py-3 font-inv-body text-[1.0625rem] text-inv-ink"
               >
-                <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4 text-inv-accent" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4 shrink-0 text-inv-accent" aria-hidden="true">
                   <path
                     d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11Z"
                     stroke="currentColor"
@@ -510,36 +617,69 @@ export function HadiqaInvitation({ view, copy }: { view: InvitationView; copy: I
             ) : null}
           </Block>
 
-          {/* --------------------------------------------------------- 10. countdown */}
-          <Block>
+          {/* ---------------------------------------------------------- 9. countdown */}
+          <Block
+            mark={
+              <div className="h-[38px] w-[38px] text-inv-accent">
+                <OpenFlower />
+              </div>
+            }
+          >
             <HadiqaCountdown view={view} copy={copy} />
           </Block>
 
-          {/* ----------------------------------------------------------- 11. message */}
+          {/* ----------------------------------------------------------- 10. message */}
           {view.customMessage ? (
-            <Block>
-              <p className="font-inv-body text-base leading-[1.9] text-inv-muted text-pretty">
+            <Block
+              mark={
+                <div className="h-[34px] w-[32px] text-inv-accent-soft">
+                  <LeafSprig />
+                </div>
+              }
+            >
+              <p className="font-inv-body text-[1.0625rem] leading-[1.9] text-inv-muted text-pretty">
                 {view.customMessage}
               </p>
             </Block>
           ) : null}
 
-          {/* ------------------------------------------------------------ 12. footer */}
+          {/* ------------------------------------------------- 11. the couple's line */}
           {/* Empty when the couple chose no line. */}
           {copy.poetry ? (
-            <Block>
+            <Block
+              mark={
+                <div className="h-[30px] w-[30px] text-inv-accent">
+                  <LeafNode />
+                </div>
+              }
+            >
               <p className="font-inv-body text-[1.125rem] leading-[1.9] text-inv-muted text-pretty">
                 {copy.poetry}
               </p>
             </Block>
           ) : null}
 
-          <Block className="mt-16">
+          {/* ------------------------------------------------------------ 12. footer */}
+          {/*
+            `flex w-fit` with `tap-target` rather than a bare inline link. At 12px the
+            credit's own box is nineteen pixels tall, which is under half the 44px floor
+            and the smallest tappable thing anywhere in the product — the flex box takes
+            the min-height and centres the text in it, so the target grows without the
+            type moving.
+          */}
+          <Block
+            className={STEP_LG}
+            mark={
+              <div className="h-[28px] w-[26px] text-inv-accent-soft">
+                <LeafSprig />
+              </div>
+            }
+          >
             <a
               href={SITE_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="font-inv-body text-xs text-inv-muted/80 transition hover:text-inv-accent"
+              className="tap-target press flex w-fit items-center font-inv-body text-xs text-inv-muted/80 hover:text-inv-accent"
             >
               {view.lang === 'AR' ? 'صنع بواسطة qlty.events' : 'Made with qlty.events'}
             </a>
@@ -557,6 +697,13 @@ export function HadiqaInvitation({ view, copy }: { view: InvitationView; copy: I
  * its no-photo rhythm, which is the version most customers see anyway — an ImageKit
  * outage becomes something nobody notices instead of a broken icon in the middle of
  * somebody's wedding invitation.
+ *
+ * The arch spans the gutter AND the measure — 56 + 306 — so its trailing edge lands on
+ * the same pixel as every paragraph's. At 306 it stopped 56px short of the text edge,
+ * which on a start-aligned page is the one misalignment nothing else can hide.
+ * `rounded-t-[181px]` is half of that full width; where the column is narrower, CSS
+ * scales the two top radii down together to fit, so the top stays a true semicircle at
+ * 320, 360 and 390 alike rather than a fixed curve on a variable box.
  */
 function PhotoArch({ view }: { view: InvitationView }) {
   const [failed, setFailed] = useState(false);
@@ -564,9 +711,9 @@ function PhotoArch({ view }: { view: InvitationView }) {
   if (!view.photoUrl || failed) return null;
 
   return (
-    <div className="relative w-full max-w-[306px]">
+    <div className="relative w-full max-w-[362px]">
       <div
-        className="relative overflow-hidden rounded-t-[153px] border border-inv-accent/40 bg-inv-panel"
+        className="relative overflow-hidden rounded-t-[181px] border border-inv-accent/40 bg-inv-panel"
         style={{ aspectRatio: '4 / 5' }}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}

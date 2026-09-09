@@ -21,7 +21,34 @@ import type { InvitationView } from '@/lib/invitation-view';
  * Full-bleed saturated appliqué panels running edge to edge with zero page margin.
  * Hard running-stitch seams bind each cloth field to the next.
  * Color fields alternate madder (bg), panel red, and tentmaker teal (accentSoft).
+ *
+ * What would destroy the axis, and therefore may not be done here: putting the card in
+ * a centred column with a page margin, softening the seams into rules or shadows,
+ * letting one background show through behind the fields, or dropping the cut-shape
+ * border from the field edges. The fields ARE the ground; there is nothing behind them.
+ *
+ * THE RHYTHM. Every cloth takes FIELD or FIELD_TALL and nothing else, so the distance
+ * from any block of type to the seam above it is one of exactly two numbers. FIELD_TALL
+ * is spent on the three cloths that open, anchor and close the stack — names, date, the
+ * couple's line — and every other cloth is FIELD. A field whose padding is picked at the
+ * call site is how the stack lost its rhythm the first time.
+ *
+ * THE MEASURE. Every block of type on the card is wrapped in MEASURE, so all of them
+ * share one text edge: 24px in from the cloth edge on a phone, a 400px column above
+ * that. The 24px also keeps type clear of the 16px merlon tab at each inline edge.
+ *
+ * THE COLOUR ORDER. No two touching cloths are the same colour, including across the
+ * three optional fields (verse, photo, message), and the teal is spent on exactly two
+ * (roles, countdown) as the theme contract requires. The card opens and closes on the
+ * same madder so the footer reads as the stack finishing rather than as a stray band.
  */
+
+/** The two field paddings. Nothing else sets vertical padding on a cloth. */
+const FIELD = 'relative flex flex-col items-center justify-center px-6 py-12 text-center';
+const FIELD_TALL = 'relative flex flex-col items-center justify-center px-6 py-14 text-center';
+
+/** The one measure. Every block of type on the card lines its edges up on this. */
+const MEASURE = 'relative z-10 w-full max-w-[400px]';
 
 function KhayamiyaCountdown({
   targetMs,
@@ -36,7 +63,11 @@ function KhayamiyaCountdown({
   const { totalSeconds, hasPassed } = useCountdownParts(targetMs);
 
   if (hasPassed) {
-    return <p className="font-inv-display text-xl text-inv-ink">{copy.labels.started[eventType]}</p>;
+    return (
+      <p className="font-inv-display text-[21px] font-bold text-inv-ink">
+        {copy.labels.started[eventType]}
+      </p>
+    );
   }
 
   const cells = [
@@ -47,13 +78,18 @@ function KhayamiyaCountdown({
   ];
 
   return (
-    <div className="grid grid-cols-4 gap-4 text-center">
+    <div className="grid grid-cols-4 gap-3 text-center">
       {cells.map((cell) => (
         <div key={cell.label} className="flex flex-col items-center">
-          <span className="font-inv-display text-3xl font-bold leading-none text-inv-ink">
+          <span className="numeric font-inv-display text-[1.75rem] font-bold leading-none text-inv-ink">
             {cell.value.toString().padStart(2, '0')}
           </span>
-          <span className="mt-1 font-inv-body text-[10px] text-inv-ink/80">
+          {/*
+            12px, not 10px. This cloth is the tent teal, which is a mid tone: cream on it
+            is 3.1:1, so the label has no contrast headroom to spend and has to buy its
+            legibility with size and weight instead.
+          */}
+          <span className="mt-2 font-inv-body text-[12px] font-medium text-inv-ink">
             {cell.label}
           </span>
         </div>
@@ -72,8 +108,8 @@ export function KhayamiyaInvitation({ view, copy }: { view: InvitationView; copy
   return (
     <div className="relative min-h-dvh w-full overflow-hidden bg-inv-bg text-inv-ink">
 
-      {/* ================= 1. NAMES: 30vh madder field ================= */}
-      <section className="relative flex min-h-[36vh] flex-col items-center justify-center bg-inv-bg px-5 py-14 text-center">
+      {/* ================= 1. NAMES: madder cloth ================= */}
+      <section className={cn(FIELD_TALL, 'min-h-[36vh] bg-inv-bg')}>
         <SteppedMerlonBorder side="left" />
         <SteppedMerlonBorder side="right" />
 
@@ -86,19 +122,23 @@ export function KhayamiyaInvitation({ view, copy }: { view: InvitationView; copy
           watermark, it is an object, and the names were competing with it for the same
           pixels. Appliqué panels stack: a medallion, then the text beneath it. So does
           this now, at full strength, where it decorates instead of interferes.
+
+          72px, not 104px, and the names are 44px rather than 36px. A crest that is
+          nearly three times the height of a single name inverts the hierarchy on the one
+          card whose entire subject is two people's names.
         */}
-        <Reveal immediate className="relative z-10 mb-6" aria-hidden="true">
-          <EightPetalMedallion size={104} />
+        <Reveal immediate className="relative z-10 mb-7">
+          <EightPetalMedallion size={72} />
         </Reveal>
 
-        <Reveal immediate className="relative z-10">
+        <Reveal immediate className={MEASURE}>
           {copy.familiesPrefix ? (
-            <p className="mb-3 font-inv-body text-xs text-inv-muted tracking-wider">
+            <p className="mb-4 font-inv-body text-[13px] tracking-[0.14em] text-inv-muted">
               {copy.familiesPrefix}
             </p>
           ) : null}
 
-          <h1 className="font-inv-display text-4xl sm:text-5xl font-bold leading-tight text-inv-ink text-balance">
+          <h1 className="font-inv-display text-[2.75rem] font-bold leading-[1.16] text-inv-ink text-balance">
             <span className="block">{view.name1}</span>
             <span className="my-1 block text-2xl text-inv-accent" aria-hidden="true">
               {copy.nameSeparator}
@@ -106,37 +146,54 @@ export function KhayamiyaInvitation({ view, copy }: { view: InvitationView; copy
             <span className="block">{view.name2}</span>
           </h1>
 
-          <p className="mt-4 font-inv-body text-xs uppercase tracking-widest text-inv-accent">
+          <p className="mt-5 font-inv-body text-[11px] uppercase tracking-[0.16em] text-inv-accent">
             {copy.eventName[view.eventType]}
           </p>
         </Reveal>
       </section>
 
-        <Reveal className="max-w-[420px]">
-          <p className="font-inv-body text-[17px] leading-relaxed text-inv-ink text-pretty">
+      <RunningStitchSeam />
+
+      {/* ================= 2. INVITATION LINE: panel cloth =================
+          This block and the couple's line at the end of the card were both sitting
+          loose between two seams with no section, no cloth colour and no inline
+          padding, which ran their text flush into both viewport edges. They are fields
+          in the stack like everything else. */}
+      <section className={cn(FIELD, 'bg-inv-panel')}>
+        <SteppedMerlonBorder side="left" />
+        <SteppedMerlonBorder side="right" />
+
+        <Reveal className={MEASURE}>
+          <p className="font-inv-body text-[17px] leading-[1.9] text-inv-ink text-pretty">
             {copy.inviteLine[view.eventType]}
           </p>
         </Reveal>
+      </section>
 
       <RunningStitchSeam />
 
-      {/* ================= 2. BISMILLAH + VERSE: 24vh panel field (Unpatterned cloth) ================= */}
+      {/* ================= 3. BISMILLAH + VERSE: the one un-patterned cloth ================= */}
       {copy.bismillah && copy.verse ? (
         <>
-          <section className="relative flex min-h-[24vh] flex-col items-center justify-center bg-inv-panel px-6 py-12 text-center">
-            {/* Merlon borders explicitly suppressed on this sacred cloth */}
-            <Reveal className="max-w-[420px]">
+          <section className={cn(FIELD_TALL, 'min-h-[24vh] bg-inv-bg')}>
+            {/* Merlon borders explicitly suppressed on this sacred cloth. */}
+            <Reveal className={MEASURE}>
+              {/*
+                U+FDFD is a single ligature around eleven times wider than its font size,
+                so it is sized against the viewport rather than set at a fixed 2.375rem:
+                at 360px a fixed size runs the glyph past the measure and into the edge.
+              */}
               <p
-                className="font-inv-verse text-2xl text-inv-ink"
+                className="font-inv-verse text-[length:min(2.25rem,7.5vw)] leading-none text-inv-ink"
                 aria-label="بسم الله الرحمن الرحيم"
               >
                 {copy.bismillah}
               </p>
-              <p className="mt-4 font-inv-verse text-[1.0625rem] leading-[2.05] text-inv-ink text-pretty">
+              <p className="mt-7 font-inv-verse text-[1.0625rem] leading-[2.05] text-inv-ink text-pretty">
                 {copy.verse}
               </p>
               {copy.verseSource ? (
-                <p className="mt-2 font-inv-body text-xs text-inv-muted">
+                <p className="mt-3 font-inv-body text-[13px] text-inv-muted">
                   {copy.verseSource}
                 </p>
               ) : null}
@@ -146,41 +203,32 @@ export function KhayamiyaInvitation({ view, copy }: { view: InvitationView; copy
         </>
       ) : null}
 
-      {/* ================= 3. POETRY: madder field with Lotus Palmette ================= */}
-      <section className="relative flex flex-col items-center justify-center bg-inv-bg px-5 py-12 text-center">
+      {/* ================= 4. ROLES: teal cloth ================= */}
+      <section className={cn(FIELD, 'bg-inv-accent-soft')}>
         <SteppedMerlonBorder side="left" />
         <SteppedMerlonBorder side="right" />
 
-      </section>
-
-      <RunningStitchSeam />
-
-      {/* ================= 4. INVITATION LINE: panel field ================= */}
-      <section className="relative flex flex-col items-center justify-center bg-inv-panel px-5 py-10 text-center">
-        <SteppedMerlonBorder side="left" />
-        <SteppedMerlonBorder side="right" />
-
-      </section>
-
-      <RunningStitchSeam />
-
-      {/* ================= 5. ROLES: Teal cloth field ================= */}
-      <section className="relative flex flex-col items-center justify-center bg-inv-accent-soft px-5 py-8 text-center text-inv-ink">
-        <Reveal className="w-full max-w-[400px]">
+        <Reveal className={MEASURE}>
           <div className="grid grid-cols-2 gap-6">
             <div>
-              <span className="font-inv-body text-[11px] font-bold uppercase tracking-wider text-inv-accent">
+              {/*
+                Cream, not gold. The theme's gold is 5.17:1 on the panel red and legal
+                there down to 11px, but this cloth is the tent teal and gold on teal is
+                2.1:1 — the one place on the card where the appliqué language and the
+                contrast numbers disagree, and the numbers win.
+              */}
+              <p className="font-inv-body text-[13px] font-bold uppercase tracking-[0.16em] text-inv-ink">
                 {copy.roleGroom}
-              </span>
-              <p className="mt-1 font-inv-body text-xl font-bold text-inv-ink">
+              </p>
+              <p className="mt-3 font-inv-body text-[21px] font-bold leading-snug text-inv-ink text-balance">
                 {view.name1}
               </p>
             </div>
             <div>
-              <span className="font-inv-body text-[11px] font-bold uppercase tracking-wider text-inv-accent">
+              <p className="font-inv-body text-[13px] font-bold uppercase tracking-[0.16em] text-inv-ink">
                 {copy.roleBride}
-              </span>
-              <p className="mt-1 font-inv-body text-xl font-bold text-inv-ink">
+              </p>
+              <p className="mt-3 font-inv-body text-[21px] font-bold leading-snug text-inv-ink text-balance">
                 {view.name2}
               </p>
             </div>
@@ -190,46 +238,54 @@ export function KhayamiyaInvitation({ view, copy }: { view: InvitationView; copy
 
       <RunningStitchSeam />
 
-      {/* ================= 6. PHOTO / NO PHOTO MEDALLION ================= */}
-      <section className="relative flex flex-col items-center justify-center bg-inv-bg px-5 py-12 text-center">
+      {/* ================= 5. PHOTO: madder cloth =================
+          Only when there is a photo. The no-photo state used to be a 300px field holding
+          a second copy of the eight-petal medallion from the top of the card, which is
+          an ornament repeated to fill space it is not carrying — and the sample card,
+          the one most customers see, has no photo, so that band was the theme's largest
+          piece of dead cloth. The photo still gets its own cloth whenever there is one;
+          what is gone is a field that existed to hold a repeat of an ornament. */}
+      {hasPhoto ? (
+        <>
+          <section className={cn(FIELD, 'bg-inv-bg')}>
+            <SteppedMerlonBorder side="left" />
+            <SteppedMerlonBorder side="right" />
+
+            <Reveal className="relative z-10">
+              <div className="relative mx-auto inline-block rounded-full border-[3px] border-dashed border-inv-ink/90 bg-inv-panel p-2 shadow-md">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={view.photoUrl!}
+                  alt={`${view.name1} & ${view.name2}`}
+                  loading="lazy"
+                  onError={() => setPhotoFailed(true)}
+                  className="h-[220px] w-[220px] rounded-full object-cover"
+                />
+              </div>
+            </Reveal>
+          </section>
+          <RunningStitchSeam />
+        </>
+      ) : null}
+
+      {/* ================= 6. DATE: panel cloth ================= */}
+      <section className={cn(FIELD_TALL, 'bg-inv-panel')}>
         <SteppedMerlonBorder side="left" />
         <SteppedMerlonBorder side="right" />
 
-        <Reveal>
-          {hasPhoto ? (
-            <div className="relative mx-auto inline-block rounded-full border-[3px] border-dashed border-inv-ink/90 p-2 bg-inv-panel shadow-md">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={view.photoUrl!}
-                alt={`${view.name1} & ${view.name2}`}
-                loading="lazy"
-                onError={() => setPhotoFailed(true)}
-                className="h-[220px] w-[220px] rounded-full object-cover"
-              />
-            </div>
-          ) : (
-            <div className="flex justify-center py-4">
-              <EightPetalMedallion size={180} />
-            </div>
-          )}
-        </Reveal>
-      </section>
-
-      <RunningStitchSeam />
-
-      {/* ================= 7. DATE: madder field ================= */}
-      <section className="relative flex flex-col items-center justify-center bg-inv-bg px-5 py-14 text-center">
-        <SteppedMerlonBorder side="left" />
-        <SteppedMerlonBorder side="right" />
-
-        <Reveal>
-          <p className="font-inv-body text-[11px] uppercase tracking-wider text-inv-muted">
+        <Reveal className={MEASURE}>
+          {/*
+            13 / 48 / 21, not 11 / 60 / 18. The numeral is still the loudest thing in the
+            stack, but it now has a tier above it and a tier below it that are on the
+            same ladder as the rest of the card, and it no longer out-sizes the names.
+          */}
+          <p className="font-inv-body text-[13px] uppercase tracking-[0.16em] text-inv-muted">
             {date.weekday}
           </p>
-          <p className="mt-2 font-inv-display text-6xl sm:text-7xl font-bold leading-none text-inv-accent">
-            <span className="numeric">{date.day}</span>
+          <p className="numeric mt-3 font-inv-display text-5xl font-bold leading-none text-inv-accent">
+            {date.day}
           </p>
-          <p className="mt-3 font-inv-display text-lg text-inv-ink">
+          <p className="mt-4 font-inv-display text-[21px] text-inv-ink">
             {date.month} <span className="numeric">{date.year}</span>
           </p>
         </Reveal>
@@ -237,27 +293,39 @@ export function KhayamiyaInvitation({ view, copy }: { view: InvitationView; copy
 
       <RunningStitchSeam />
 
-      {/* ================= 8. TIME: short 64px panel field ================= */}
-      <section className="relative flex h-[64px] items-center justify-center bg-inv-panel px-5 text-center">
-        <Reveal>
-          <p className="font-inv-body text-[17px] text-inv-ink">
-            {copy.labels.time}: <span className="numeric font-semibold">{time.clock}</span> {time.period}
+      {/* ================= 7. TIME: madder cloth =================
+          This was a 64px strip carrying one 17px line between two seams, which read as
+          the gap between the date and the venue rather than as a cloth. It is built like
+          the date field now — gold label, display figure — so the two practical fields
+          are a pair, and it carries the height that every other field in the stack does. */}
+      <section className={cn(FIELD, 'bg-inv-bg')}>
+        <SteppedMerlonBorder side="left" />
+        <SteppedMerlonBorder side="right" />
+
+        <Reveal className={MEASURE}>
+          <p className="font-inv-body text-[11px] uppercase tracking-[0.16em] text-inv-accent">
+            {copy.labels.time}
+          </p>
+          {/* Only the clock is isolated as left to right. The period beside it is a word,
+              and forcing it would seat it on the wrong side in Arabic. */}
+          <p className="mt-3 font-inv-display text-[1.75rem] leading-none text-inv-ink">
+            <span className="numeric font-bold">{time.clock}</span> {time.period}
           </p>
         </Reveal>
       </section>
 
       <RunningStitchSeam />
 
-      {/* ================= 9. VENUE: panel field with Maps button ================= */}
-      <section className="relative flex flex-col items-center justify-center bg-inv-panel px-5 py-12 text-center">
+      {/* ================= 8. VENUE: panel cloth with the Maps button ================= */}
+      <section className={cn(FIELD, 'bg-inv-panel')}>
         <SteppedMerlonBorder side="left" />
         <SteppedMerlonBorder side="right" />
 
-        <Reveal className="max-w-[400px]">
-          <p className="font-inv-body text-xs uppercase tracking-wider text-inv-accent">
+        <Reveal className={MEASURE}>
+          <p className="font-inv-body text-[11px] uppercase tracking-[0.16em] text-inv-accent">
             {copy.labels.venue}
           </p>
-          <p className="mt-2 font-inv-body text-xl font-semibold text-inv-ink text-balance">
+          <p className="mt-3 font-inv-body text-[21px] font-bold text-inv-ink text-balance">
             {view.venueName}
           </p>
 
@@ -266,15 +334,15 @@ export function KhayamiyaInvitation({ view, copy }: { view: InvitationView; copy
               href={view.venueMapUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="tap-target press mt-6 inline-flex items-center gap-2 rounded bg-inv-accent px-8 py-3 font-inv-body text-sm font-bold text-inv-bg shadow-sm transition hover:brightness-105 active:scale-95"
+              className="tap-target press mt-7 inline-flex items-center justify-center gap-2 rounded bg-inv-accent px-8 py-3 font-inv-body text-[15px] font-bold text-inv-bg shadow-sm hover:brightness-105"
             >
               <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4" aria-hidden="true">
                 <path
                   d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11Z"
                   stroke="currentColor"
-                  strokeWidth="1.6"
+                  strokeWidth="2"
                 />
-                <circle cx="12" cy="10" r="2.5" stroke="currentColor" strokeWidth="1.6" />
+                <circle cx="12" cy="10" r="2.5" stroke="currentColor" strokeWidth="2" />
               </svg>
               {copy.labels.mapsButton}
             </a>
@@ -284,10 +352,13 @@ export function KhayamiyaInvitation({ view, copy }: { view: InvitationView; copy
 
       <RunningStitchSeam />
 
-      {/* ================= 10. COUNTDOWN: Teal cloth field ================= */}
-      <section className="relative flex flex-col items-center justify-center bg-inv-accent-soft px-5 py-10 text-center">
-        <Reveal className="w-full max-w-[420px]">
-          <p className="mb-4 font-inv-body text-xs text-inv-ink/90 font-medium">
+      {/* ================= 9. COUNTDOWN: teal cloth ================= */}
+      <section className={cn(FIELD, 'bg-inv-accent-soft')}>
+        <SteppedMerlonBorder side="left" />
+        <SteppedMerlonBorder side="right" />
+
+        <Reveal className={MEASURE}>
+          <p className="mb-6 font-inv-body text-[13px] font-semibold text-inv-ink">
             {copy.labels.countdownHeading[view.eventType]}
           </p>
           <KhayamiyaCountdown targetMs={view.eventInstantMs} copy={copy} eventType={view.eventType} />
@@ -296,14 +367,15 @@ export function KhayamiyaInvitation({ view, copy }: { view: InvitationView; copy
 
       <RunningStitchSeam />
 
-      {/* ================= 11. MESSAGE: madder field ================= */}
+      {/* ================= 10. MESSAGE: madder cloth ================= */}
       {view.customMessage ? (
         <>
-          <section className="relative flex flex-col items-center justify-center bg-inv-bg px-6 py-10 text-center">
+          <section className={cn(FIELD, 'bg-inv-bg')}>
             <SteppedMerlonBorder side="left" />
             <SteppedMerlonBorder side="right" />
-            <Reveal className="max-w-[420px]">
-              <p className="font-inv-body text-base leading-relaxed text-inv-muted text-pretty">
+
+            <Reveal className={MEASURE}>
+              <p className="font-inv-body text-[15px] leading-[1.95] text-inv-muted text-pretty">
                 {view.customMessage}
               </p>
             </Reveal>
@@ -312,25 +384,36 @@ export function KhayamiyaInvitation({ view, copy }: { view: InvitationView; copy
         </>
       ) : null}
 
-      {/* ================= 12. FOOTER: short panel field ================= */}
-      {/* Empty when the couple chose no line. */}
+      {/* ================= 11. THE COUPLE'S OWN LINE: panel cloth ================= */}
       {copy.poetry ? (
-        <Reveal className="max-w-[420px]">
-          <div className="mb-4">
-            <LotusPalmette size={40} />
-          </div>
-          <p className="font-inv-body text-lg font-medium leading-[1.9] text-inv-muted text-pretty">
-            {copy.poetry}
-          </p>
-        </Reveal>
+        <>
+          <section className={cn(FIELD_TALL, 'bg-inv-panel')}>
+            <SteppedMerlonBorder side="left" />
+            <SteppedMerlonBorder side="right" />
+
+            <Reveal className={MEASURE}>
+              <LotusPalmette size={40} className="mb-6" />
+              <p className="font-inv-body text-[17px] font-medium leading-[1.95] text-inv-muted text-pretty">
+                {copy.poetry}
+              </p>
+            </Reveal>
+          </section>
+          <RunningStitchSeam />
+        </>
       ) : null}
 
-      <footer className="relative flex h-[72px] items-center justify-center bg-inv-panel px-5 text-center">
+      {/* ================= 12. FOOTER: the madder cloth the card opened on ================= */}
+      <footer className="relative flex items-center justify-center bg-inv-bg px-6 py-5 text-center">
+        <SteppedMerlonBorder side="left" />
+        <SteppedMerlonBorder side="right" />
+
+        {/* 13px in a 44px target. The credit was a 16px-tall tap on every card in the
+            set, which is a link a thumb cannot reliably hit. */}
         <a
           href={SITE_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="font-inv-body text-xs text-inv-muted transition hover:text-inv-accent"
+          className="tap-target press relative z-10 inline-flex items-center justify-center px-4 font-inv-body text-[13px] text-inv-muted hover:text-inv-accent"
         >
           {view.lang === 'AR' ? 'صنع بواسطة qlty.events' : 'Made with qlty.events'}
         </a>

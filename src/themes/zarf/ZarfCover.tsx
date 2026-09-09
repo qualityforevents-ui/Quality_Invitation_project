@@ -184,12 +184,24 @@ export function ZarfCover({
           className="absolute inset-x-0 bottom-0 h-1/2 origin-bottom bg-inv-panel/40"
           variants={FLAP_BOTTOM_VARIANTS}
         />
+        {/*
+          Physical left/right here, deliberately, and it is the one place on this card
+          where that is the correct call.
+
+          These were `start-0` / `end-0` beside `origin-left` / `origin-right`. Tailwind
+          has no logical transform-origin, so in Arabic the start flap moved to the right
+          of the envelope while its hinge stayed on the left — the flap swung off its own
+          centre instead of off the margin it is attached to. The four flaps are a
+          symmetric envelope, not content: nothing about them should mirror, so pinning
+          both the edge and the hinge to the same physical side is what keeps the hinge on
+          the hinge in both directions.
+        */}
         <motion.div
-          className="absolute inset-y-0 start-0 w-1/2 origin-left bg-inv-panel/30"
+          className="absolute inset-y-0 left-0 w-1/2 origin-left bg-inv-panel/30"
           variants={FLAP_LEFT_VARIANTS}
         />
         <motion.div
-          className="absolute inset-y-0 end-0 w-1/2 origin-right bg-inv-panel/30"
+          className="absolute inset-y-0 right-0 w-1/2 origin-right bg-inv-panel/30"
           variants={FLAP_RIGHT_VARIANTS}
         />
 

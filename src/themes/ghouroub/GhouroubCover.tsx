@@ -9,7 +9,7 @@ import { EASE_OUT as EASE } from '@/lib/motion';
 
 /**
  * The closed state: a pale sky, one sun high in it, one rule low, the names under the
- * line. Nothing else, because the card behind it is six fields of colour and a line,
+ * line. Nothing else, because the card behind it is five fields of colour and a line,
  * and a cover carrying a monogram and a frame would be advertising a different theme.
  *
  * The composition is the same two-row grid the card is built from — sky above the rule,
@@ -97,10 +97,11 @@ export function GhouroubCover({
       animate="idle"
       exit="set"
     >
-      {/* The sky deepening as the sun goes. Panel over bg, so the warm end of the ramp
-          is the card's own final band rather than a colour invented for one animation. */}
+      {/* The sky deepening as the sun goes. A stop on the card's own ground ramp — see
+          GROUND in GhouroubInvitation.tsx — rather than a colour invented for one
+          animation, so the sky the cover leaves on is a sky the card actually contains. */}
       <motion.span
-        className="pointer-events-none absolute inset-0 bg-inv-panel"
+        className="pointer-events-none absolute inset-0 bg-inv-accent-soft/30"
         variants={GROUND}
         aria-hidden="true"
       />
@@ -126,14 +127,23 @@ export function GhouroubCover({
 
       {/* Everything below the line shares one grid cell, because two items placed in the
           same cell would sit on top of each other rather than in sequence. */}
-      <div className="relative z-10 col-start-1 row-start-2 flex flex-col justify-between px-6 pt-5 pb-6 sm:pt-8 sm:pb-8 text-center">
-        <motion.div className="mx-auto my-auto w-[342px] max-w-full" variants={CONTENT}>
+      {/*
+        `min-w-0` and a measure written as w-full-then-capped, not as a fixed 342 that
+        gives way: this is a single implicit grid column, so the column is sized from its
+        item's min-content, and a hard 342px plus 48px of padding sized it to 390 inside a
+        360px phone. The column overflowed 30px past the start edge, which in RTL is the
+        left one, and the open button lost 6px of its own rule off the side of the screen.
+        Same measure as the card now — 342, or the column less its margins, whichever is
+        smaller.
+      */}
+      <div className="relative z-10 col-start-1 row-start-2 flex min-w-0 flex-col justify-between px-6 pt-5 pb-6 sm:pt-8 sm:pb-8 text-center">
+        <motion.div className="mx-auto my-auto w-full max-w-[342px]" variants={CONTENT}>
           <h1 className="font-inv-display font-bold text-inv-ink">
             {/* Stacked rather than joined on one line: these are free text in any
                 script, and "Abdelrahman" beside "Yasmine" at this size does not fit a
                 390px screen. */}
             <span className="block text-3xl sm:text-[2.5rem] leading-[1.2] text-balance">{view.name1}</span>
-            <span className="my-1 sm:my-2 block font-inv-body text-sm sm:text-base text-inv-accent">
+            <span className="my-1 sm:my-2 block font-inv-body text-[0.875rem] sm:text-[1.0625rem] text-inv-accent">
               {copy.nameSeparator}
             </span>
             <span className="block text-3xl sm:text-[2.5rem] leading-[1.2] text-balance">{view.name2}</span>
@@ -144,7 +154,7 @@ export function GhouroubCover({
             bidi algorithm already orders that correctly; forcing a direction onto the
             whole string is what puts an Arabic date the wrong way round.
           */}
-          <p className="mt-3 sm:mt-5 font-inv-body text-xs sm:text-[0.8125rem] text-inv-muted">
+          <p className="mt-3 sm:mt-5 font-inv-body text-[0.875rem] text-inv-muted">
             {formatEventDate(view.eventDate, view.lang)}
           </p>
         </motion.div>
@@ -152,15 +162,20 @@ export function GhouroubCover({
         {/*
           Structural, not decorative: this tap is the gesture the browser needs before it
           will start the music, so it is the only thing to press here and it has to be
-          reachable without scrolling on a 390x844 screen. A bar rather than a pill,
-          because every mark in this theme is horizontal, and no shadow pulse to draw the
-          eye — an infinite box-shadow loop repaints for as long as the cover is open, on
-          the one device class that cannot spare it.
+          reachable without scrolling on a 390x844 screen.
+
+          Ruled top and bottom and open at the sides — the same control the card uses for
+          the map link, and the reasoning is in CONTROL in GhouroubInvitation.tsx: a
+          four-sided outline with square corners was the only hard edge on either screen,
+          in a theme whose whole argument is that it has none. It spans the measure, so
+          two rules read as one control rather than as a stray pair of dividers. No shadow
+          pulse to draw the eye — an infinite box-shadow loop repaints for as long as the
+          cover is open, on the one device class that cannot spare it.
         */}
         <motion.button
           type="button"
           onClick={onOpen}
-          className="tap-target press mx-auto mt-4 sm:mt-6 block w-[228px] max-w-full border border-inv-accent/70 px-6 py-3 font-inv-body text-sm sm:text-[0.9375rem] text-inv-ink"
+          className="tap-target press mx-auto mt-6 flex min-h-[52px] w-full max-w-[342px] items-center justify-center border-y border-inv-accent/45 px-4 font-inv-body text-[0.9375rem] text-inv-ink"
           variants={BUTTON}
         >
           {copy.openButton}

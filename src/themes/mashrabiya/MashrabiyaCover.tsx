@@ -2,7 +2,7 @@
 
 import { motion, type Variants } from 'framer-motion';
 import { useState } from 'react';
-import { LATTICE_TILE } from './MashrabiyaOrnaments';
+import { LATTICE_TILE, LATTICE_TILE_SIZE } from './MashrabiyaOrnaments';
 import { EASE_OUT as EASE } from '@/lib/motion';
 import type { InvitationCopy } from '@/i18n/invitation';
 import type { InvitationView } from '@/lib/invitation-view';
@@ -83,7 +83,7 @@ export function MashrabiyaCover({
       {/* 2. Opaque turned-wood lattice screen with scaling aperture mask on open */}
       <motion.div
         className="pointer-events-none absolute inset-0 z-0 bg-inv-panel/95 will-change-transform"
-        style={{ backgroundImage: LATTICE_TILE, backgroundSize: '22px 22px' }}
+        style={{ backgroundImage: LATTICE_TILE, backgroundSize: LATTICE_TILE_SIZE }}
         variants={APERTURE_VARIANTS}
       />
 

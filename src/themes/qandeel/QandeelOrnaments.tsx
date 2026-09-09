@@ -5,21 +5,35 @@ import { cn } from '@/lib/cn';
 /**
  * قنديل ornaments: Mamluk mosque lamp, hung plumb lines, and background suspension tile.
  *
- * All plumb line drops are locked tokens from the spec:
- * [40, 96, 62, 130, 78, 54, 112, 68] px.
+ * THE PLUMB LENGTHS ARE THE THEME. Every other card in the set has a spacing scale;
+ * this one has an authored irregular sequence, and the irregularity is the design. Do
+ * not tidy these into a regular ramp, and do not sort them.
+ *
+ * The spec sequence was [40, 96, 62, 130, 78, 54, 112, 68]. It is kept here at its own
+ * proportions but re-based into a shorter band:
+ *
+ *   40 → 56 · 54 → 62 · 62 → 66 · 68 → 70 · 78 → 74 · 96 → 82 · 112 → 88 · 130 → 96
+ *
+ * Same eight distinct values, same ordering, same ties (names/message share the
+ * shortest, verse/photo share one so the no-photo substitution stays invisible to the
+ * pixel), same non-uniform deltas. What changed is only the band: the old sequence put
+ * 130px of empty thread above the invitation line and 112px above the venue, and with
+ * a section margin on top of that the card ran to two full screens of nothing between
+ * blocks. The thread now IS the gap — HungBlock carries no vertical margin at all — so
+ * these numbers are the entire distance between one block and the next, and the
+ * suspension still reads at 56–96px where at 130px it read as a dropout.
  */
-
 export const PLUMB_LENGTHS = {
-  names: 40,
-  verse: 96,
-  poetry: 62,
-  invite: 130,
-  roles: 78,
-  photo: 96,
-  date: 54,
-  venue: 112,
-  countdown: 68,
-  message: 40,
+  names: 56,
+  verse: 82,
+  poetry: 66,
+  invite: 96,
+  roles: 74,
+  photo: 82,
+  date: 62,
+  venue: 88,
+  countdown: 70,
+  message: 56,
 } as const;
 
 /** Subtle repeating plumb lines background tile on FAR layer */
@@ -107,6 +121,10 @@ export function MosqueLamp({
 
 /**
  * A plumb suspension line of authored length.
+ *
+ * The element is exactly `length` tall and nothing else pads it, so a block's drop is
+ * readable off the token and the ornament pays for the space it occupies rather than
+ * sitting inside a margin that pays for it twice.
  */
 export function PlumbLine({
   length,

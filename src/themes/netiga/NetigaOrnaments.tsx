@@ -25,6 +25,9 @@ export const TORN_EDGE_PATH =
 
 /**
  * Format digits as Arabic-Indic for Arabic netiga, or standard Latin for English.
+ *
+ * Every numeral on the card goes through here — the day, the year, the clock, the
+ * countdown AND the verse citation. A نتيجة that mixes ٢٤ with 21 is not a نتيجة.
  */
 export function formatNetigaDigits(val: number | string, lang: Lang): string {
   if (lang !== 'AR') return String(val);
@@ -57,37 +60,57 @@ export function TornEdge({ className }: { className?: string }) {
 }
 
 /**
- * The red calendar header band with punch holes and reversed text.
+ * The red calendar header band: the binding strip at the top of every leaf.
+ *
+ * Three fixed slots, so the band is the same object on every leaf of the pad rather
+ * than a bar that appears on some of them. The punch holes are pinned to the inline
+ * edges with logical `start`/`end` so the pad binds on the correct side in both
+ * directions; the leaf's index sits beside the start hole, reversed out of the red;
+ * the title sits optically centred between them.
+ *
+ * The index is the leaf number and nothing else — it is deliberately NOT zero padded,
+ * because ٠٢ sets the Arabic-Indic zero as a low dot and a guest reads the result as a
+ * stray full stop rather than as a page number.
  */
 export function CalendarHeaderBand({
   title,
+  index,
   showPunchHoles = true,
   className,
 }: {
   title?: string;
+  index?: string;
   showPunchHoles?: boolean;
   className?: string;
 }) {
   return (
     <div
       className={cn(
-        'relative flex h-8 w-full items-center justify-between bg-inv-accent px-4 text-inv-panel select-none',
+        'relative flex min-h-9 w-full items-center justify-center rounded-t-sm bg-inv-accent px-12 py-1.5 text-white select-none',
         className,
       )}
     >
-      {showPunchHoles ? (
-        <span className="h-3 w-3 rounded-full bg-inv-bg shadow-inner border border-inv-line/30" />
-      ) : <span className="w-3" />}
+      {/* Binding hardware, pinned to the inline start: the hole and the leaf's number. */}
+      <span className="absolute start-3 top-1/2 flex -translate-y-1/2 items-center gap-1.5">
+        {showPunchHoles ? (
+          <span className="h-3 w-3 rounded-full border border-inv-line/30 bg-inv-bg shadow-inner" />
+        ) : null}
+        {index ? (
+          <span className="numeric font-inv-body text-[0.6875rem] font-semibold text-white/80">
+            {index}
+          </span>
+        ) : null}
+      </span>
 
       {title ? (
-        <span className="font-inv-display text-xs font-bold tracking-wider text-white">
+        <span className="text-center font-inv-display text-[0.8125rem] font-bold leading-snug text-white">
           {title}
         </span>
       ) : null}
 
       {showPunchHoles ? (
-        <span className="h-3 w-3 rounded-full bg-inv-bg shadow-inner border border-inv-line/30" />
-      ) : <span className="w-3" />}
+        <span className="absolute end-3 top-1/2 h-3 w-3 -translate-y-1/2 rounded-full border border-inv-line/30 bg-inv-bg shadow-inner" />
+      ) : null}
     </div>
   );
 }

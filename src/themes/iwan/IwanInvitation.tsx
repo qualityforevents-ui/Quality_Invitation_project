@@ -51,6 +51,37 @@ import { EASE_OUT as EASE } from '@/lib/motion';
  * unknown scroll height turns a horseshoe into an oval; the legs are the only part safe
  * to scale non-uniformly, because a vertical line stretched vertically is still that
  * line. Merging them is this theme's single build failure.
+ *
+ * ---
+ *
+ * THE VERTICAL RHYTHM. Three gaps between blocks and no others:
+ *
+ *   40  `mt-10`      one subject continuing — the names and the line that follows them,
+ *                    the couple's own poetry after the last of the arrangements.
+ *   56  `mt-14`      a new subject inside the same tier.
+ *   72  `Haunch`     a new subject AND a step of the wall. The largest gap on the card is
+ *                    the one where the frame itself moves, which is the only place the
+ *                    reader is asked to notice a change of measure.
+ *
+ * Inside a block the set is 8 / 12 / 28 — a value under its own label, a label under the
+ * thing above it, and 28 on both sides of a voussoir stub, so a stub always carries the
+ * same air whichever two subjects it separates.
+ *
+ * THE TYPE LADDER. 11 · 17 · 21 · 32 · 44 · 56, each step about a third over the one
+ * below it. Everything on the card is one of those six and there is no seventh:
+ *
+ *   11  every label, every citation, the credit — one small tier, not three.
+ *   17  body: the invitation line, the verse, the time, the message, the map button.
+ *   21  a name or a line that carries weight — the two roles, the venue, the month, the
+ *       couple's own words.
+ *   32  the countdown numerals.
+ *   44  the day of the month.
+ *   56  the two names, which are the only thing on the card allowed to be biggest.
+ *
+ * The day used to be 68 with an 11px weekday sitting on top of it and nothing in between,
+ * and it was also larger than the couple's own names. 44 puts it one clean step over the
+ * countdown and one under the names, and the month below it moved up to 21 so the numeral
+ * has something to stand on rather than a caption.
  */
 
 /**
@@ -115,13 +146,17 @@ function Course({
 /**
  * A haunch: the gap in which the wall steps inward.
  *
- * It is a real 64px of space and not a zero height marker, because IwanLegs measures
+ * It is a real 72px of space and not a zero height marker, because IwanLegs measures
  * these off the DOM rather than placing them at fractions of the page. The wall steps at
  * exactly the y where the measure steps, however long the couple's custom message turns
  * out to be — and a fraction would drift the moment anybody wrote one.
+ *
+ * 72 and not 64: it is the top of the card's three gaps and it has to be legibly bigger
+ * than the 56 that separates two blocks standing in the same tier. Eight pixels apart
+ * they read as the same gap measured twice.
  */
 function Haunch() {
-  return <span data-iwan-step="" aria-hidden="true" className="block h-16" />;
+  return <span data-iwan-step="" aria-hidden="true" className="block h-[4.5rem]" />;
 }
 
 /* ------------------------------------------------------------------ the countdown */
@@ -148,7 +183,11 @@ function IwanCountdown({ view, copy }: { view: InvitationView; copy: InvitationC
   const hasPassed = nowMs !== null && view.eventInstantMs - nowMs <= 0;
 
   if (hasPassed) {
-    return <p className="font-inv-display text-2xl text-inv-accent">{copy.labels.started[view.eventType]}</p>;
+    return (
+      <p className="font-inv-display text-[2rem] leading-tight text-inv-accent">
+        {copy.labels.started[view.eventType]}
+      </p>
+    );
   }
 
   const cells = [
@@ -162,13 +201,23 @@ function IwanCountdown({ view, copy }: { view: InvitationView; copy: InvitationC
     <div>
       <p className={LABEL}>{copy.labels.countdownHeading[view.eventType]}</p>
 
-      <div className="mt-6 grid grid-cols-4">
+      {/*
+        Four equal columns, and equal is doing real work here.
+
+        `grid-cols-4` is `repeat(4, minmax(0, 1fr))`, so a column cannot be widened by a
+        long label — ثانية and يوم differ by half again — and `numeric` puts the numerals
+        on tabular figures inside it, so the four pairs sit on a fixed pitch instead of
+        drifting with whatever the clock happens to say. The labels moved from 10px to the
+        card's one label size: a tenth tier existing for four words was the reason this row
+        read as a different piece of design from the rest of the page.
+      */}
+      <div className="mt-7 grid grid-cols-4">
         {cells.map((cell) => (
-          <div key={cell.label}>
+          <div key={cell.label} className="min-w-0">
             <span className="numeric block font-inv-body text-[2rem] leading-none font-semibold text-inv-ink">
               {cell.value.toString().padStart(2, '0')}
             </span>
-            <span className="mt-2 block font-inv-body text-[0.625rem] text-inv-muted">
+            <span className="mt-2 block font-inv-body text-[0.6875rem] leading-[1.4] text-inv-muted">
               {cell.label}
             </span>
           </div>
@@ -236,7 +285,7 @@ export function IwanInvitation({ view, copy }: { view: InvitationView; copy: Inv
         */}
         <IwanLegs style={{ top: `calc(${CROWN_HEIGHT_CSS} - 3px)` }} />
 
-        <div className="relative z-10 pb-20" style={{ paddingTop: CROWN_HEIGHT_CSS }}>
+        <div className="relative z-10 pb-24" style={{ paddingTop: CROWN_HEIGHT_CSS }}>
           {/* ----------------------------------------------------------- 1. names */}
           {/*
             56px, and it does not shrink. Qahiri is a single weight display Kufi with
@@ -251,7 +300,7 @@ export function IwanInvitation({ view, copy }: { view: InvitationView; copy: Inv
               className="text-center"
               nameClassName="text-[3.5rem] leading-[1.12]"
               separator={
-                <span className="my-2 block font-inv-body text-lg text-inv-accent" aria-hidden="true">
+                <span className="my-2 block font-inv-body text-[1.3125rem] text-inv-accent" aria-hidden="true">
                   {copy.nameSeparator}
                 </span>
               }
@@ -260,7 +309,10 @@ export function IwanInvitation({ view, copy }: { view: InvitationView; copy: Inv
 
           {/* ------------------------------------------------- 4. invitation line */}
           <Course tier={0} className="mt-10">
-            <p className="text-center font-inv-body text-[1.0625rem] leading-relaxed text-inv-ink text-pretty">
+            {/* 1.85, not `leading-relaxed`. That utility is 1.625, which is a Latin
+                measurement: Arabic hangs its dots below the baseline and stacks its
+                tashkeel above it, and the two collide well before 1.8. */}
+            <p className="text-center font-inv-body text-[1.0625rem] leading-[1.85] text-inv-ink text-pretty">
               {copy.inviteLine[view.eventType]}
             </p>
           </Course>
@@ -279,7 +331,17 @@ export function IwanInvitation({ view, copy }: { view: InvitationView; copy: Inv
           */}
           {copy.bismillah && copy.verse ? (
             <Course tier={0} bleed immediate delay={0.12} className="mt-14">
-              <div className="@container bg-inv-panel px-6 py-10 text-center">
+              {/*
+                14px of side padding, which looks arbitrary and is the opposite.
+
+                The field is laid 2px inside the legs, so 14 more puts its first glyph
+                exactly 16px clear of the inner face of the wall — the same GUTTER every
+                other block on the card is padded off its own leg by. The verse now shares
+                a text edge with the names above it instead of sitting 10px inside them,
+                which was the one place on this card where two blocks disagreed about
+                where the column was.
+              */}
+              <div className="@container bg-inv-panel px-3.5 py-10 text-center">
                 {/*
                   U+FDFD is a single ligature roughly eleven times wider than its font
                   size, so a size that suits ordinary text runs it off both edges of a
@@ -308,8 +370,8 @@ export function IwanInvitation({ view, copy }: { view: InvitationView; copy: Inv
             </Course>
           ) : null}
 
-          {/* ---------------------------------------------------------- 3. poetry */}
-
+          {/* 3. POETRY — the couple's own line, which now stands at the end of the card
+                rather than here. See block 12. */}
 
           {/* ----------------------------------------------------------- 5. roles */}
           <Haunch />
@@ -323,14 +385,14 @@ export function IwanInvitation({ view, copy }: { view: InvitationView; copy: Inv
           <Course tier={1}>
             <div className="text-center">
               <p className={LABEL}>{copy.roleGroom}</p>
-              <p className="mt-2 font-inv-body text-xl leading-snug font-semibold text-inv-ink text-balance">
+              <p className="mt-3 font-inv-body text-[1.3125rem] leading-snug font-semibold text-inv-ink text-balance">
                 {view.name1}
               </p>
 
               <IwanVoussoirStub className="my-7" />
 
               <p className={LABEL}>{copy.roleBride}</p>
-              <p className="mt-2 font-inv-body text-xl leading-snug font-semibold text-inv-ink text-balance">
+              <p className="mt-3 font-inv-body text-[1.3125rem] leading-snug font-semibold text-inv-ink text-balance">
                 {view.name2}
               </p>
             </div>
@@ -348,14 +410,23 @@ export function IwanInvitation({ view, copy }: { view: InvitationView; copy: Inv
             <div className="text-center">
               <p className={LABEL}>{date.weekday}</p>
 
-              <p className="mt-3 font-inv-display text-[4.25rem] leading-none text-inv-accent">
-                <span className="numeric">{date.day}</span>
+              {/*
+                The leading lives on the span and not only on the paragraph, and that is a
+                bug fix rather than a flourish. `:lang(ar)` sets line-height 1.6 in the
+                base layer and it matches this span directly, so an isolated numeral
+                quietly ignored the parent's `leading-none` and stood in a line box 1.6
+                times its own size: at 68px that was 109px of box around a 48px glyph, and
+                it is the whole reason the gaps around the date measured 75, 80 and 105
+                where the markup says 12, 12 and 28.
+              */}
+              <p className="mt-3 font-inv-display text-[2.75rem] text-inv-accent">
+                <span className="numeric block leading-none">{date.day}</span>
               </p>
 
               {/* Not isolated. This line mixes a month name with digits and bidi already
                   orders it correctly; forcing a direction is what puts an Arabic date the
                   wrong way round. Only the bare year is safe to isolate. */}
-              <p className="mt-3 font-inv-body text-base text-inv-ink">
+              <p className="mt-3 font-inv-body text-[1.3125rem] leading-[1.6] text-inv-ink">
                 {date.month} <span className="numeric">{date.year}</span>
               </p>
 
@@ -363,7 +434,7 @@ export function IwanInvitation({ view, copy }: { view: InvitationView; copy: Inv
 
               {/* Only the clock is isolated left to right. The period beside it is a
                   word, and forcing it would seat it on the wrong side in Arabic. */}
-              <p className="font-inv-body text-base text-inv-muted">
+              <p className="font-inv-body text-[1.0625rem] leading-[1.6] text-inv-muted">
                 {copy.labels.time}
                 <span className="mx-2 text-inv-accent">·</span>
                 <span className="numeric">{time.clock}</span> {time.period}
@@ -376,22 +447,39 @@ export function IwanInvitation({ view, copy }: { view: InvitationView; copy: Inv
             <div className="text-center">
               <p className={LABEL}>{copy.labels.venue}</p>
 
-              <p className="mt-2.5 font-inv-display text-[1.1875rem] leading-snug text-inv-ink text-balance">
+              <p className="mt-3 font-inv-display text-[1.3125rem] leading-snug text-inv-ink text-balance">
                 {view.venueName}
               </p>
 
               {/*
-                A solid bar across the whole current measure, so the one practical control
-                on the card is the width of the wall it stands in. No pin icon: the
-                shared one carries a circle, and this theme has no round shapes anywhere,
-                down to the confetti. The label already says where it goes.
+                A stone laid across the measure, not a slab jammed between the walls.
+
+                Two corrections to what stood here. It is inset 16px from the padding it
+                already had, so it clears the leg by 30px instead of 14 and stops reading
+                as a bar wedged into the frame — the one control on the card should stand
+                inside the hall, not brace it. And it is chamfered at the foot: a
+                symmetrical trapezoid is a keystone, which is the only shape this theme
+                draws, and square corners on the single filled rectangle of an arch-based
+                card were the one place the vocabulary broke.
+
+                No pin icon: the shared one carries a circle, and this theme has no round
+                shapes anywhere, down to the confetti. The label already says where it goes.
+
+                16px of side padding rather than 20, which is the difference between
+                "Open the venue in Maps" holding one line on a 360px Android and breaking
+                onto two: at 17px that string is 158px wide and the wider padding left it
+                154px. Both labels now sit on one line from 360 up.
+
+                The focus ring is pulled inside the box because a clip-path clips an
+                outline too, and cream on the accent is the readable pairing here.
               */}
               {view.venueMapUrl ? (
                 <a
                   href={view.venueMapUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="tap-target press mt-6 flex w-full items-center justify-center bg-inv-accent px-5 py-3 font-inv-body text-[0.9375rem] text-inv-bg"
+                  className="tap-target press mx-4 mt-7 flex items-center justify-center bg-inv-accent px-4 py-3.5 text-center font-inv-body text-[1.0625rem] text-inv-bg focus-visible:outline-2 focus-visible:outline-offset-[-6px] focus-visible:outline-inv-bg"
+                  style={{ clipPath: 'polygon(0 0, 100% 0, calc(100% - 12px) 100%, 12px 100%)' }}
                 >
                   {copy.labels.mapsButton}
                 </a>
@@ -411,33 +499,52 @@ export function IwanInvitation({ view, copy }: { view: InvitationView; copy: Inv
           {/* --------------------------------------------------------- 11. message */}
           {view.customMessage ? (
             <Course tier={3} className="mt-14">
-              <p className="text-center font-inv-body text-base leading-[1.9] text-inv-muted text-pretty">
+              <p className="text-center font-inv-body text-[1.0625rem] leading-[1.9] text-inv-muted text-pretty">
                 {view.customMessage}
               </p>
             </Course>
           ) : null}
 
-          {/* ---------------------------------------------------------- 12. footer */}
+          {/* ------------------------------------------------ 12. the couple's line */}
+          {/*
+            A Course at tier 3 like the two blocks above it, and that is a fix.
+
+            It used to be a tier 0 Course standing inside a wrapper that was already
+            padded to tier 3, so the two paddings added and the poetry sat 16px inside the
+            countdown and the message — the last words on the card were the only ones that
+            missed the column. Nesting a Course inside padding is the way this happens, so
+            there is now no wrapper: each of the last two blocks pads itself.
+
+            40 rather than 56 above it, because the stub below that gap is itself a
+            change-of-subject mark and carries 28 of its own. Countdown to poetry was 112px
+            of near-empty card with one small ornament adrift in the middle of it.
+          */}
+          {copy.poetry ? (
+            <Course tier={3} className="mt-10">
+              <IwanVoussoirStub className="mb-7" />
+              <p className="text-center font-inv-body text-[1.3125rem] leading-[1.9] text-inv-muted text-pretty">
+                {copy.poetry}
+              </p>
+            </Course>
+          ) : null}
+
+          {/* ---------------------------------------------------------- 13. footer */}
           {/*
             The last thing above the plinth. Padded to the narrowest tier like everything
             else here, so the credit sits inside the arch rather than under it, and the
             two legs run past it and meet on the floor.
+
+            The credit itself is a shared block and its anchor ships as a 17px line of
+            text, which is a link a thumb cannot reliably hit. The descendant variants give
+            it the house's 44px without reaching into sections.tsx, and drop it onto the
+            card's one label size so it stops being a seventh tier that exists for six
+            words.
           */}
           <div
-            className="text-center"
+            className="text-center [&_a]:inline-flex [&_a]:min-h-11 [&_a]:items-center [&_a]:justify-center [&_a]:px-4 [&_a]:text-[0.6875rem]"
             style={{ paddingInline: TIER_INSET[3] + GUTTER }}
           >
-            {/* Empty when the couple chose no line. */}
-            {copy.poetry ? (
-              <Course tier={0} className="mt-14">
-                <IwanVoussoirStub className="mb-8" />
-                <p className="text-center font-inv-body text-[1.125rem] leading-[1.9] text-inv-muted text-pretty">
-                  {copy.poetry}
-                </p>
-              </Course>
-            ) : null}
-
-            <FooterBlock view={view} ornament={<IwanVoussoirStub className="mb-8" />} />
+            <FooterBlock view={view} ornament={<IwanVoussoirStub keystone className="mb-7" />} />
           </div>
         </div>
       </div>

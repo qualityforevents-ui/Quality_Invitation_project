@@ -9,6 +9,7 @@ import {
   formatNetigaDigits,
 } from './NetigaOrnaments';
 import { EASE_OUT as EASE } from '@/lib/motion';
+import { cn } from '@/lib/cn';
 import { formatEventDateParts } from '@/lib/format';
 import type { InvitationCopy } from '@/i18n/invitation';
 import type { InvitationView } from '@/lib/invitation-view';
@@ -25,10 +26,29 @@ const CONTAINER_VARIANTS: Variants = {
   open: { opacity: 0, transition: { duration: 0.35, delay: 0.7, ease: EASE } },
 };
 
-const TEAR_LEAF_VARIANTS: Variants = {
+/*
+ * The tear, mirrored.
+ *
+ * The leaf pivots about the punch hole on its INLINE-START edge, so the hinge is on
+ * the left of an English card and on the right of an Arabic one — and the free edge
+ * has to swing away from that hinge, which means the rotation reverses with it. A
+ * single physical `origin-top-left` plus a fixed +4° tears an Arabic card off its
+ * bound edge, which is the one thing a calendar pad cannot do.
+ */
+const TEAR_LEAF_VARIANTS_LTR: Variants = {
   closed: { rotate: 0, y: 0, opacity: 1 },
   open: {
     rotate: 4,
+    y: -80,
+    opacity: 0,
+    transition: { duration: 0.64, ease: EASE },
+  },
+};
+
+const TEAR_LEAF_VARIANTS_RTL: Variants = {
+  closed: { rotate: 0, y: 0, opacity: 1 },
+  open: {
+    rotate: -4,
     y: -80,
     opacity: 0,
     transition: { duration: 0.64, ease: EASE },
@@ -45,6 +65,8 @@ export function NetigaCover({
   onOpen: () => void;
 }) {
   const [opening, setOpening] = useState(false);
+
+  const isRtl = view.lang === 'AR';
 
   // Today's date for closed cover
   const todayParts = formatEventDateParts(new Date(), view.lang);
@@ -112,14 +134,24 @@ export function NetigaCover({
 
         {/* Active / Tearing top leaf */}
         <motion.div
-          className="relative rounded-sm bg-inv-panel shadow-lg border border-inv-line/40 origin-top-left"
-          variants={TEAR_LEAF_VARIANTS}
+          className={cn(
+            'relative rounded-sm border border-inv-line/40 bg-inv-panel shadow-lg',
+            isRtl ? 'origin-top-right' : 'origin-top-left',
+          )}
+          variants={isRtl ? TEAR_LEAF_VARIANTS_RTL : TEAR_LEAF_VARIANTS_LTR}
         >
           <TornEdge className="absolute -top-3 inset-x-0" />
           <CalendarHeaderBand title={displayWeekday} />
 
           <div className="flex flex-col items-center justify-center px-4 py-4 sm:py-6 text-center">
-            <p className="font-inv-body text-[11px] tracking-widest text-inv-muted uppercase">
+            {/* Letter-spacing is what makes a line of Latin small caps readable and what
+                pulls an Arabic word apart at its joins, so it is applied by language. */}
+            <p
+              className={cn(
+                'font-inv-body text-[11px] text-inv-muted',
+                isRtl ? '' : 'uppercase tracking-widest',
+              )}
+            >
               {copy.eventName[view.eventType]}
             </p>
 
@@ -132,7 +164,7 @@ export function NetigaCover({
               {displayMonth} <span className="numeric">{formatNetigaDigits(displayYear, view.lang)}</span>
             </p>
 
-            <p className="mt-3 font-inv-body text-xs text-inv-muted tracking-wider">
+            <p className="mt-3 font-inv-body text-xs text-inv-muted">
               {view.name1} {copy.nameSeparator} {view.name2}
             </p>
           </div>
@@ -144,7 +176,7 @@ export function NetigaCover({
         <button
           type="button"
           onClick={handleOpen}
-          className="tap-target press rounded bg-inv-accent px-8 py-2.5 sm:py-3 font-inv-body text-xs sm:text-sm font-semibold text-white shadow-md transition hover:opacity-90 active:scale-95"
+          className="tap-target press rounded bg-inv-accent px-8 py-2.5 sm:py-3 font-inv-body text-xs sm:text-sm font-semibold text-white shadow-md hover:opacity-90"
         >
           {copy.openButton}
         </button>

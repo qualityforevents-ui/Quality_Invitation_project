@@ -22,42 +22,56 @@ import { cn } from '@/lib/cn';
 /**
  * The serpentine, authored by hand.
  *
- * Nine points on an alternating axis, joined by cubics whose control handles are all
+ * Fifteen points on an alternating axis, joined by cubics whose control handles are all
  * vertical, so every junction is smooth and the stem climbs rather than zig-zags. It was
  * placed by eye and then written down; a procedurally wiggled path — a sine, a random
  * walk, anything generated — is recognisably synthetic within about a second of looking
  * at it, and that recognition is the entire difference between a botanical plate and a
  * decorative border.
  *
- * The viewBox is 56 wide by 1000 tall and the SVG is drawn with
- * `preserveAspectRatio="none"`, so the stem stretches to whatever height the card turns
- * out to be. Stretching is safe for this shape and only this shape: a smooth serpentine
- * under vertical scale stays a smooth serpentine, it merely becomes gentler on a long
- * card and tighter on a short one, which is what a real climbing stem does when it has
- * more or less wall to cover. Nothing else in this file is ever put inside that stretched
- * box — every leaf, bud and blossom is its own fixed-aspect SVG positioned over the top,
- * because a stretched leaf is instantly wrong.
+ * The viewBox is 56 wide and the SVG is drawn with `preserveAspectRatio="none"`, so the
+ * stem stretches to whatever height the card turns out to be. Stretching is safe for this
+ * shape and only this shape: a smooth serpentine under vertical scale stays a smooth
+ * serpentine, it merely becomes gentler on a long card and tighter on a short one, which
+ * is what a real climbing stem does when it has more or less wall to cover. Nothing else
+ * in this file is ever put inside that stretched box — every leaf, bud and blossom is its
+ * own fixed-aspect SVG positioned over the top, because a stretched leaf is instantly
+ * wrong.
+ *
+ * HOW MANY POINTS IS A CORRECTNESS QUESTION, NOT A TASTE ONE. The viewBox height is what
+ * gets stretched onto the finished card, so the number of waves in it is the number of
+ * waves the guest sees, whatever the card's length. Nine points over a 1000-tall box put
+ * eight waves on a ~2000px card: one wave every 250px, carrying eighteen pixels of
+ * sideways travel. At that ratio the curve is under five degrees off vertical and the
+ * vine renders as a straight line with a slight lean — which is exactly what it did.
+ * Fifteen points hold the authored proportion (roughly one wave per 150px of real card)
+ * so the serpentine survives the stretch, and the shorter sub-paths also bound each
+ * scroll repaint more tightly than the eight did.
+ *
+ * The x values are placed by eye and irregular on purpose. A vine whose every wave has
+ * the same amplitude is a sine, and a sine is recognisably synthetic within a second of
+ * looking at it.
  */
-const STEM_X = [28, 19, 37, 21, 35, 19, 36, 23, 29];
+const STEM_X = [30, 18, 37, 21, 34, 17, 36, 22, 38, 19, 33, 20, 37, 24, 30];
 const STEM_SEGMENT_HEIGHT = 125;
 
 /** The vertical pull on each control handle. Tuned by eye against the 125px segment. */
 const HANDLE = 46;
 
 /**
- * Eight sub-paths with shared endpoints, and not one long path.
+ * Fourteen sub-paths with shared endpoints, and not one long path.
  *
  * The vine is drawn by scroll, which means a `stroke-dashoffset` that changes every
  * frame. On one path spanning the whole document that is a repaint of a region as tall
  * as the card on every frame of every scroll, and it is the single thing in this theme
- * that genuinely stutters on a mid-range Android. Split into eighths, only the one or
- * two segments actually crossing the viewport are ever changing, and each repaint is
- * bounded by a segment rather than by the length of the invitation.
+ * that genuinely stutters on a mid-range Android. Split up, only the one or two segments
+ * actually crossing the viewport are ever changing, and each repaint is bounded by a
+ * segment rather than by the length of the invitation.
  *
  * The endpoints are shared rather than merely close: segment n ends exactly where
- * segment n+1 begins, so the eight strokes read as one stem with no seam.
+ * segment n+1 begins, so the fourteen strokes read as one stem with no seam.
  */
-export const STEM_SEGMENTS: string[] = Array.from({ length: 8 }, (_, i) => {
+export const STEM_SEGMENTS: string[] = Array.from({ length: STEM_X.length - 1 }, (_, i) => {
   const y0 = i * STEM_SEGMENT_HEIGHT;
   const y1 = y0 + STEM_SEGMENT_HEIGHT;
   const x0 = STEM_X[i];
@@ -66,7 +80,7 @@ export const STEM_SEGMENTS: string[] = Array.from({ length: 8 }, (_, i) => {
   return `M${x0} ${y0} C${x0} ${y0 + HANDLE}, ${x1} ${y1 - HANDLE}, ${x1} ${y1}`;
 });
 
-export const STEM_VIEWBOX = { width: 56, height: STEM_SEGMENT_HEIGHT * 8 };
+export const STEM_VIEWBOX = { width: 56, height: STEM_SEGMENT_HEIGHT * (STEM_X.length - 1) };
 
 /* ---------------------------------------------------------------- the growths */
 
@@ -161,6 +175,46 @@ export function JasmineBud({ className }: { className?: string }) {
         <path d="M12 25 C11 28, 11 30, 12 33" strokeLinecap="round" />
         <path d="M12 25 C8 24, 6 22, 5 19" strokeLinecap="round" />
         <path d="M12 25 C16 24, 18 22, 19 19" strokeLinecap="round" />
+      </g>
+    </svg>
+  );
+}
+
+/**
+ * A tendril: the curl a climbing jasmine puts out to grab the wall, with one leaf on it.
+ *
+ * The vocabulary needed a third and a fourth mark, and this is the honest place to get
+ * them. The ornament is an index of the sections, and an index whose every entry is the
+ * same glyph indexes nothing — with only a leaf node, a bud and an open flower to hand,
+ * six of the nine growths on a full card were the same two-leaf node at slightly
+ * different sizes, which reads as a repeated decoration rather than as a mark that means
+ * "this block". A tendril and a three-leaf sprig are both things a real jasmine does, so
+ * the one-species rule is intact and the marks are now distinguishable at a glance.
+ */
+export function JasmineTendril({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 30 34" fill="none" className={cn('h-full w-full', className)} aria-hidden="true">
+      <g stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round">
+        {/* The curl. It leaves the stem, runs down, and closes on itself. */}
+        <path
+          d="M5 3 C11 10, 14 18, 13 26 C12.4 30.4, 16 32.6, 18.6 30.4 C20.6 28.6, 19.6 25.6, 16.4 26.2"
+          strokeLinecap="round"
+        />
+        <path d="M9 9 C16 5, 23 7, 26 13 C18 17, 11 15, 9 9 Z" />
+      </g>
+    </svg>
+  );
+}
+
+/** Three leaves off one short shoot. The fuller mark, for the closing blocks. */
+export function LeafSprig({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 32 34" fill="none" className={cn('h-full w-full', className)} aria-hidden="true">
+      <g stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round">
+        <path d="M6 3 C12 11, 15 20, 15 31" strokeLinecap="round" opacity="0.7" />
+        <path d="M10 8 C17 4, 24 6, 27 12 C19 16, 12 14, 10 8 Z" />
+        <path d="M13 17 C7 14, 3 9, 3 3 C10 6, 14 11, 13 17 Z" />
+        <path d="M15 24 C22 21, 28 23, 30 28 C23 31, 17 29, 15 24 Z" />
       </g>
     </svg>
   );

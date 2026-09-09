@@ -6,7 +6,9 @@ import {
   BobbinDivider,
   HexagonalVoid,
   LATTICE_TILE,
+  LATTICE_TILE_SIZE,
   SixLobedRosette,
+  TurnedGrille,
 } from './MashrabiyaOrnaments';
 import { useCountdownParts } from '@/components/invitation/Countdown';
 import { Reveal } from '@/components/invitation/Reveal';
@@ -18,10 +20,33 @@ import type { InvitationView } from '@/lib/invitation-view';
 /**
  * مشربية, revealed. The axis is APERTURE.
  *
- * Content does not sit on a page; it sits in holes cut through a turned-wood lattice screen.
- * Consecutive voids alternate which side they hang from (center -> start -> end -> center).
- * The usable measure inside each hexagonal void is 244px.
- * The lattice ground parallaxes at 0.35x on scroll.
+ * Content does not sit on a page; it sits in holes cut through a turned-wood lattice
+ * screen. Nothing here may become a column of cards on a plain ground: the lattice must
+ * stay full-bleed and visible between the voids, the voids must stay opaque holes with
+ * a cut edge, and consecutive voids must keep hanging from alternating sides. Centring
+ * the stack, dropping the lattice, or letting a block sit on the ground with no rim
+ * would each end the theme.
+ *
+ * THE STAGGER. Three positions, one 28px step: a void is the column less that step, hung
+ * inline-start, centred, or hung inline-end. Consecutive voids rotate through the three,
+ * so no two neighbours share a side and every edge in the card is one of two values.
+ * The rotation survives the optional blocks — the verse (Arabic only), the couple's
+ * message and the couple's own line — because the sequence was assigned against the
+ * order they actually render in.
+ *
+ * VERTICAL RHYTHM. One scale, and every gap on the card is a member of it:
+ *   56px  between voids (gap-14) — the band of solid lattice the theme is named for
+ *   28px  between the parts of a void (mt-7 / my-7)
+ *   20px  between a group and what follows it (mt-5 / my-5)
+ *   12px  between lines of one statement (mt-3)
+ *    8px  between a label and its value (mt-2)
+ *
+ * TYPE SCALE. 12 / 14 / 17 / 21 / 28 / 40, then the names on top. Each tier is roughly
+ * 1.25-1.4x the one below it, so nothing on the card steps from a numeral straight to a
+ * caption. Arabic body copy never goes below 1.9 leading.
+ *
+ * MEASURE. 244px at a 360px viewport — the void less its side padding. Identical in
+ * every void; only the stagger moves it.
  */
 
 function MashrabiyaCountdown({
@@ -37,7 +62,7 @@ function MashrabiyaCountdown({
   const { totalSeconds, hasPassed } = useCountdownParts(targetMs);
 
   if (hasPassed) {
-    return <p className="font-inv-display text-lg text-inv-accent">{copy.labels.started[eventType]}</p>;
+    return <p className="font-inv-display text-[21px] text-inv-accent">{copy.labels.started[eventType]}</p>;
   }
 
   const cells = [
@@ -48,13 +73,13 @@ function MashrabiyaCountdown({
   ];
 
   return (
-    <div className="grid grid-cols-4 gap-2 text-center">
+    <div className="grid grid-cols-4 gap-1 text-center">
       {cells.map((cell) => (
         <div key={cell.label} className="flex flex-col items-center">
-          <span className="font-inv-display text-2xl font-bold leading-none text-inv-accent">
+          <span className="numeric font-inv-display text-[28px] leading-none font-bold text-inv-accent">
             {cell.value.toString().padStart(2, '0')}
           </span>
-          <span className="mt-1 font-inv-body text-[9px] text-inv-muted">
+          <span className="mt-2 font-inv-body text-[12px] text-inv-muted">
             {cell.label}
           </span>
         </div>
@@ -82,83 +107,96 @@ export function MashrabiyaInvitation({ view, copy }: { view: InvitationView; cop
   return (
     <div
       ref={containerRef}
-      className="relative min-h-dvh overflow-hidden bg-inv-bg text-inv-ink px-3 py-16"
+      className="relative min-h-dvh overflow-hidden bg-inv-bg px-5 pt-12 pb-20 text-inv-ink"
     >
-      {/* Scroll-linked full bleed turned-wood lattice layer */}
+      {/*
+        Scroll-linked full bleed turned-wood lattice layer.
+
+        `backgroundSize` is not optional and not a tuning knob: without it the three
+        gradients size themselves to the viewport and paint one ring in the corner
+        instead of a screen. See the note on LATTICE_TILE_SIZE.
+      */}
       <motion.div
-        className="pointer-events-none fixed inset-0 z-0 opacity-40 select-none will-change-transform"
+        className="pointer-events-none fixed inset-0 z-0 opacity-70 select-none will-change-transform"
         style={{
           y: latticeY,
           backgroundImage: LATTICE_TILE,
+          backgroundSize: LATTICE_TILE_SIZE,
         }}
         aria-hidden="true"
       />
 
       {/* Main Stream of Alternating Hexagonal Aperture Voids */}
-      <div className="relative z-10 mx-auto flex w-full max-w-[420px] flex-col">
+      <div className="relative z-10 mx-auto flex w-full max-w-[350px] flex-col gap-14">
 
-        {/* 1. NAMES: center void, 380px tall with 180px rosette behind at 30% */}
+        {/* 1. NAMES: centred void, the rosette as its crest */}
         <Reveal immediate>
-          <HexagonalVoid align="center" className="min-h-[380px] flex flex-col justify-center">
-            <div className="relative z-10 py-4">
-              {/*
-                The rosette is over the names, not under them.
+          <HexagonalVoid align="center">
+            {/*
+              The rosette is over the names, not under them.
 
-                A 180px rosette at 30% centred on inset-0 put its lobes straight through
-                the couple's names — and a shape that reads through type is not a
-                watermark, it is interference. Turned into a crest at the head of the
-                void, it still fills the hexagonal opening the theme is built on and the
-                names get their own air.
-              */}
-              <span className="mb-5 flex justify-center text-inv-accent-soft" aria-hidden="true">
-                <SixLobedRosette size={92} />
-              </span>
+              A 180px rosette at 30% centred on inset-0 put its lobes straight through
+              the couple's names — and a shape that reads through type is not a
+              watermark, it is interference. Turned into a crest at the head of the
+              void, it still fills the hexagonal opening the theme is built on and the
+              names get their own air.
+            */}
+            <span className="mb-7 flex justify-center text-inv-accent-soft" aria-hidden="true">
+              <SixLobedRosette size={108} />
+            </span>
 
-              {copy.familiesPrefix ? (
-                <p className="mb-3 font-inv-body text-xs text-inv-muted tracking-wider">
-                  {copy.familiesPrefix}
-                </p>
-              ) : null}
-
-              <h1 className="font-inv-display text-[2.75rem] font-bold leading-tight text-inv-ink text-balance">
-                <span className="block">{view.name1}</span>
-                <span className="my-1.5 block text-xl text-inv-accent font-normal" aria-hidden="true">
-                  {copy.nameSeparator}
-                </span>
-                <span className="block">{view.name2}</span>
-              </h1>
-
-              <p className="mt-4 font-inv-body text-xs uppercase tracking-widest text-inv-accent">
-                {copy.eventName[view.eventType]}
+            {copy.familiesPrefix ? (
+              <p className="mb-5 font-inv-body text-[12px] tracking-[0.16em] text-inv-muted">
+                {copy.familiesPrefix}
               </p>
-            </div>
+            ) : null}
+
+            {/*
+              The names are the one place the measure can be beaten by a single long
+              word, so the size is bound to the viewport as well as capped: عبد الرحمن
+              at a flat 44px is wider than the 244px measure on a 360px Android.
+            */}
+            <h1 className="font-inv-display text-[length:clamp(2.1rem,11.5vw,2.75rem)] leading-[1.18] font-bold text-inv-ink text-balance">
+              <span className="block">{view.name1}</span>
+              <span className="my-2 block text-[21px] font-normal text-inv-accent" aria-hidden="true">
+                {copy.nameSeparator}
+              </span>
+              <span className="block">{view.name2}</span>
+            </h1>
+
+            <p className="mt-5 font-inv-body text-[12px] tracking-[0.2em] text-inv-accent uppercase">
+              {copy.eventName[view.eventType]}
+            </p>
           </HexagonalVoid>
         </Reveal>
 
         {/* 4. INVITATION LINE: inline-end hung void */}
         <Reveal>
           <HexagonalVoid align="end">
-            <p className="font-inv-body text-[17px] leading-relaxed text-inv-ink text-pretty py-2">
+            <p className="font-inv-body text-[17px] leading-[1.9] text-inv-ink text-pretty">
               {copy.inviteLine[view.eventType]}
             </p>
           </HexagonalVoid>
         </Reveal>
 
-        {/* 2. BISMILLAH + VERSE: inline-start hung void, 300px tall */}
+        {/* 2. BISMILLAH + VERSE: inline-start hung void. The void is opaque, so the
+            Qur'anic text never sits over the lattice. */}
         {copy.bismillah && copy.verse ? (
           <Reveal>
-            <HexagonalVoid align="start" className="min-h-[300px] flex flex-col justify-center">
+            <HexagonalVoid align="start">
+              {/* U+FDFD is around eleven times wider than its font size, so it is sized
+                  against the measure rather than against a fixed number. */}
               <p
-                className="font-inv-verse text-2xl text-inv-accent"
+                className="font-inv-verse text-[length:min(1.5rem,8cqw)] leading-[1.4] text-inv-accent"
                 aria-label="بسم الله الرحمن الرحيم"
               >
                 {copy.bismillah}
               </p>
-              <p className="mt-3 font-inv-verse text-[1.0625rem] leading-[2] text-inv-ink text-pretty">
+              <p className="mt-7 font-inv-verse text-[17px] leading-[2] text-inv-ink text-pretty">
                 {copy.verse}
               </p>
               {copy.verseSource ? (
-                <p className="mt-2 font-inv-body text-[11px] text-inv-muted">
+                <p className="mt-3 font-inv-body text-[12px] tracking-[0.1em] text-inv-muted">
                   {copy.verseSource}
                 </p>
               ) : null}
@@ -166,94 +204,92 @@ export function MashrabiyaInvitation({ view, copy }: { view: InvitationView; cop
           </Reveal>
         ) : null}
 
-        {/* 5. ROLES: center void with bobbin divider */}
+        {/* 5. ROLES: centred void, a three-bobbin run between the two people */}
         <Reveal>
           <HexagonalVoid align="center">
-            <div className="py-2">
-              <div>
-                <span className="font-inv-body text-[11px] text-inv-muted [word-spacing:0.3em] uppercase">
-                  {copy.roleGroom}
-                </span>
-                <p className="mt-1 font-inv-body text-lg font-bold text-inv-ink">
-                  {view.name1}
-                </p>
-              </div>
+            <p className="font-inv-body text-[12px] tracking-[0.18em] text-inv-muted uppercase [word-spacing:0.3em]">
+              {copy.roleGroom}
+            </p>
+            <p className="mt-2 font-inv-body text-[21px] font-bold text-inv-ink text-balance">
+              {view.name1}
+            </p>
 
-              <BobbinDivider className="my-3" />
+            <BobbinDivider className="my-7" />
 
-              <div>
-                <span className="font-inv-body text-[11px] text-inv-muted [word-spacing:0.3em] uppercase">
-                  {copy.roleBride}
-                </span>
-                <p className="mt-1 font-inv-body text-lg font-bold text-inv-ink">
-                  {view.name2}
-                </p>
-              </div>
-            </div>
+            <p className="font-inv-body text-[12px] tracking-[0.18em] text-inv-muted uppercase [word-spacing:0.3em]">
+              {copy.roleBride}
+            </p>
+            <p className="mt-2 font-inv-body text-[21px] font-bold text-inv-ink text-balance">
+              {view.name2}
+            </p>
           </HexagonalVoid>
         </Reveal>
 
-        {/* 6. PHOTO / NO PHOTO VOID */}
+        {/* 6. PHOTO: inline-end hung void. The photograph fills the opening; with no
+            photograph the opening shows the screen itself. */}
         <Reveal>
-          <HexagonalVoid align="start">
+          <HexagonalVoid align="end">
             {hasPhoto ? (
-              <div className="relative mx-auto inline-block overflow-hidden rounded-2xl border-2 border-inv-accent-soft p-1">
+              <div className="overflow-hidden rounded-[20px] border-2 border-inv-accent-soft p-1">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={view.photoUrl!}
                   alt={`${view.name1} & ${view.name2}`}
                   loading="lazy"
                   onError={() => setPhotoFailed(true)}
-                  className="block h-[220px] w-[200px] rounded-xl object-cover"
+                  className="block h-[220px] w-full rounded-[16px] object-cover"
                 />
               </div>
             ) : (
-              <div className="flex justify-center py-4">
-                <SixLobedRosette size={160} />
-              </div>
+              <span className="flex justify-center" aria-hidden="true">
+                <TurnedGrille size={150} />
+              </span>
             )}
           </HexagonalVoid>
         </Reveal>
 
-        {/* 7 & 8. DATE & TIME: inline-start hung void */}
+        {/* 7 & 8. DATE & TIME: inline-start hung void, one bobbin at the seam */}
         <Reveal>
-          <HexagonalVoid align="end" className="min-h-[240px] flex flex-col justify-center">
-            <p className="font-inv-body text-[11px] text-inv-muted uppercase tracking-wider">
+          <HexagonalVoid align="start">
+            <p className="font-inv-body text-[14px] tracking-[0.14em] text-inv-muted">
               {date.weekday}
             </p>
-            <p className="mt-1 font-inv-display text-5xl font-bold leading-none text-inv-accent">
+            <p className="mt-3 font-inv-display text-[40px] font-bold leading-none text-inv-accent">
               <span className="numeric">{date.day}</span>
             </p>
-            <p className="mt-2 font-inv-display text-base text-inv-ink">
+            <p className="mt-3 font-inv-display text-[21px] text-inv-ink">
               {date.month} <span className="numeric">{date.year}</span>
             </p>
 
-            <BobbinDivider className="my-2" />
+            <BobbinDivider count={1} className="my-5" />
 
-            <p className="font-inv-body text-sm text-inv-muted">
-              {copy.labels.time}: <span className="numeric font-semibold">{time.clock}</span> {time.period}
+            <p className="font-inv-body text-[14px] text-inv-muted">
+              {copy.labels.time}: <span className="numeric font-semibold text-inv-ink">{time.clock}</span> {time.period}
             </p>
           </HexagonalVoid>
         </Reveal>
 
-        {/* 9. VENUE: center void with Maps button */}
+        {/* 9. VENUE: centred void with the Maps button inside it, never over lattice */}
         <Reveal>
           <HexagonalVoid align="center">
-            <p className="font-inv-body text-[11px] text-inv-muted uppercase tracking-wider">
+            <p className="font-inv-body text-[12px] tracking-[0.18em] text-inv-muted uppercase">
               {copy.labels.venue}
             </p>
-            <p className="mt-1.5 font-inv-body text-lg font-medium text-inv-ink text-balance">
+            <p className="mt-2 font-inv-body text-[21px] font-medium text-inv-ink text-balance">
               {view.venueName}
             </p>
 
             {view.venueMapUrl ? (
+              /* Full measure rather than a hugging pill: موقع القاعة على الخريطة is a
+                 six-word label, and a pill sized to it overruns the 204px measure of a
+                 320px phone. At full width it wraps instead of overflowing. */
               <a
                 href={view.venueMapUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="tap-target press mt-4 inline-flex items-center gap-2 rounded-full border border-inv-accent px-6 py-2 font-inv-body text-xs font-semibold text-inv-accent transition hover:bg-inv-panel active:scale-95"
+                className="tap-target press mt-5 flex w-full items-center justify-center gap-2 rounded-full border border-inv-accent px-4 py-3 font-inv-body text-[14px] font-semibold text-inv-accent hover:bg-inv-panel"
               >
-                <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4 shrink-0" aria-hidden="true">
                   <path
                     d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11Z"
                     stroke="currentColor"
@@ -267,50 +303,60 @@ export function MashrabiyaInvitation({ view, copy }: { view: InvitationView; cop
           </HexagonalVoid>
         </Reveal>
 
-        {/* 10. COUNTDOWN: wide 170px void */}
+        {/* 10. COUNTDOWN: inline-end hung void */}
         <Reveal>
-          <HexagonalVoid align="start" className="min-h-[170px] flex flex-col justify-center">
-            <p className="mb-3 font-inv-body text-xs text-inv-muted">
+          <HexagonalVoid align="end">
+            <p className="font-inv-body text-[12px] tracking-[0.14em] text-inv-muted">
               {copy.labels.countdownHeading[view.eventType]}
             </p>
-            <MashrabiyaCountdown targetMs={view.eventInstantMs} copy={copy} eventType={view.eventType} />
+            <div className="mt-5">
+              <MashrabiyaCountdown targetMs={view.eventInstantMs} copy={copy} eventType={view.eventType} />
+            </div>
           </HexagonalVoid>
         </Reveal>
 
-        {/* 11. MESSAGE: inline-end void */}
+        {/* 11. MESSAGE: centred void, so the rotation still alternates when it is absent
+            and the couple's own line follows the countdown directly. */}
         {view.customMessage ? (
           <Reveal>
-            <HexagonalVoid align="end">
-              <p className="font-inv-body text-sm leading-relaxed text-inv-muted text-pretty py-2">
+            <HexagonalVoid align="center">
+              <p className="font-inv-body text-[17px] leading-[1.9] text-inv-muted text-pretty">
                 {view.customMessage}
               </p>
             </HexagonalVoid>
           </Reveal>
         ) : null}
 
-        {/* 12. FOOTER: small center void */}
-        {/* Empty when the couple chose no line. */}
+        {/* 3. THE COUPLE'S OWN LINE: inline-start hung void. Empty when they chose none. */}
         {copy.poetry ? (
-          <HexagonalVoid align="center" className="min-h-[200px] flex flex-col justify-center">
-            <BobbinDivider className="my-2" />
-            <p className="font-inv-body text-base leading-[1.9] text-inv-muted text-pretty">
-              {copy.poetry}
-            </p>
-          </HexagonalVoid>
+          <Reveal>
+            <HexagonalVoid align="start">
+              <BobbinDivider className="mb-5" />
+              <p className="font-inv-body text-[17px] leading-[1.9] text-inv-muted text-pretty">
+                {copy.poetry}
+              </p>
+            </HexagonalVoid>
+          </Reveal>
         ) : null}
 
-        <footer className="my-8 text-center">
-          <HexagonalVoid align="center" className="py-4">
-            <BobbinDivider className="my-1" />
-            <a
-              href={SITE_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-inv-body text-[11px] text-inv-muted transition hover:text-inv-accent"
-            >
-              {view.lang === 'AR' ? 'صنع بواسطة qlty.events' : 'Made with qlty.events'}
-            </a>
-          </HexagonalVoid>
+        {/*
+          12. FOOTER CREDIT: on the screen, not in a hole.
+
+          It had a void of its own, with the same rim and the same bobbin run as the
+          couple's line above it, which gave a platform credit the weight of the
+          invitation. The voids are for the invitation. This is the one thing on the
+          page that is not part of it, so it sits on the lattice — quiet, and still a
+          44px target because it is the only other thing on the card you can tap.
+        */}
+        <footer className="text-center">
+          <a
+            href={SITE_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="tap-target press inline-flex items-center justify-center px-4 font-inv-body text-[12px] tracking-[0.08em] text-inv-muted hover:text-inv-accent"
+          >
+            {view.lang === 'AR' ? 'صنع بواسطة qlty.events' : 'Made with qlty.events'}
+          </a>
         </footer>
       </div>
     </div>
