@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, type FormEvent } from 'react';
+import { useRef, useState, type FormEvent } from 'react';
 import { Check } from 'lucide-react';
 import { SectionShell } from './SectionShell';
 import { Badge } from '@/components/ui/badge';
@@ -383,6 +383,13 @@ function VerseOption({
  *
  * Deliberately not `hidden`, `display: none`, or zero-sized. An input in any of those
  * states cannot be focused on iOS, and the picker would simply never open.
+ *
+ * Desktop Chrome needs one more thing. It only opens the picker when the click lands on
+ * the little calendar indicator at the end of the field — a click on the value itself
+ * just puts a caret in it. That indicator is invisible here along with the rest of the
+ * input, so on a laptop the box looked dead: the customer clicked the middle of it,
+ * nothing happened, and there was no icon to aim at. `showPicker()` opens it from any
+ * click on the box, which is what mobile Safari already did on its own.
  */
 function NativePickerField({
   type,
@@ -404,6 +411,22 @@ function NativePickerField({
   invalid?: boolean;
   onChange: (next: string) => void;
 }) {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  /**
+   * Best effort, always. `showPicker()` throws where the browser will not honour it —
+   * no user activation, a cross-origin frame — and every one of those cases is a browser
+   * that either opens the picker itself or cannot open one at all. Swallowing the error
+   * leaves the field exactly as usable as it was before.
+   */
+  function openPicker() {
+    try {
+      inputRef.current?.showPicker();
+    } catch {
+      /* the browser declined; its own click handling still stands */
+    }
+  }
+
   return (
     <div
       className={cn(
@@ -421,10 +444,21 @@ function NativePickerField({
       </span>
 
       <input
+        ref={inputRef}
         type={type}
         value={value}
         min={min}
         onChange={(event) => onChange(event.target.value)}
+        onClick={openPicker}
+        // A keyboard user tabs to the field and presses Enter or Space, and gets the same
+        // picker the mouse gets. Enter would otherwise submit the form and skip the
+        // question entirely.
+        onKeyDown={(event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            openPicker();
+          }
+        }}
         aria-label={label}
         aria-invalid={invalid ? true : undefined}
         className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
