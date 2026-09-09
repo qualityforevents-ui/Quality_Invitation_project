@@ -64,6 +64,7 @@ export const MUSIC_TRACKS: MusicTrack[] = [
 ];
 
 export const DEFAULT_MUSIC_TRACK_ID = 'fostanek-al-abyad';
+export const NO_MUSIC_TRACK_ID = 'none';
 
 const TRACKS_BY_ID = new Map(MUSIC_TRACKS.map((track) => [track.id, track]));
 
@@ -79,29 +80,35 @@ const TRACK_ALIASES: Record<string, string> = {
   'joyful-zaffa': 'elfarh-malena',
 };
 
-export function getTrack(id: string | null | undefined): MusicTrack {
+export function getTrack(id: string | null | undefined): MusicTrack | null {
+  if (id === NO_MUSIC_TRACK_ID) return null;
   if (id) {
     const resolvedId = TRACK_ALIASES[id] ?? id;
     const found = TRACKS_BY_ID.get(resolvedId);
     if (found) return found;
+    // An unknown id means a track was retired after an invitation chose it. Falling
+    // back keeps that invitation playing rather than leaving it silent.
+    return TRACKS_BY_ID.get(DEFAULT_MUSIC_TRACK_ID) ?? MUSIC_TRACKS[0];
   }
-  // An unknown id means a track was retired after an invitation chose it. Falling
-  // back keeps that invitation playing rather than leaving it silent.
-  return TRACKS_BY_ID.get(DEFAULT_MUSIC_TRACK_ID) ?? MUSIC_TRACKS[0];
+  return null;
 }
 
 export function isValidTrackId(id: string): boolean {
-  return TRACKS_BY_ID.has(id) || id in TRACK_ALIASES;
+  return id === NO_MUSIC_TRACK_ID || TRACKS_BY_ID.has(id) || id in TRACK_ALIASES;
 }
 
-export function trackUrl(track: MusicTrack): string {
+export function trackUrl(track: MusicTrack | null): string {
+  if (!track) return '';
   return `/music/${encodeURIComponent(track.file)}`;
 }
 
-export function trackName(track: MusicTrack, lang: 'AR' | 'EN'): string {
+export function trackName(track: MusicTrack | null, lang: 'AR' | 'EN'): string {
+  if (!track) return lang === 'AR' ? 'بدون موسيقى' : 'No music';
   return lang === 'AR' ? track.nameAr : track.nameEn;
 }
 
-export function trackMood(track: MusicTrack, lang: 'AR' | 'EN'): string {
+export function trackMood(track: MusicTrack | null, lang: 'AR' | 'EN'): string {
+  if (!track) return lang === 'AR' ? 'تفتح الدعوة في هدوء تام' : 'Invitation opens in silence';
   return lang === 'AR' ? track.moodAr : track.moodEn;
 }
+

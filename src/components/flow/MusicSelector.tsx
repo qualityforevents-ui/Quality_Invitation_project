@@ -1,10 +1,10 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { Check, Pause, Play } from 'lucide-react';
+import { Check, Pause, Play, VolumeX } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/cn';
-import { MUSIC_TRACKS, trackMood, trackName, trackUrl } from '@/lib/music';
+import { MUSIC_TRACKS, NO_MUSIC_TRACK_ID, trackMood, trackName, trackUrl } from '@/lib/music';
 import type { Dictionary } from '@/i18n/ui';
 import type { Lang } from '@/lib/types';
 
@@ -68,6 +68,12 @@ export function MusicSelector({
     });
   }
 
+  function selectNone() {
+    audioRef.current?.pause();
+    setPlayingId(null);
+    onSelect(NO_MUSIC_TRACK_ID);
+  }
+
   return (
     <div role="radiogroup" aria-label={t.theme.music} className="flex flex-col gap-2">
       {MUSIC_TRACKS.map((track) => {
@@ -124,6 +130,48 @@ export function MusicSelector({
           </div>
         );
       })}
+
+      {/* Option for no music */}
+      {(() => {
+        const selected = selectedId === NO_MUSIC_TRACK_ID;
+        return (
+          <div
+            className={cn(
+              'flex items-center gap-3 rounded-xl border px-3 py-2 transition',
+              selected ? 'border-primary bg-secondary' : 'border-border bg-card',
+            )}
+          >
+            <div
+              className="flex size-10 shrink-0 items-center justify-center rounded-full border border-border bg-card text-muted-foreground"
+              aria-hidden="true"
+            >
+              <VolumeX className="size-5" />
+            </div>
+
+            <button
+              type="button"
+              role="radio"
+              aria-checked={selected}
+              onClick={selectNone}
+              className="press tap-target flex flex-1 flex-col justify-center text-start"
+            >
+              <span className="block text-sm font-medium">{t.theme.noMusic}</span>
+              <span className="block text-xs text-muted-foreground">{t.theme.noMusicHint}</span>
+            </button>
+
+            <span
+              className={cn(
+                'flex size-5 shrink-0 items-center justify-center rounded-full border',
+                selected ? 'border-primary bg-primary' : 'border-border',
+              )}
+              aria-hidden="true"
+            >
+              {selected ? <Check className="size-3 text-primary-foreground" /> : null}
+            </span>
+          </div>
+        );
+      })()}
     </div>
   );
 }
+
