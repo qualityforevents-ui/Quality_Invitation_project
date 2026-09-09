@@ -422,18 +422,11 @@ export function InvitationFlow({
                popup can never disagree about what the card says. */
             view={viewFromValues(values)}
             value={values.themeId}
-            onChange={(themeId) => {
-              // Switching design carries the music with it, but only while the customer
-              // has not chosen a track of their own. Overriding a deliberate choice
-              // would be the app arguing with them.
-              const previousDefault = getTheme(values.themeId).defaultMusicTrackId;
-              const musicTrackId =
-                values.musicTrackId === previousDefault
-                  ? getTheme(themeId).defaultMusicTrackId
-                  : values.musicTrackId;
-
-              set({ themeId, musicTrackId });
-            }}
+            // A design is a design. It used to drag a track along with it — each theme
+            // named a default and switching designs swapped the music underneath the
+            // customer — which meant an invitation could go out playing something nobody
+            // had ever chosen. The music question is the only place music is decided.
+            onChange={(themeId) => set({ themeId })}
             onTry={() => setPreviewOpen(true)}
             onNext={() => advance('theme')}
           />

@@ -49,8 +49,6 @@ export type ThemeDefinition = {
   id: string;
   nameAr: string;
   nameEn: string;
-  /** Pre-selected when this theme is chosen, per the spec's sensible default rule. */
-  defaultMusicTrackId: string;
   /** Fills the --inv-* slots declared in globals.css. */
   vars: Record<string, string>;
   fonts: Record<Lang, ThemeFontPair>;
@@ -83,7 +81,6 @@ const classic: ThemeDefinition = {
   listed: false,
   nameAr: 'كلاسيك',
   nameEn: 'Classic',
-  defaultMusicTrackId: 'ya-lela-beda',
   themeColor: '#faf5ec',
   vars: {
     '--inv-bg': '#faf5ec',
@@ -121,7 +118,6 @@ const modern: ThemeDefinition = {
   listed: false,
   nameAr: 'مودرن',
   nameEn: 'Modern',
-  defaultMusicTrackId: 'el-leila',
   themeColor: '#fcfcfb',
   vars: {
     '--inv-bg': '#fcfcfb',
@@ -157,7 +153,6 @@ const floral: ThemeDefinition = {
   listed: false,
   nameAr: 'ورد',
   nameEn: 'Floral',
-  defaultMusicTrackId: 'fostanek-al-abyad',
   themeColor: '#fdf6f4',
   vars: {
     '--inv-bg': '#fdf6f4',
@@ -191,7 +186,6 @@ const midnight: ThemeDefinition = {
   listed: false,
   nameAr: 'ليلي',
   nameEn: 'Midnight',
-  defaultMusicTrackId: 'fostanek-al-abyad',
   themeColor: '#131a2a',
   vars: {
     '--inv-bg': '#131a2a',
@@ -235,7 +229,6 @@ const mashrabiya: ThemeDefinition = {
   listed: true,
   nameAr: 'مشربية',
   nameEn: 'Mashrabiya',
-  defaultMusicTrackId: 'ya-lela-beda',
   themeColor: '#f7f1e4',
   vars: {
     '--inv-bg': '#f7f1e4',
@@ -276,7 +269,6 @@ const iwan: ThemeDefinition = {
   listed: true,
   nameAr: 'الإيوان',
   nameEn: 'Iwan',
-  defaultMusicTrackId: 'ya-lela-beda',
   themeColor: '#f3ece1',
   vars: {
     '--inv-bg': '#f3ece1',
@@ -317,7 +309,6 @@ const qandeel: ThemeDefinition = {
   listed: true,
   nameAr: 'قنديل',
   nameEn: 'Qandeel',
-  defaultMusicTrackId: 'el-leila',
   themeColor: '#0f1e22',
   vars: {
     '--inv-bg': '#0f1e22',
@@ -358,7 +349,6 @@ const khayamiya: ThemeDefinition = {
   listed: true,
   nameAr: 'خيامية',
   nameEn: 'Khayamiya',
-  defaultMusicTrackId: 'elfarh-malena',
   themeColor: '#7c1f2b',
   vars: {
     '--inv-bg': '#7c1f2b',
@@ -399,7 +389,6 @@ const ghouroub: ThemeDefinition = {
   listed: true,
   nameAr: 'غروب',
   nameEn: 'Ghouroub',
-  defaultMusicTrackId: 'fostanek-al-abyad',
   themeColor: '#fdf3ea',
   vars: {
     '--inv-bg': '#fdf3ea',
@@ -440,7 +429,6 @@ const netiga: ThemeDefinition = {
   listed: true,
   nameAr: 'النتيجة',
   nameEn: 'Netiga',
-  defaultMusicTrackId: 'elfarh-malena',
   themeColor: '#e8e0cd',
   vars: {
     '--inv-bg': '#e8e0cd',
@@ -481,7 +469,6 @@ const zarf: ThemeDefinition = {
   listed: true,
   nameAr: 'الظرف',
   nameEn: 'Zarf',
-  defaultMusicTrackId: 'fostanek-al-abyad',
   themeColor: '#f4efe4',
   vars: {
     '--inv-bg': '#f4efe4',
@@ -522,7 +509,6 @@ const hadiqa: ThemeDefinition = {
   listed: true,
   nameAr: 'حديقة',
   nameEn: 'Hadiqa',
-  defaultMusicTrackId: 'fostanek-al-abyad',
   themeColor: '#f4f2e9',
   vars: {
     '--inv-bg': '#f4f2e9',
@@ -563,7 +549,6 @@ const rizma: ThemeDefinition = {
   listed: true,
   nameAr: 'الرزمة',
   nameEn: 'Rizma',
-  defaultMusicTrackId: 'el-leila',
   themeColor: '#e9e4dc',
   vars: {
     '--inv-bg': '#e9e4dc',

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Divider } from './Ornaments';
+import { BrandLogo } from '@/components/BrandLogo';
 import { Button } from '@/components/ui/button';
 import { uiFontVariables } from '@/lib/fonts';
 
@@ -31,7 +32,7 @@ export function NotAvailable() {
       </p>
 
       <Button asChild variant="outline" size="lg" className="mt-10 rounded-full">
-        <Link href="/">qlty.events</Link>
+        <Link href="/"><BrandLogo className="h-7" /></Link>
       </Button>
     </div>
   );

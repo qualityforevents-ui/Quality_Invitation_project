@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { BrandLogo } from '@/components/BrandLogo';
 import { LanguageToggle } from '@/components/LanguageToggle';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/cn';
@@ -38,8 +39,8 @@ export function FlowHeader({
   return (
     <header className="sticky top-0 z-30 -mx-5 border-b border-transparent bg-background/90 px-5 backdrop-blur transition-colors data-[started=true]:border-border" data-started={started}>
       <div className="flex h-14 items-center gap-3">
-        <Link href="/" className="press text-sm font-semibold tracking-wide text-secondary-foreground">
-          qlty.events
+        <Link href="/" className="press shrink-0">
+          <BrandLogo className="h-10" />
         </Link>
 
         {saveStatus !== 'idle' ? (

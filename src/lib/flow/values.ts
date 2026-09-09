@@ -6,6 +6,7 @@ import { suggestArabicName, suggestLatinName } from '../arabic-suggest';
 import { getPackage } from '../packages';
 import { DEFAULT_THEME_ID } from '../constants';
 import { DEFAULT_VERSE_ID } from '../verses';
+import { NO_MUSIC_TRACK_ID } from '../music';
 import { getTheme } from '@/themes/registry';
 import type { Invitation } from '@/lib/types';
 import type { EventType, Lang, Package } from '@/lib/types';
@@ -70,7 +71,7 @@ export function emptyValues(requestedPackage: Package): FlowValues {
     invitationLang: 'AR',
     verseId: DEFAULT_VERSE_ID,
     themeId: theme.id,
-    musicTrackId: theme.defaultMusicTrackId,
+    musicTrackId: NO_MUSIC_TRACK_ID,
     photoFileId: null,
     photoCrop: null,
     customRequest: '',

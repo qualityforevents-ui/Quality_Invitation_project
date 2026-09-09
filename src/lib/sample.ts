@@ -1,6 +1,6 @@
 import { getEventInstant } from './format';
 import { DEFAULT_VERSE_ID } from './verses';
-import { getTrack, trackName, trackUrl } from './music';
+import { DEFAULT_MUSIC_TRACK_ID, getTrack, trackName, trackUrl } from './music';
 import { DEFAULT_THEME, getTheme } from '@/themes/registry';
 import type { InvitationView } from './invitation-view';
 import type { Lang } from '@/lib/types';
@@ -20,7 +20,17 @@ export function buildSampleView(lang: Lang, themeId?: string, verseId?: string):
   const eventTime = '20:00';
 
   const theme = getTheme(themeId ?? DEFAULT_THEME.id);
-  const track = getTrack(theme.defaultMusicTrackId);
+
+  /*
+   * One track, the library's own, for every design.
+   *
+   * The specimen is the only place in the product that picks music for anybody, and it
+   * does so because a silent sample demonstrates the card without demonstrating the
+   * feature. It is deliberately not a property of the theme: designs no longer carry a
+   * default track, so switching the specimen's design changes the design and nothing
+   * else.
+   */
+  const track = getTrack(DEFAULT_MUSIC_TRACK_ID);
 
   const arabic = {
     name1: 'كريم',

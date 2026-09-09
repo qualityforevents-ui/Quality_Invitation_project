@@ -4,6 +4,7 @@ import { generateEditToken, generateRequestId, generateSlugSuffix } from './toke
 import { DEFAULT_THEME_ID } from './constants';
 import { DEFAULT_PACKAGE } from './packages';
 import { DEFAULT_VERSE_ID } from './verses';
+import { NO_MUSIC_TRACK_ID } from './music';
 import { fromDateInputValue } from './format';
 import { parseCrop } from './photo-url';
 import { getTheme } from '@/themes/registry';
@@ -187,7 +188,10 @@ export async function createDraft(patch: InvitationPatch, uiLang: Lang): Promise
       customRequest: patch.customRequest ?? null,
 
       themeId: theme.id,
-      musicTrackId: patch.musicTrackId ?? theme.defaultMusicTrackId,
+      // Silence, not a guess. Music is the customer's choice and nothing else's: a
+      // track written in here on their behalf is a track they are later shown as their
+      // own answer, and most people never touch an answer that is already filled in.
+      musicTrackId: patch.musicTrackId ?? NO_MUSIC_TRACK_ID,
       photoFileId: null,
       photoCrop: null,
       ogImageUrl: null,
