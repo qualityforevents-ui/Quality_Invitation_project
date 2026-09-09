@@ -450,3 +450,21 @@
 @utility font-inv-verse {
   font-family: var(--inv-verse, var(--inv-body));
 }
+
+/*
+ * A scroller with no scrollbar drawn.
+ *
+ * Only for strips whose content already says which way it moves — the design picker
+ * shows the next card peeking past the edge and a row of dots under it — so the bar is
+ * redundant on a phone, where it is an overlay nobody sees, and a grey line under the
+ * cards on a desktop, where it is the only thing in the section that is not the design.
+ * Never on a scroller whose overflow is otherwise unannounced.
+ */
+@utility hide-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}

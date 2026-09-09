@@ -418,11 +418,9 @@ export function InvitationFlow({
           <ThemeSection
             t={t}
             uiLang={lang}
-            invitationLang={values.invitationLang}
-            name1={values.name1}
-            name2={values.name2}
-            eventDate={eventDateObject}
-            eventType={values.eventType}
+            /* The same view the full preview is built from, so the strip and the
+               popup can never disagree about what the card says. */
+            view={viewFromValues(values)}
             value={values.themeId}
             onChange={(themeId) => {
               // Switching design carries the music with it, but only while the customer

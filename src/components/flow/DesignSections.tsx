@@ -4,14 +4,15 @@ import { ArrowLeft, Eye } from 'lucide-react';
 import { SectionShell } from './SectionShell';
 import { MusicSelector } from './MusicSelector';
 import { PhotoUpload } from './PhotoUpload';
-import { MiniInvitation } from '@/components/invitation/MiniInvitation';
+import { ThemePicker } from './ThemePicker';
 import { Button } from '@/components/ui/button';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { scriptSuggestions } from '@/lib/flow/values';
-import { getTheme, LISTED_THEMES, themeName, themeStyle, type ThemeDefinition } from '@/themes/registry';
+import { getTheme, LISTED_THEMES } from '@/themes/registry';
+import type { InvitationView } from '@/lib/invitation-view';
 import type { PhotoCrop } from '@/lib/photo-url';
 import type { Dictionary } from '@/i18n/ui';
-import type { EventType, Lang } from '@/lib/types';
+import type { Lang } from '@/lib/types';
 
 /* ----------------------------------------------------------------- language */
 
@@ -128,41 +129,10 @@ export function LanguageSection({
 
 /* -------------------------------------------------------------------- theme */
 
-/**
- * A theme reduced to what identifies it at thumbnail size: its ground, its accent, and
- * the weight of its ink.
- *
- * Not a rendering of the invitation. At this size real text is a grey smudge, nine of
- * them are nine grey smudges, and it would cost nine more font loads to say nothing.
- *
- * This used to be defensible only because there were four themes and they were four
- * palettes. With nine it earns its place for a different reason: the palettes are now
- * genuinely far apart — walnut on pale sand, brick on warm stone, gold on deep teal,
- * crimson appliqué, sunset, calendar red — so the ground colour alone is enough to tell
- * them apart in a grid, and the card underneath is where the actual choosing happens.
- */
-function ThemeSwatch({ theme, lang }: { theme: ThemeDefinition; lang: Lang }) {
-  return (
-    <span
-      style={themeStyle(theme, lang)}
-      aria-hidden="true"
-      className="flex h-11 w-full flex-col items-center justify-center gap-[3px] rounded-md border border-inv-line bg-inv-bg"
-    >
-      <span className="h-[3px] w-8 rounded-full bg-inv-ink/75" />
-      <span className="h-[3px] w-3 rounded-full bg-inv-accent" />
-      <span className="h-[3px] w-8 rounded-full bg-inv-ink/75" />
-    </span>
-  );
-}
-
 export function ThemeSection({
   t,
   uiLang,
-  invitationLang,
-  name1,
-  name2,
-  eventDate,
-  eventType,
+  view,
   value,
   onChange,
   onTry,
@@ -170,11 +140,8 @@ export function ThemeSection({
 }: {
   t: Dictionary;
   uiLang: Lang;
-  invitationLang: Lang;
-  name1: string;
-  name2: string;
-  eventDate: Date;
-  eventType: EventType;
+  /** The flow's live values, rendered by each design in turn. */
+  view: InvitationView;
   value: string;
   onChange: (themeId: string) => void;
   /** Opens the full screen preview on the design currently showing. */
@@ -186,69 +153,54 @@ export function ThemeSection({
    *
    * A retired theme stays renderable so that invitations sold under it keep working,
    * which means a draft started before a design was retired can arrive here holding an
-   * id that is no longer offered. Dropping it from the list would leave the toggle group
-   * with no selected item and the customer looking at a card that matches none of the
-   * buttons above it, so the retired design is appended rather than hidden. It leaves
-   * the list the moment they choose something else.
+   * id that is no longer offered. Dropping it from the list would leave the strip with
+   * nothing selected and the customer looking at a design that is not in it, so the
+   * retired design is appended rather than hidden. It leaves the list the moment they
+   * choose something else.
    */
   const listed = LISTED_THEMES;
   const current = getTheme(value);
   const choices = listed.some((theme) => theme.id === current.id) ? listed : [...listed, current];
 
   return (
-    <SectionShell title={t.flow.themeTitle} onNext={onNext} nextLabel={t.flow.next}>
+    <SectionShell
+      title={t.flow.themeTitle}
+      hint={t.theme.themeSwipe}
+      onNext={onNext}
+      nextLabel={t.flow.next}
+    >
       {/*
-        One card, not nine.
-        This question used to be a column of thumbnails, which meant the design
-        being decided on was never bigger than a third of the screen and comparing two of
-        them was a scroll rather than a glance. The names are a row of buttons now and
-        the card below them is the answer: tapping a name re-typesets it in place, in the
-        customer's own names and date, at a size where the typography is actually
-        legible. Choosing a design is a typographic decision, and it cannot be made from
-        a thumbnail.
+        The designs, shown as themselves.
+
+        This question was a grid of nine swatches — three grey dashes on a coloured
+        ground — over a single generic card that wore no theme's ornament, so the two
+        things on screen were a colour chip and a design that does not exist anywhere in
+        the product. Between them they cost half the screen to say almost nothing, and
+        what they did say was not true.
+
+        What is here now is the real cover of every design, at the size the decision is
+        actually made at, in the customer's own names, date and language: the same
+        component their guests' phones will mount, scaled down whole. Swiping is both the
+        looking and the choosing, so the two-step of picking a chip and then reading the
+        card below it is gone, and the strip costs one card of height instead of ten.
       */}
-      <ToggleGroup
-        type="single"
+      <ThemePicker
+        t={t}
+        uiLang={uiLang}
+        view={view}
+        choices={choices}
         value={value}
-        // Held at the current value when single mode hands back an empty string, so the
-        // card below can never be left with no design to draw.
-        onValueChange={(next) => onChange(next || value)}
-        variant="outline"
-        className="grid w-full grid-cols-3 gap-1.5"
-        aria-label={t.flow.themeTitle}
-      >
-        {choices.map((theme) => (
-          <ToggleGroupItem
-            key={theme.id}
-            value={theme.id}
-            className="tap-target h-auto flex-col gap-1 rounded-xl p-1.5 data-[state=on]:border-primary data-[state=on]:bg-secondary data-[state=on]:text-secondary-foreground"
-          >
-            <ThemeSwatch theme={theme} lang={invitationLang} />
-            <span className="text-[0.6875rem] leading-none">{themeName(theme, uiLang)}</span>
-          </ToggleGroupItem>
-        ))}
-      </ToggleGroup>
+        onChange={onChange}
+      />
 
-      <div className="mt-3 overflow-hidden rounded-xl border-2 border-primary">
-        <MiniInvitation
-          themeId={value}
-          lang={invitationLang}
-          name1={name1}
-          name2={name2}
-          eventDate={eventDate}
-          eventType={eventType}
-          size="lg"
-        />
-      </div>
-
-      {/* The miniature is the shape and the typography. This is the whole thing, with
-          its cover, its opening and its music, which is the only way to judge the two
-          dark themes fairly. */}
+      {/* The tile is the cover, still and silent. This is the card: the opening
+          animation, the confetti, the music and everything under the fold, which is the
+          only way to judge the darker designs fairly. */}
       <Button
         type="button"
         variant="outline"
         onClick={onTry}
-        className="mt-2 w-full rounded-full"
+        className="mt-3 w-full rounded-full"
       >
         <Eye aria-hidden="true" />
         {t.theme.themeView}
