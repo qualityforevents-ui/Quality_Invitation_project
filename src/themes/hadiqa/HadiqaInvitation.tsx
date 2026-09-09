@@ -476,34 +476,6 @@ export function HadiqaInvitation({ view, copy }: { view: InvitationView; copy: I
             </Block>
           ) : null}
 
-          {/* ------------------------------------------------------------- 4. roles */}
-          {/*
-            Two rows rather than two columns. A two-column grid halves the measure, and at
-            306px that leaves 150px for a name — which is where "عبد الرحمن" starts
-            breaking. Stacked, both names get the full column.
-          */}
-          <Block
-            mark={
-              <div className="h-[34px] w-[30px] text-inv-accent">
-                <JasmineTendril />
-              </div>
-            }
-          >
-            <div className="flex flex-col gap-6">
-              {[
-                { role: copy.roleGroom, name: view.name1 },
-                { role: copy.roleBride, name: view.name2 },
-              ].map((person) => (
-                <div key={person.role}>
-                  <Label>{person.role}</Label>
-                  <p className="mt-1.5 font-inv-body text-[1.375rem] leading-snug font-semibold text-inv-ink text-balance">
-                    {person.name}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </Block>
-
           {/* ------------------------------------------------------------- 5. photo */}
           {/*
             An arch: square at the bottom, a true semicircle on top. The one curved frame

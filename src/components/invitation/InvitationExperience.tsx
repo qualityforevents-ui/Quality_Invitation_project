@@ -27,6 +27,22 @@ export function InvitationExperience({
 }) {
   const [opened, setOpened] = useState(false);
 
+  /*
+   * Whether the cover has actually left, which is not the same as whether the card has
+   * been opened.
+   *
+   * `mode="wait"` keeps the cover mounted through its exit, and in this set that exit is
+   * the reveal itself — a bud opening, a screen dissolving, a curtain parting. Tying the
+   * panel's height to `opened` pulled that height away on the tap, half a second before
+   * the cover was done with it: everything the cover was animating collapsed back to the
+   * top of the panel and performed its exit from there. The height belongs to the cover
+   * for exactly as long as the cover is on screen.
+   *
+   * Safe as the only gate, because the two events are the same event: with `mode="wait"`
+   * the card is not rendered until the exit completes, which is when this fires.
+   */
+  const [coverGone, setCoverGone] = useState(false);
+
   const audio = useInvitationAudio(view.musicUrl);
   const copy = getInvitationCopy(view.lang, { verseId: view.verseId, quote: view.quote });
   const { Cover, Card } = getThemeComponents(view.themeId);
@@ -71,14 +87,18 @@ export function InvitationExperience({
          * `--inv-panel-height` is the fix and the whole of it. The popup sets it to its
          * own height; on a guest's phone nothing sets it and the fallback is the screen.
          * Either way this box is definite, so `h-full` inside every cover resolves.
+         *
+         * Held until the cover has left rather than until it is asked to leave — see
+         * `coverGone` above. Afterwards this is a plain block and the card is as long as
+         * it is.
          */
         className={
-          !opened
+          !coverGone
             ? 'h-[var(--inv-panel-height,100dvh)] max-h-[var(--inv-panel-height,100dvh)] w-full overflow-hidden flex flex-col'
             : ''
         }
       >
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode="wait" onExitComplete={() => setCoverGone(true)}>
           {opened ? (
             <Card key="card" view={view} copy={copy} />
           ) : (

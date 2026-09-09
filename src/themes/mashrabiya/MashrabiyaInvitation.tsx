@@ -204,27 +204,6 @@ export function MashrabiyaInvitation({ view, copy }: { view: InvitationView; cop
           </Reveal>
         ) : null}
 
-        {/* 5. ROLES: centred void, a three-bobbin run between the two people */}
-        <Reveal>
-          <HexagonalVoid align="center">
-            <p className="font-inv-body text-[12px] tracking-[0.18em] text-inv-muted uppercase [word-spacing:0.3em]">
-              {copy.roleGroom}
-            </p>
-            <p className="mt-2 font-inv-body text-[21px] font-bold text-inv-ink text-balance">
-              {view.name1}
-            </p>
-
-            <BobbinDivider className="my-7" />
-
-            <p className="font-inv-body text-[12px] tracking-[0.18em] text-inv-muted uppercase [word-spacing:0.3em]">
-              {copy.roleBride}
-            </p>
-            <p className="mt-2 font-inv-body text-[21px] font-bold text-inv-ink text-balance">
-              {view.name2}
-            </p>
-          </HexagonalVoid>
-        </Reveal>
-
         {/* 6. PHOTO: inline-end hung void. The photograph fills the opening; with no
             photograph the opening shows the screen itself. */}
         <Reveal>

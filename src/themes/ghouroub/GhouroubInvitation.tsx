@@ -74,8 +74,15 @@ const GROUND: Array<{ flat: string; blend: string }> = [
   { flat: 'bg-inv-accent-soft/40', blend: 'from-inv-accent-soft/40 to-inv-accent-soft/50' },
 ];
 
-/** The last stop on the same line, under the poetry and the credit. */
-const FOOTER_GROUND = 'bg-inv-accent-soft/50';
+/**
+ * The last stop on the same line, under the poetry and the credit.
+ *
+ * One step shallower than it was, because the card is one band shorter: the band that
+ * named the bride and the groom a second time is gone, and the four that remain deepen
+ * 0, 10, 20, 30 rather than 0 through 40. A footer left at 50 would put the page's only
+ * visible seam directly under its last words.
+ */
+const FOOTER_GROUND = 'bg-inv-accent-soft/40';
 
 /**
  * Where the horizon sits in each band, as a fixed distance rather than a percentage.
@@ -99,7 +106,7 @@ const FOOTER_GROUND = 'bg-inv-accent-soft/50';
  * same composition at a length a guest will actually scroll: the sun still needs its
  * 105px of sky above the first rule, and it still gets it.
  */
-const SKY = { names: 140, roles: 96, date: 76, venue: 96 };
+const SKY = { names: 140, date: 76, venue: 96 };
 
 /**
  * The vertical rhythm. Four gaps, and nothing on this card uses a fifth.
@@ -310,7 +317,7 @@ function PhotoBand({
   reduced: boolean;
 }) {
   const [failed, setFailed] = useState(false);
-  const travel = GAP_TRAVEL[2];
+  const travel = GAP_TRAVEL[1];
   const x = useTransform(progress, [0, 1], reduced ? [0, 0] : [travel[0], travel[1]]);
   const showPhoto = Boolean(view.photoUrl) && !failed;
 
@@ -318,11 +325,11 @@ function PhotoBand({
     <section className="relative h-[380px] overflow-hidden">
       <span
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 bottom-[60px] bg-inv-accent-soft/20"
+        className="pointer-events-none absolute inset-x-0 top-0 bottom-[60px] bg-inv-accent-soft/10"
       />
       <span
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-[60px] bg-gradient-to-b from-inv-accent-soft/20 to-inv-accent-soft/30"
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-[60px] bg-gradient-to-b from-inv-accent-soft/10 to-inv-accent-soft/20"
       />
 
       {showPhoto ? (
@@ -350,7 +357,7 @@ function PhotoBand({
           />
           <span
             aria-hidden="true"
-            className="pointer-events-none absolute inset-x-0 top-0 h-[60px] bg-gradient-to-b from-inv-accent-soft/20 to-transparent"
+            className="pointer-events-none absolute inset-x-0 top-0 h-[60px] bg-gradient-to-b from-inv-accent-soft/10 to-transparent"
           />
           <span
             aria-hidden="true"
@@ -358,7 +365,7 @@ function PhotoBand({
           />
           <span
             aria-hidden="true"
-            className="pointer-events-none absolute inset-x-0 bottom-0 h-[60px] bg-gradient-to-t from-inv-accent-soft/30 to-transparent"
+            className="pointer-events-none absolute inset-x-0 bottom-0 h-[60px] bg-gradient-to-t from-inv-accent-soft/20 to-transparent"
           />
         </>
       ) : null}
@@ -524,42 +531,12 @@ export function GhouroubInvitation({ view, copy }: { view: InvitationView; copy:
         ) : null}
       </Band>
 
-      {/* 4. The two people the invitation comes from — the last content that hangs below
-          the line. Everything after this sits above it. */}
-      <Band index={1} side="below" sky={SKY.roles} progress={scrollYProgress} reduced={reduced}>
-        <Reveal delay={0.05}>
-          {/* Two rows rather than two columns. A pair of columns is a table, and the
-              table belongs to another theme; stacked rows keep the reading horizontal. */}
-          <div className="space-y-10">
-            {[
-              { role: copy.roleGroom, name: view.name1 },
-              { role: copy.roleBride, name: view.name2 },
-            ].map((person) => (
-              <div key={person.role}>
-                <p className={LABEL}>{person.role}</p>
-                {/* IBM Plex Sans Arabic ships here at 400 and 600 only, and a bare 500
-                    resolves down to 400, which would leave the name and its label at the
-                    same weight. */}
-                <p
-                  className={cn(
-                    'font-inv-body text-[1.3125rem] leading-snug font-semibold text-inv-ink text-balance',
-                    GAP_LABEL,
-                  )}
-                >
-                  {person.name}
-                </p>
-              </div>
-            ))}
-          </div>
-        </Reveal>
-      </Band>
-
       {/* 5. The photograph, or the field of colour that is better than most photographs. */}
       <PhotoBand view={view} progress={scrollYProgress} reduced={reduced} />
 
       {/* 6 and 7. Date and hour, now sitting above the line. */}
       <Band
-        index={3}
+        index={2}
         side="above"
         sky={SKY.date}
         progress={scrollYProgress}
@@ -599,7 +576,7 @@ export function GhouroubInvitation({ view, copy }: { view: InvitationView; copy:
       {/* 8 to 10. The deepest band of the card: where, how long, and what they wanted to
           say. */}
       <Band
-        index={4}
+        index={3}
         side="above"
         sky={SKY.venue}
         progress={scrollYProgress}

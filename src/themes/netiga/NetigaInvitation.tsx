@@ -243,34 +243,6 @@ export function NetigaInvitation({ view, copy }: { view: InvitationView; copy: I
           </Leaf>
         ) : null}
 
-        {/* LEAF 4: ROLES. Two ruled rows, not two columns — a column pair at this
-            measure pushes both names to the outer edges and leaves the leaf hollow. */}
-        <Leaf
-          slot={nextSlot()}
-          indexLabel={nextNumber()}
-          headerTitle={view.lang === 'AR' ? 'العريس والعروس' : 'The Wedding Party'}
-        >
-          <div className="text-center">
-            <div className="pb-4">
-              <p className="font-inv-body text-[0.8125rem] leading-relaxed text-inv-muted">
-                {copy.roleGroom}
-              </p>
-              <p className="mt-1 font-inv-body text-xl font-semibold leading-snug text-inv-ink text-balance">
-                {view.name1}
-              </p>
-            </div>
-
-            <div className="border-t border-inv-line pt-4">
-              <p className="font-inv-body text-[0.8125rem] leading-relaxed text-inv-muted">
-                {copy.roleBride}
-              </p>
-              <p className="mt-1 font-inv-body text-xl font-semibold leading-snug text-inv-ink text-balance">
-                {view.name2}
-              </p>
-            </div>
-          </div>
-        </Leaf>
-
         {/* LEAF 5: PHOTO, or the loud second date leaf when there is none. */}
         {hasPhoto ? (
           <Leaf slot={nextSlot()} indexLabel={nextNumber()}>

@@ -213,28 +213,6 @@ export function ZarfInvitation({ view, copy }: { view: InvitationView; copy: Inv
             </Reveal>
           ) : null}
 
-          {/* Roles. The rules land on the measure, like every other edge. */}
-          <Reveal>
-            <div className="grid grid-cols-2 gap-4 border-y border-inv-line/40 py-6">
-              <div>
-                <span className="font-inv-body text-xs text-inv-muted [word-spacing:0.3em]">
-                  {copy.roleGroom}
-                </span>
-                <p className="mt-2 font-inv-body text-xl font-bold leading-snug text-inv-ink text-balance">
-                  {view.name1}
-                </p>
-              </div>
-              <div>
-                <span className="font-inv-body text-xs text-inv-muted [word-spacing:0.3em]">
-                  {copy.roleBride}
-                </span>
-                <p className="mt-2 font-inv-body text-xl font-bold leading-snug text-inv-ink text-balance">
-                  {view.name2}
-                </p>
-              </div>
-            </div>
-          </Reveal>
-
           {/* Photo / Monogram State. `max-w-full` on the image is load bearing: with
               `w-auto` alone a wide photo sized itself off its own height and pushed the
               document wider than the phone. */}

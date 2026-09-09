@@ -101,6 +101,7 @@ export function ThemePicker({
   choices,
   value,
   onChange,
+  onOpen,
 }: {
   t: Dictionary;
   uiLang: Lang;
@@ -109,6 +110,8 @@ export function ThemePicker({
   choices: ThemeDefinition[];
   value: string;
   onChange: (themeId: string) => void;
+  /** Opens the full preview on the design in the middle. */
+  onOpen: () => void;
 }) {
   const scrollerRef = useRef<HTMLDivElement>(null);
   const slideRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -245,7 +248,7 @@ export function ThemePicker({
     [],
   );
 
-  /** Tapping a neighbour, an arrow, or an arrow key: move there and take it. */
+  /** An arrow, an arrow key, or a tap on a neighbour: move there and take it. */
   const select = useCallback(
     (target: number) => {
       const clamped = Math.min(choices.length - 1, Math.max(0, target));
@@ -257,6 +260,25 @@ export function ThemePicker({
       if (theme.id !== value) onChange(theme.id);
     },
     [centerOn, choices, onChange, value],
+  );
+
+  /*
+   * A tap means "bring that one here" on a neighbour and "open this" on the one already
+   * here.
+   *
+   * Which is the only reading of a tap that is not a surprise in either place. A tap on
+   * a card at the edge of the strip cannot mean open, because what the customer is
+   * looking at is a third of a design; and a second tap on the card they have already
+   * brought to the middle cannot mean select, because it is already selected. The card
+   * is a picture of a closed invitation with an open button drawn on it, so pressing it
+   * doing what that button does is the thing it already looks like it will do.
+   */
+  const press = useCallback(
+    (target: number) => {
+      if (target === index) onOpen();
+      else select(target);
+    },
+    [index, onOpen, select],
   );
 
   const rtl = uiLang === 'AR';
@@ -329,10 +351,14 @@ export function ThemePicker({
                   role="radio"
                   aria-checked={isCurrent}
                   tabIndex={isCurrent ? 0 : -1}
-                  onClick={() => select(i)}
+                  onClick={() => press(i)}
                   className="absolute inset-0 h-full w-full rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                 >
-                  <span className="sr-only">{themeName(theme, uiLang)}</span>
+                  <span className="sr-only">
+                    {isCurrent
+                      ? `${themeName(theme, uiLang)} — ${t.theme.themeView}`
+                      : themeName(theme, uiLang)}
+                  </span>
                 </button>
 
                 {isCurrent ? (

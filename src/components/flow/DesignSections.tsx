@@ -191,6 +191,7 @@ export function ThemeSection({
         choices={choices}
         value={value}
         onChange={onChange}
+        onOpen={onTry}
       />
 
       {/* The tile is the cover, still and silent. This is the card: the opening

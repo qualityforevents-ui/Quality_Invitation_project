@@ -203,41 +203,6 @@ export function KhayamiyaInvitation({ view, copy }: { view: InvitationView; copy
         </>
       ) : null}
 
-      {/* ================= 4. ROLES: teal cloth ================= */}
-      <section className={cn(FIELD, 'bg-inv-accent-soft')}>
-        <SteppedMerlonBorder side="left" />
-        <SteppedMerlonBorder side="right" />
-
-        <Reveal className={MEASURE}>
-          <div className="grid grid-cols-2 gap-6">
-            <div>
-              {/*
-                Cream, not gold. The theme's gold is 5.17:1 on the panel red and legal
-                there down to 11px, but this cloth is the tent teal and gold on teal is
-                2.1:1 — the one place on the card where the appliqué language and the
-                contrast numbers disagree, and the numbers win.
-              */}
-              <p className="font-inv-body text-[13px] font-bold uppercase tracking-[0.16em] text-inv-ink">
-                {copy.roleGroom}
-              </p>
-              <p className="mt-3 font-inv-body text-[21px] font-bold leading-snug text-inv-ink text-balance">
-                {view.name1}
-              </p>
-            </div>
-            <div>
-              <p className="font-inv-body text-[13px] font-bold uppercase tracking-[0.16em] text-inv-ink">
-                {copy.roleBride}
-              </p>
-              <p className="mt-3 font-inv-body text-[21px] font-bold leading-snug text-inv-ink text-balance">
-                {view.name2}
-              </p>
-            </div>
-          </div>
-        </Reveal>
-      </section>
-
-      <RunningStitchSeam />
-
       {/* ================= 5. PHOTO: madder cloth =================
           Only when there is a photo. The no-photo state used to be a 300px field holding
           a second copy of the eight-petal medallion from the top of the card, which is

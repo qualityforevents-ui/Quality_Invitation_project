@@ -192,42 +192,21 @@ export function RizmaInvitation({ view, copy }: { view: InvitationView; copy: In
           ) : null}
         </InsertCard>
 
-        {/* ================= CARD 2: THE COUPLE (258px) =================
-            The roles and the photo are one object. They were two cards, and the second
-            of them — a 330px card holding nothing but a faint emboss — was the emptiest
-            surface in the set. The crest is the FOOT of the couple's card now, which is
-            what a blind emboss is for on real stationery, and it reads as a decision
-            rather than as a photo that failed to load.
+        {/* ================= CARD 2: THE PORTRAIT (258px) =================
+            This was the couple's card: a pair of ruled columns naming the bride and the
+            groom a second time, over the photograph. The names are on the announcement
+            above, directly under the invitation line, and one card in a bundle of five
+            repeating what the first card just said is the bundle arguing with itself.
 
-            Unconditional. A guard added around this card to hide the couple's line also
-            hid the bride and the groom with it, so choosing "no line" took their names
-            off the card entirely. The line lives at the end of the set now; this card is
-            the two people, and they are never optional. */}
+            What is left is the object that card was really for. With a photograph it is
+            a print; without one it is the blind emboss, which is what a monogram card is
+            in a real set of stationery, and which is why the crest was drawn. */}
         <InsertCard measure={258} index={2}>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <span className="font-inv-body text-[11px] uppercase tracking-wider text-inv-muted">
-                {copy.roleGroom}
-              </span>
-              <p className="mt-2 font-inv-body text-[17px] font-semibold leading-snug text-inv-ink text-balance">
-                {view.name1}
-              </p>
-            </div>
-            <div>
-              <span className="font-inv-body text-[11px] uppercase tracking-wider text-inv-muted">
-                {copy.roleBride}
-              </span>
-              <p className="mt-2 font-inv-body text-[17px] font-semibold leading-snug text-inv-ink text-balance">
-                {view.name2}
-              </p>
-            </div>
-          </div>
-
           {hasPhoto ? (
             /* The photo IS the foot of the card: bled to all three edges, cancelling the
                card's own padding, so it is a print in the bundle and not an image in a
                frame. The inline margins are logical, so the bleed mirrors with the text. */
-            <div className="-ms-6 -me-6 -mb-12 mt-8 overflow-hidden rounded-b">
+            <div className="-ms-6 -me-6 -mb-12 mt-2 overflow-hidden rounded-b">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={view.photoUrl!}
@@ -238,7 +217,7 @@ export function RizmaInvitation({ view, copy }: { view: InvitationView; copy: In
               />
             </div>
           ) : (
-            <div className={INNER_RULE}>
+            <div className="pt-2">
               <div className="flex justify-center">
                 <BlindEmbossedCrest size={148} />
               </div>

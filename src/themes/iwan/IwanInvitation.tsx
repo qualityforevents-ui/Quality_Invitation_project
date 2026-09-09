@@ -373,31 +373,6 @@ export function IwanInvitation({ view, copy }: { view: InvitationView; copy: Inv
           {/* 3. POETRY — the couple's own line, which now stands at the end of the card
                 rather than here. See block 12. */}
 
-          {/* ----------------------------------------------------------- 5. roles */}
-          <Haunch />
-
-          {/*
-            Stacked rather than side by side. A two column grid halves an already
-            tapering measure, and 315 minus the gutters leaves 133px a side — which is
-            where "عبد الرحمن" starts breaking mid-word. Stacked, both names get the
-            whole wall, and the stub between them does the work the column rule would.
-          */}
-          <Course tier={1}>
-            <div className="text-center">
-              <p className={LABEL}>{copy.roleGroom}</p>
-              <p className="mt-3 font-inv-body text-[1.3125rem] leading-snug font-semibold text-inv-ink text-balance">
-                {view.name1}
-              </p>
-
-              <IwanVoussoirStub className="my-7" />
-
-              <p className={LABEL}>{copy.roleBride}</p>
-              <p className="mt-3 font-inv-body text-[1.3125rem] leading-snug font-semibold text-inv-ink text-balance">
-                {view.name2}
-              </p>
-            </div>
-          </Course>
-
           {/* ----------------------------------------------------------- 6. photo */}
           <Course tier={1} className="mt-14">
             <IwanWindow view={view} />

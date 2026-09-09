@@ -293,36 +293,6 @@ export function QandeelInvitation({ view, copy }: { view: InvitationView; copy: 
           </HungBlock>
         ) : null}
 
-        {/* 5. ROLES — a 26px solid lamp at the head, then two columns on the full measure */}
-        <HungBlock drop={PLUMB_LENGTHS.roles}>
-          <div className="mb-4 flex justify-center">
-            <MosqueLamp size={26} variant="solid" lit={false} />
-          </div>
-
-          {/*
-            The pair used to shrink-wrap to 116px of the 342px measure, leaving 113px of
-            nothing on each side of two words. Full measure, one column each.
-          */}
-          <div className="grid w-full grid-cols-2 gap-4">
-            <div>
-              <span className="font-inv-body text-xs uppercase text-inv-muted [word-spacing:0.3em]">
-                {copy.roleGroom}
-              </span>
-              <p className="mt-1.5 font-inv-body text-xl font-bold text-inv-ink text-balance">
-                {view.name1}
-              </p>
-            </div>
-            <div>
-              <span className="font-inv-body text-xs uppercase text-inv-muted [word-spacing:0.3em]">
-                {copy.roleBride}
-              </span>
-              <p className="mt-1.5 font-inv-body text-xl font-bold text-inv-ink text-balance">
-                {view.name2}
-              </p>
-            </div>
-          </div>
-        </HungBlock>
-
         {/* 6. PHOTO / NO PHOTO — same drop either way, so the substitution is invisible */}
         <HungBlock drop={PLUMB_LENGTHS.photo}>
           {hasPhoto ? (

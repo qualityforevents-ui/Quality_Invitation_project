@@ -28,7 +28,6 @@ export const PLUMB_LENGTHS = {
   verse: 82,
   poetry: 66,
   invite: 96,
-  roles: 74,
   photo: 82,
   date: 62,
   venue: 88,
