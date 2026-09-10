@@ -11,7 +11,7 @@ const buckets = new Map<string, Bucket>();
  * determined attacker.
  *
  * What it does do is stop a script hammering the login endpoint from one place, at no
- * infrastructure cost. The real protection on this endpoint is that Supabase rate
+ * infrastructure cost. The real protection on this endpoint is that Firebase Auth rate
  * limits authentication itself, public signup is disabled so exactly one account can
  * ever exist, and the address is never linked from anywhere. If the admin ever grows
  * past one operator, replace this with something backed by the database.

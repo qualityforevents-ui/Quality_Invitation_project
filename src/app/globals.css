@@ -3,10 +3,13 @@
    families that every shadcn overlay (dialog, sheet, select, popover) animates with. */
 @import 'tw-animate-css';
 
-/* shadcn's components are written against this variant. Nothing in the customer facing
-   site turns it on: the brand is a warm light one and has no dark mode. It exists so a
-   shadcn control dropped into the dark admin renders in the admin's own palette rather
-   than glowing cream in the middle of it. */
+/* Every shadcn component ships `dark:` classes baked into its class string, and by
+   default that variant is a prefers-color-scheme query — which would hand a controls
+   palette to whatever the operator's phone is set to at nine in the evening. Pointing
+   it at a class nothing ever sets is how the whole set is held to one palette. It has
+   no second palette to switch to any more: the admin used to be dark and no longer is,
+   so the `.dark` block that fed this is gone. The declaration stays, because deleting
+   it does not remove the variant, it just gives it back to the operating system. */
 @custom-variant dark (&:is(.dark *));
 
 @theme {
@@ -38,20 +41,41 @@
   --color-whatsapp-deep: #1da851;
 
   /*
-   * Admin. Dark, dense, and deliberately sharing nothing with the customer palette
-   * above: the operator should never be a moment's doubt about which surface they are
-   * looking at, and the two are used minutes apart on the same phone.
+   * Admin.
+   *
+   * This was a dark palette that deliberately shared nothing with the customer colours
+   * above, on the argument that an operator moving between the two surfaces on one
+   * phone should never be a moment's doubt about which one they are looking at. That
+   * argument lost to a stronger one: the admin is where the business is actually run,
+   * every day, and it was the only part of the product that did not look like the
+   * company. The wordmark now sits on both, and the surfaces are told apart by what
+   * they contain rather than by being different colours.
+   *
+   * These stay their own token layer rather than becoming aliases of the customer
+   * tokens. They are the same values today; the point is that changing the admin's
+   * surface cannot be an accident of retuning the landing page.
+   *
+   * Every pairing here clears WCAG AA against the surface it is used on, which mattered
+   * more once the background stopped being near black: on a light ground the brand gold
+   * is a 2.9:1 colour and cannot carry text at all. So there are two golds. `accent` is
+   * the one that may hold a word; `accent-soft` is the brand gold and is decoration —
+   * fills, rules, the ring on a chart — and never text.
    */
-  --color-adm-bg: #0f1115;
-  --color-adm-panel: #171a21;
-  --color-adm-raised: #1e222b;
-  --color-adm-line: #2b303b;
-  --color-adm-text: #e9ebf1;
-  --color-adm-muted: #8b93a5;
-  --color-adm-accent: #34d399;
-  --color-adm-accent-deep: #10b981;
-  --color-adm-warn: #f59e0b;
-  --color-adm-danger: #f87171;
+  --color-adm-bg: #f7f3ea;
+  --color-adm-panel: #ffffff;
+  --color-adm-raised: #f3ecdd;
+  /* Hairlines between things that are already obviously separate. */
+  --color-adm-line: #e7dcc7;
+  /* The boundary of anything you can type in or press: AA wants 3:1 and a hairline is
+     1.3:1. Inputs and secondary buttons take this, dividers take the line above. */
+  --color-adm-control: #9c8451;
+  --color-adm-text: #23201b;
+  --color-adm-muted: #6f6555;
+  --color-adm-accent: #7f612d;
+  --color-adm-accent-soft: #b18b47;
+  --color-adm-success: #3f7052;
+  --color-adm-warn: #7d5310;
+  --color-adm-danger: #a8412f;
 
   /* Font slots. next/font fills the inner variables in src/lib/fonts.ts. */
   --font-ui-ar: var(--font-tajawal), ui-sans-serif, system-ui, sans-serif;
@@ -203,31 +227,6 @@
   --border: var(--color-line);
   --input: var(--color-line);
   --ring: var(--color-gold);
-}
-
-/* The admin palette, for shadcn controls used on that surface. The customer site never
-   sets this class. */
-.dark {
-  --background: var(--color-adm-bg);
-  --foreground: var(--color-adm-text);
-  --card: var(--color-adm-panel);
-  --card-foreground: var(--color-adm-text);
-  --popover: var(--color-adm-raised);
-  --popover-foreground: var(--color-adm-text);
-  --primary: var(--color-adm-accent);
-  --primary-foreground: var(--color-adm-bg);
-  --secondary: var(--color-adm-raised);
-  --secondary-foreground: var(--color-adm-text);
-  --muted: var(--color-adm-raised);
-  --muted-foreground: var(--color-adm-muted);
-  --accent: var(--color-adm-raised);
-  --accent-foreground: var(--color-adm-text);
-  --destructive: var(--color-adm-danger);
-  --destructive-foreground: var(--color-adm-bg);
-  --border: var(--color-adm-line);
-  --input: var(--color-adm-line);
-  --ring: var(--color-adm-accent);
-  --placeholder: #6b7385;
 }
 
 :root {

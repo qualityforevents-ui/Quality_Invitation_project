@@ -1,22 +1,11 @@
 'use client';
 
 import { useActionState } from 'react';
-import { useFormStatus } from 'react-dom';
+import { SubmitButton } from '@/components/admin/ActionButton';
 import { signIn, type LoginState } from './actions';
 
-function SubmitButton() {
-  const { pending } = useFormStatus();
-
-  return (
-    <button
-      type="submit"
-      disabled={pending}
-      className="tap-target w-full rounded-xl bg-adm-accent px-5 py-3.5 text-base font-semibold text-adm-bg transition active:scale-[0.98] disabled:opacity-50"
-    >
-      {pending ? 'بيتم الدخول' : 'دخول'}
-    </button>
-  );
-}
+const FIELD =
+  'w-full rounded-xl border border-adm-control bg-adm-panel px-4 py-3 text-adm-text outline-none focus:border-adm-accent focus:ring-2 focus:ring-adm-accent/25';
 
 export function LoginForm() {
   const [state, formAction] = useActionState<LoginState, FormData>(signIn, { error: null });
@@ -25,14 +14,7 @@ export function LoginForm() {
     <form action={formAction} className="flex w-full flex-col gap-3">
       <label className="flex flex-col gap-1.5">
         <span className="text-xs text-adm-muted">الإيميل</span>
-        <input
-          name="email"
-          type="email"
-          dir="ltr"
-          required
-          autoComplete="username"
-          className="w-full rounded-xl border border-adm-line bg-adm-raised px-4 py-3 text-adm-text outline-none focus:border-adm-accent"
-        />
+        <input name="email" type="email" dir="ltr" required autoComplete="username" className={FIELD} />
       </label>
 
       <label className="flex flex-col gap-1.5">
@@ -43,15 +25,19 @@ export function LoginForm() {
           dir="ltr"
           required
           autoComplete="current-password"
-          className="w-full rounded-xl border border-adm-line bg-adm-raised px-4 py-3 text-adm-text outline-none focus:border-adm-accent"
+          className={FIELD}
         />
       </label>
 
       {state.error ? (
-        <p className="rounded-lg bg-adm-danger/10 px-3 py-2 text-sm text-adm-danger">{state.error}</p>
+        <p role="alert" className="rounded-lg bg-adm-danger/10 px-3 py-2 text-sm text-adm-danger">
+          {state.error}
+        </p>
       ) : null}
 
-      <SubmitButton />
+      <SubmitButton size="lg" pendingLabel="بيتم الدخول">
+        دخول
+      </SubmitButton>
     </form>
   );
 }

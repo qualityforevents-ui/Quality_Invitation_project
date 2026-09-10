@@ -1,4 +1,4 @@
-import { invitations } from './db';
+import { invitations, reviews } from './db';
 import { mapInvitation } from './invitations';
 import { getEventInstant } from './format';
 import { EVENT_TIMEZONE } from './constants';
@@ -80,11 +80,19 @@ export async function getStats(): Promise<AdminStats> {
   };
 }
 
-/** Newest first. This is the screen the operator lives on. */
+/**
+ * The queue, longest wait first.
+ *
+ * This used to be newest first, which is the order a feed wants and the wrong order for
+ * a queue: it buries the person who has been waiting since last night under everyone
+ * who arrived since, and the operator works down from the top. The one case newest-first
+ * served — a request that just landed in WhatsApp — is served better by the search box,
+ * which is where the operator arrives with a request id in hand anyway.
+ */
 export async function getPending(): Promise<Invitation[]> {
   const snapshot = await invitations()
     .where('status', '==', 'AWAITING_CONFIRMATION')
-    .orderBy('updatedAt', 'desc')
+    .orderBy('updatedAt', 'asc')
     .limit(100)
     .get();
 
@@ -171,4 +179,60 @@ export async function listByStatus(filter: StatusFilter): Promise<Invitation[]> 
 
   const snapshot = await query.get();
   return snapshot.docs.map(mapInvitation);
+}
+
+/** The numbers on the tab bar. Three count aggregations, no documents read. */
+export async function getNavCounts(): Promise<{
+  pending: number;
+  drafts: number;
+  reviews: number;
+}> {
+  const [pending, drafts, reviewsPending] = await Promise.all([
+    invitations().where('status', '==', 'AWAITING_CONFIRMATION').count().get(),
+    invitations().where('status', '==', 'DRAFT').count().get(),
+    reviews().where('status', '==', 'PENDING').count().get(),
+  ]);
+
+  return {
+    pending: pending.data().count,
+    drafts: drafts.data().count,
+    reviews: reviewsPending.data().count,
+  };
+}
+
+const MINUTE_MS = 60 * 1000;
+const HOUR_MS = 60 * MINUTE_MS;
+
+/**
+ * How long somebody has been waiting, in Arabic.
+ *
+ * An absolute timestamp is the wrong unit for a queue. "امبارح 23:14" has to be
+ * subtracted from the current time before it means anything, and the thing the operator
+ * is deciding — who has been left hanging longest — is exactly that subtraction.
+ *
+ * Arabic counts in four buckets rather than two, and a singular where a dual belongs
+ * reads as broken to every customer this is about. Digits stay Latin, which is what the
+ * rest of the product uses and what a phone keyboard produces.
+ */
+export function formatWaited(since: Date, now: Date = new Date()): string {
+  const elapsed = Math.max(0, now.getTime() - since.getTime());
+
+  if (elapsed < HOUR_MS) {
+    return counted(Math.max(1, Math.floor(elapsed / MINUTE_MS)), 'دقيقة', 'دقيقتين', 'دقايق');
+  }
+
+  if (elapsed < 24 * HOUR_MS) {
+    return counted(Math.floor(elapsed / HOUR_MS), 'ساعة', 'ساعتين', 'ساعات');
+  }
+
+  return counted(Math.floor(elapsed / (24 * HOUR_MS)), 'يوم', 'يومين', 'أيام');
+}
+
+function counted(n: number, one: string, two: string, few: string): string {
+  if (n === 1) return `من ${one}`;
+  if (n === 2) return `من ${two}`;
+  // Three to ten take the plural; eleven and up go back to the singular after the
+  // number. This is the rule, not a stylistic choice.
+  if (n <= 10) return `من ${n} ${few}`;
+  return `من ${n} ${one}`;
 }

@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { ADMIN_SESSION_COOKIE, isAuthConfigured, verifySessionCookie } from './firebase/auth';
@@ -7,12 +8,20 @@ export type Operator = { id: string; email: string | null };
 /**
  * The signed in operator, or null.
  *
- * The cookie is verified against Firebase on every call rather than merely decoded,
- * and the check includes whether the account has been revoked since. A cookie is
- * something the browser hands over, so on a surface that can activate invitations and
- * read customer phone numbers, it gets verified.
+ * The cookie is verified against Firebase rather than merely decoded, and the check
+ * includes whether the account has been revoked since. A cookie is something the
+ * browser hands over, so on a surface that can activate invitations and read customer
+ * phone numbers, it gets verified.
+ *
+ * Verified once per request, not once per call. That check is a network round trip to
+ * Firebase, and every admin screen now asks for the operator at least twice — the
+ * layout, to decide whether to render the tab bar and read its counts, and then the
+ * page itself through requireOperator. React's cache() keeps that one lookup for the
+ * whole render rather than paying for the tab bar in latency on the screen the operator
+ * opens twenty times a day. The memo is per request, so a revoked session is still
+ * caught on the very next one.
  */
-export async function getOperator(): Promise<Operator | null> {
+export const getOperator = cache(async function getOperator(): Promise<Operator | null> {
   if (!isAuthConfigured()) return null;
 
   const store = await cookies();
@@ -20,7 +29,7 @@ export async function getOperator(): Promise<Operator | null> {
   if (!cookie) return null;
 
   return verifySessionCookie(cookie);
-}
+});
 
 /**
  * Guards an admin page or action. Every admin route calls this on the server.

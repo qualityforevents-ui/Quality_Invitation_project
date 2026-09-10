@@ -18,7 +18,7 @@ type Params = { params: Promise<{ slug: string }> };
  *
  * The list is empty on purpose. Invitations are created long after the build, so there
  * is nothing to pre render, and reaching for the database during a build would make
- * deployments fail whenever Supabase is briefly unavailable. Each slug is rendered on
+ * deployments fail whenever Firestore is briefly unavailable. Each slug is rendered on
  * its first request and cached from then on.
  *
  * Guests therefore never touch the database, which keeps function invocations near

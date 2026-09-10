@@ -28,24 +28,23 @@ npm run dev
 
 ---
 
-## The database is shared. Three rules.
+## The database. Three rules.
 
-Everyone points at the same Supabase project, so what you do is visible to everyone else
-immediately.
+Local development runs against the Firestore emulator, so nothing you do on your own
+machine touches customer data. Comment out `FIRESTORE_EMULATOR_HOST` in `.env` and you
+are pointing at the live project all three of you share, where every write is visible to
+everyone else immediately.
 
-**1. Only one person runs migrations.** Agree who. `npm run db:migrate` alters the live
-schema for all three of you, and it can drop data when the schema has drifted. If you
-need a schema change, edit `prisma/schema.prisma`, push the branch, and let the migration
-owner run it.
+**1. Firestore has no migrations, and that is the trap.** There is no schema to alter and
+no migration to run, so a shape change never fails loudly the way a missing column does.
+Add a field to `InvitationRecord` and every document already written is simply without
+it. Read new fields back as optional and default them rather than assuming they are
+there.
 
-**2. After pulling a schema change, regenerate.**
-
-```sh
-npm install   # runs prisma generate through the postinstall hook
-```
-
-Otherwise your types describe a database that no longer exists, and the errors are
-confusing.
+**2. `src/lib/types.ts` is hand written.** Nothing generates it, because Firestore has
+nothing to generate from. It is the only description of document shape that exists, so it
+is accurate only for as long as you keep it accurate. Update it in the same commit as the
+code that writes the new field.
 
 **3. Test invitations pile up.** Everything you build shows in the admin's pending list
 alongside real customers. Give test couples obviously fake names so nobody activates one
@@ -126,11 +125,11 @@ them". The short version:
 | | Needs |
 |---|---|
 | The code | GitHub collaborator access |
-| The database and admin | Supabase dashboard access, or just the `.env` values |
+| The database and admin | Firebase console access, or just the `.env` values |
 | Photo storage | ImageKit dashboard access, or just the `.env` values |
 | Live deployment | Vercel project access |
 
 The admin has exactly one operator account and public signup is disabled. If a teammate
-needs their own admin login, the owner creates it from the Supabase dashboard under
-Authentication, Users, Add user, with **Auto Confirm User** ticked. The dashboard can
-create accounts even with signup disabled; that is the point of disabling it.
+needs their own admin login, the owner creates it from the Firebase console under
+Authentication, Users, Add user. The console can create accounts even with signup
+disabled; that is the point of disabling it.

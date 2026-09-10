@@ -107,7 +107,7 @@ export function statusUrl(editToken: string): string {
  * Review length limits.
  *
  * Here rather than in lib/reviews because the submission form is a client component,
- * and importing them from a module that touches Prisma drags the Postgres driver into
+ * and importing them from a module that touches the Admin SDK drags firebase-admin into
  * the browser bundle. The build fails on dns, fs and net, which is a confusing way to
  * discover you crossed the server boundary for two numbers.
  */

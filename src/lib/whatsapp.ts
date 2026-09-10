@@ -86,3 +86,24 @@ export function buildSupportMessage(lang: Lang, requestId: string): string {
     ? `السلام عليكم، عندي استفسار عن طلب رقم ${requestId}`
     : `Hello, I have a question about request ${requestId}`;
 }
+
+/**
+ * The nudge to somebody who built an invitation and never paid.
+ *
+ * Deliberately not a sales pitch. They already chose names, a date and a venue and then
+ * stopped, which usually means a question they did not ask rather than a decision they
+ * made, so this opens the door and says nothing about money. The request id is in it
+ * because the reply comes back without one otherwise, and then the operator is searching
+ * for a name.
+ */
+export function buildDraftNudgeMessage(requestId: string, name1: string, name2: string): string {
+  const couple = [name1, name2].filter(Boolean).join(' و ');
+
+  return [
+    'السلام عليكم',
+    couple ? `بخصوص دعوة ${couple}` : 'بخصوص الدعوة اللي بدأتوها',
+    `رقم الطلب: ${requestId}`,
+    '',
+    'لقيناها لسه مش مكتملة. لو في أي حاجة محتاجين مساعدة فيها، إحنا هنا.',
+  ].join('\n');
+}

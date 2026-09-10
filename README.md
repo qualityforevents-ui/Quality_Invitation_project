@@ -118,7 +118,7 @@ Stages 1 to 6 of the build order.
 | 13. Open Graph image generation | Done |
 | 14. Admin editing, stats, drafts list | Done |
 
-All fourteen stages are written, and everything above has now run against a real Supabase
+All fourteen stages are written, and everything above has now run against a real Firebase
 project and a real ImageKit account. A synthetic photo has been through the whole
 pipeline: upload signature accepted, crop stored as coordinates, delivered at 49KB with
 no EXIF or GPS markers left in the bytes.
@@ -183,7 +183,7 @@ Checked in a browser at 390px, in both directions:
 - Slug transliteration. Both reference invitations reproduce exactly: مُعَاذ and رِيم
   give `moaaz-reem`, حمدي and فاطمة give `hamdy-fatma`.
 
-The full path has since been walked end to end against the real Supabase project and a
+The full path has since been walked end to end against the real Firebase project and a
 real ImageKit account: draft created, autosaved, resumed from the cookie, photo uploaded
 and cropped, previewed, handed off to WhatsApp, activated from the admin, and served
 live at its public slug with a generated Open Graph card. The public page was checked
@@ -204,37 +204,38 @@ for an editToken leak and has none.
 Seven, and one of them needs a decision from you.
 
 **0. The hosting families line and the dress code are gone.** Removed on request, after
-the spec was written. They are out of the Prisma model, the validation schema, the
+the spec was written. They are out of the document type, the validation schema, the
 builder form, the invitation, and both dictionaries, rather than hidden in the
-interface, so nothing carries a column that no longer means anything. No migration was
-needed because no database existed yet. Section 8.2 of the spec still lists both fields;
-this README is the newer instruction. Putting either back is a schema change plus a form
-field plus a section in each theme.
+interface, so nothing carries a field that no longer means anything. Section 8.2 of the spec still lists both fields;
+this README is the newer instruction. Putting either back is a change to `InvitationRecord` plus a
+form field plus a section in each theme.
 
 The English card keeps its "Together with their families" opening. It names nobody and
 is standard English invitation phrasing, doing the job the Bismillah does on the Arabic
 side, so it is not the field that was removed.
 
-**1. Prisma 7 moved the connection URLs out of the schema.** The spec describes
-putting `url` and `directUrl` in `schema.prisma`. Prisma 7 removed both properties.
-The behaviour the spec asks for is unchanged, it is just configured in two places now:
+**1. The datastore is Firestore, not Postgres.** The spec describes Prisma against a
+Supabase Postgres, with a pooled `DATABASE_URL` for runtime and a direct `DIRECT_URL`
+for migrations. The whole stack is now Firebase: the Admin SDK against Firestore, with
+the same Firebase project also holding the operator login. Nothing reaches Postgres and
+neither connection URL exists any more.
 
-- Runtime uses `DATABASE_URL`, the pooler on port 6543, through the pg driver adapter
-  in `src/lib/db.ts`, with the pool capped at one connection per function invocation.
-- Migrations use `DIRECT_URL`, the direct connection on port 5432, set in
-  `prisma.config.ts` where only the CLI reads it.
+What that changes for you:
 
-`?pgbouncer=true&connection_limit=1` were parameters Prisma's own engine understood.
-The pg driver passes anything it does not recognise to Postgres as a startup parameter
-and the connection fails, so `src/lib/db.ts` strips them. Keep them on the URL or take
-them off, either works.
+- There is no schema and no migration step. `src/lib/types.ts` is hand written and is
+  the only description of document shape that exists.
+- A new field is absent from every document written before it, rather than being a
+  column with a default. Read new fields back as optional.
+- Queries are weaker. `src/lib/admin-queries.ts` filters in memory where Postgres would
+  have answered with `ILIKE`; the comment there explains what that costs.
+- Local development runs against the Firestore emulator. See SETUP.md step 4.
 
 **2. Backup scheduling is not automated.** This is the one item I could not close.
 `npm run backup` works now and dumps every row to `backups/`. But the single daily
 Vercel Hobby cron is taken by the heartbeat, and a Vercel function has nowhere durable
 to write, so the schedule has to live somewhere you control. SETUP.md section 6 sets
-out the two workable options. **Pick one before you take real money**, because the free
-Supabase plan has no backups at all.
+out the two workable options. **Pick one before you take real money**, because the
+Firestore free tier has no scheduled export at all.
 
 **3. Arabic fonts are subset by range, not by character.** The spec asks for subsetting
 to the characters actually used. That is unreachable here: the largest text on the card
@@ -313,8 +314,9 @@ Two smaller notes:
 
 The code is complete. What remains is everything only you can do.
 
-1. **Provision Supabase and run the migration.** SETUP.md steps 1 to 3. Disable public
-   signup while you are in there. Nothing that writes has ever run.
+1. **Provision the Firebase project.** SETUP.md steps 1 to 3: Firestore in `eur3`, the
+   service account key, the deny-all rules and the composite indexes. Disable public
+   signup while you are in there.
 2. **Walk the whole customer path on a real phone.** Every question, preview, pay, hand
    off to WhatsApp, then activate it from the admin and watch the waiting screen flip.
    That is the first time most of this code will have executed.

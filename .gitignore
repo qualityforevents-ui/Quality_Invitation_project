@@ -40,3 +40,12 @@ firestore-debug.log
 secrets/
 *service-account*.json
 *firebase-adminsdk*.json
+
+# graphify knowledge graph. graph.json and GRAPH_REPORT.md are shared so everyone
+# works from the same map, and .gitattributes registers a merge driver for graph.json
+# so two people rebuilding it does not become a conflict. Everything else is derived
+# or machine local: graph.html regenerates from graph.json, and .graphify_python holds
+# an absolute path to one developer's interpreter.
+graphify-out/*
+!graphify-out/graph.json
+!graphify-out/GRAPH_REPORT.md
