@@ -52,6 +52,30 @@ by accident.
 
 ---
 
+## Do not remove the `jose` override
+
+`package.json` pins `jose` to `^5.10.0` in `overrides`. It looks like dead weight and it
+is not. `firebase-admin` depends on `jwks-rsa`, whose code is CommonJS and does
+`require('jose')`. jose 6 is ESM only, so that `require` throws `ERR_REQUIRE_ESM` and
+every admin route returns 500. jose 5 still ships a CommonJS build, which is the whole
+reason for the pin.
+
+`jwks-rsa` declares `jose: ^6.1.3` in its own package.json, so the override reads like a
+mistake. It is not — the declared range and what its code can actually load disagree.
+
+The trap is that **this cannot fail locally**. `next dev` and `next start` bundle
+firebase-admin through Turbopack, which resolves the ESM build happily. Vercel
+externalises it into `node_modules` and does a real CommonJS `require`, so the failure
+only ever appears in production. If you touch this pin, check it with:
+
+```sh
+node -e "require('firebase-admin/auth')"
+```
+
+That is the exact call the serverless runtime makes, and it fails in the same way.
+
+---
+
 ## Branches
 
 Nobody commits to `main` directly once there is more than one of you.
