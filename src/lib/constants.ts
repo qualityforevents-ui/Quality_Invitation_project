@@ -54,6 +54,15 @@ export const VODAFONE_CASH_LINK = process.env.NEXT_PUBLIC_VODAFONE_CASH_LINK || 
  */
 export const EDIT_TOKEN_COOKIE = 'qlty_edit';
 
+/**
+ * Holds the booth booking's statusToken. httpOnly, the invitations cookie's twin.
+ *
+ * Separate from qlty_edit rather than shared, because one person can legitimately be
+ * both: a couple who booked the booth and also built an invitation. One cookie holding
+ * whichever token was written last would lose them one of the two.
+ */
+export const BOOTH_STATUS_COOKIE = 'qlty_booth';
+
 /** Remembers the builder language across visits. Readable by the client. */
 export const UI_LANG_COOKIE = 'qlty_lang';
 
@@ -101,6 +110,11 @@ export function editUrl(editToken: string): string {
 
 export function statusUrl(editToken: string): string {
   return `${SITE_URL}/build/status/${editToken}`;
+}
+
+/** Where a customer watches their booth booking. Addressed by the secret status token. */
+export function boothStatusUrl(statusToken: string): string {
+  return `${SITE_URL}/photobooth/request/${statusToken}`;
 }
 
 /**

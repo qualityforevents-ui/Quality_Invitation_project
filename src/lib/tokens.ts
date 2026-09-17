@@ -73,3 +73,34 @@ export function isUniqueConstraintError(error: unknown): boolean {
     (error as { code?: unknown }).code === 'P2002'
   );
 }
+
+/**
+ * A booth booking id, e.g. "QLB-7K4M9P".
+ *
+ * The same alphabet and the same length as an invitation's request id, for the same
+ * reason: the operator reads these out of a WhatsApp message and types them into a
+ * search box, and O, 0, I, 1 and L are where that goes wrong.
+ *
+ * A different prefix because the two live in the same conversation. The operator is
+ * looking at one WhatsApp inbox carrying both invitation requests and booth bookings,
+ * and "QLB" versus "QLT" is what tells them which queue to open without reading
+ * further.
+ */
+export function generateBookingId(): string {
+  let out = '';
+  for (let i = 0; i < REQUEST_ID_LENGTH; i += 1) {
+    out += REQUEST_ID_ALPHABET[randomInt(REQUEST_ID_ALPHABET.length)];
+  }
+  return `QLB-${out}`;
+}
+
+/**
+ * The customer's key to their own booth booking status page.
+ *
+ * Generated and used exactly like an invitation's editToken: 24 bytes from a CSPRNG,
+ * held in an httpOnly cookie, and never derived from anything about the booking. It is
+ * the whole of the authorisation on that page, because there are no accounts here.
+ */
+export function generateStatusToken(): string {
+  return randomBytes(24).toString('base64url');
+}

@@ -1,5 +1,10 @@
 import { cookies, headers } from 'next/headers';
-import { COOKIE_MAX_AGE_SECONDS, EDIT_TOKEN_COOKIE, UI_LANG_COOKIE } from './constants';
+import {
+  BOOTH_STATUS_COOKIE,
+  COOKIE_MAX_AGE_SECONDS,
+  EDIT_TOKEN_COOKIE,
+  UI_LANG_COOKIE,
+} from './constants';
 import type { Lang } from '@/lib/types';
 
 /**
@@ -69,4 +74,34 @@ export async function setUiLang(lang: Lang): Promise<void> {
     path: '/',
     maxAge: COOKIE_MAX_AGE_SECONDS,
   });
+}
+
+/* ---------------------------------------------------------------- photo booth */
+
+/**
+ * The booth booking belonging to this device.
+ *
+ * The same mechanism as the invitation editToken and for the same reason: there are no
+ * customer accounts anywhere in this product, so a cookie the server can read and the
+ * browser cannot is the whole of the authorisation on the booking status page.
+ */
+export async function getBoothStatusToken(): Promise<string | null> {
+  const store = await cookies();
+  return store.get(BOOTH_STATUS_COOKIE)?.value ?? null;
+}
+
+export async function setBoothStatusToken(token: string): Promise<void> {
+  const store = await cookies();
+  store.set(BOOTH_STATUS_COOKIE, token, {
+    httpOnly: true,
+    secure: await isSecureRequest(),
+    sameSite: 'lax',
+    path: '/',
+    maxAge: COOKIE_MAX_AGE_SECONDS,
+  });
+}
+
+export async function clearBoothStatusToken(): Promise<void> {
+  const store = await cookies();
+  store.delete(BOOTH_STATUS_COOKIE);
 }

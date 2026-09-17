@@ -156,3 +156,168 @@ export type Review = {
   invitationId: string | null;
   createdAt: Date;
 };
+
+/* ---------------------------------------------------------------- photo booth */
+
+/**
+ * Where a booking is in its life.
+ *
+ * Only three of these take a unit off the calendar, and which three is the whole
+ * design. See src/lib/photobooth/availability.ts, which is where that rule lives and
+ * where it is tested.
+ *
+ *   REQUESTED costs nothing. Somebody filled the form in. They may never message us,
+ *   and a form submission is not a reason to stop selling a Saturday night.
+ *
+ *   HELD costs a unit, for a while. The customer tapped through to WhatsApp, which is
+ *   the first act that involves us in a conversation, and the date is theirs until the
+ *   hold expires.
+ *
+ *   CONFIRMED costs a unit permanently. A human has seen the deposit arrive.
+ *
+ *   BLOCKED costs a unit and has no customer attached. It is how the operator says
+ *   "the booth is at a corporate job that day" or "I am not working that week".
+ */
+export type BoothStatus =
+  | 'REQUESTED'
+  | 'HELD'
+  | 'CONFIRMED'
+  | 'COMPLETED'
+  | 'CANCELLED'
+  | 'BLOCKED';
+
+/** Who created the booking. Bookings arrive from three places and behave differently. */
+export type BoothSource = 'site' | 'admin' | 'notion';
+
+/** How this reservation is getting on with its Notion counterpart. */
+export type BoothSyncStatus = 'ok' | 'pending' | 'error';
+
+export type BoothReservation = {
+  /** The Firestore document id. */
+  id: string;
+  /** Short and human readable, e.g. "QLB-7K4M9P". Read aloud over WhatsApp. */
+  bookingId: string;
+  /**
+   * The customer's key to their own status page, in an httpOnly cookie exactly like the
+   * invitation editToken. There are no accounts on this side of the product either.
+   */
+  statusToken: string;
+
+  status: BoothStatus;
+
+  /**
+   * A Cairo calendar day as "YYYY-MM-DD", and deliberately a string rather than a
+   * Timestamp.
+   *
+   * A booth booking is a day, not an instant. Stored as a Timestamp, "the 14th" becomes
+   * a moment in UTC, and every reader then has to agree about which timezone turns it
+   * back into a day. They will not: the server runs in UTC, the operator's phone is in
+   * Cairo, and for the last three hours of every Egyptian evening those two disagree
+   * about the date. A booking would silently move to the day before. A string cannot
+   * drift, cannot be converted by accident, and sorts correctly as text.
+   */
+  eventDate: string;
+  /** "20:00", when the booth should be running. Not when we arrive to set it up. */
+  startTime: string;
+  hours: number;
+  /** How many booths this booking takes. Almost always one. */
+  units: number;
+
+  packageId: string;
+  price: number;
+  extras: string | null;
+  depositAmount: number;
+  depositPaid: boolean;
+
+  customerName: string;
+  /** Egyptian local form, "01xxxxxxxxx", validated exactly as an invitation's is. */
+  customerPhone: string;
+  venue: string;
+  area: string;
+  eventType: string;
+  notes: string | null;
+  lang: Lang;
+
+  source: BoothSource;
+
+  /** When a HELD booking stops holding its unit. Null in every other status. */
+  holdExpiresAt: Date | null;
+
+  /**
+   * The Meta signals belonging to this booking, captured while the customer was still
+   * on the site. Same shape and same reason as an invitation's: the sale is confirmed
+   * by a human on WhatsApp days later, in a session that has none of these cookies.
+   */
+  metaAttribution: MetaAttribution | null;
+
+  /* Notion. Null on anything that has never been pushed. */
+  notionPageId: string | null;
+  /** Notion's own last_edited_time for the page, used to decide who wins a conflict. */
+  notionLastEditedTime: Date | null;
+  lastSyncedAt: Date | null;
+  /** Hash of the synced fields. Equal hashes mean an echo of our own write. */
+  syncHash: string | null;
+  syncState: BoothSyncStatus;
+  syncError: string | null;
+
+  /** Why a booking was cancelled, for the operator and for the customer's status page. */
+  cancelReason: string | null;
+
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+/**
+ * One calendar day's occupancy, and the lock that makes it true.
+ *
+ * This document exists so that two customers cannot take the last booth at the same
+ * moment. Every write that changes a reservation's status or date runs in a Firestore
+ * transaction that reads this document and writes it back, which serialises them: the
+ * second transaction is retried against the first one's result rather than overwriting
+ * it. Counting reservations with a query instead would be a read that is already stale
+ * by the time the write lands.
+ *
+ * The counters are a cache of the reservations, and the reservations are the truth. The
+ * reconcile job rebuilds these from the reservations nightly, because a cache that
+ * nothing ever checks is a cache that is eventually wrong.
+ */
+export type BoothDay = {
+  /** The document id is the date itself, "YYYY-MM-DD". */
+  date: string;
+  unitsConfirmed: number;
+  unitsHeld: number;
+  unitsBlocked: number;
+  /** Every reservation touching this day, so the counters can be rebuilt from scratch. */
+  reservationIds: string[];
+  /**
+   * True when a human deliberately took more bookings than there are booths. The admin
+   * and Notion are both allowed to do this; the public form never is.
+   */
+  overbooked: boolean;
+  updatedAt: Date;
+};
+
+export type BoothSettings = {
+  unitCount: number;
+  minNoticeDays: number;
+  maxAdvanceDays: number;
+  /** How long tapping through to WhatsApp holds a unit. */
+  holdHours: number;
+  /** JavaScript day numbers, 0 = Sunday. */
+  closedWeekdays: number[];
+  /** Specific days off, as "YYYY-MM-DD". */
+  blackoutDates: string[];
+  updatedAt: Date;
+};
+
+/** Where the Notion sync got to. One document, id "notionBooth". */
+export type BoothSyncCursor = {
+  /** Notion last_edited_time of the newest page already pulled in. */
+  lastIncrementalCursor: string | null;
+  lastIncrementalRunAt: Date | null;
+  lastFullReconcileAt: Date | null;
+  lastWebhookAt: Date | null;
+  lastError: string | null;
+  /** Held while a reconcile runs, so two do not run at once. */
+  lockedUntil: Date | null;
+};
