@@ -26,8 +26,11 @@ async function setStatus(formData: FormData): Promise<void> {
 
   await reviews().doc(id).update({ status });
 
-  // The landing page renders approved reviews, so it has to be rebuilt.
+  // Both surfaces that render approved reviews have to be rebuilt. The builder shows
+  // them today; the home is being built to show them as well, and a revalidate for a
+  // path with nothing cached costs nothing.
   revalidatePath('/');
+  revalidatePath('/invitations');
   revalidatePath('/admin/reviews');
 }
 

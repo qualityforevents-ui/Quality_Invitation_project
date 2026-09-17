@@ -30,6 +30,28 @@ const AR = {
     stepPayment: 'الدفع',
   },
 
+  /*
+   * The root, which is a door rather than a room: QLTY sells invitations and it rents a
+   * photo booth, and "/" belongs to neither of them.
+   *
+   * Only what the root renders today. The designed home, with its service cards and its
+   * price tags, brings its own keys when it lands.
+   */
+  home: {
+    tagline: 'إحنا اللي بنعمل لحظات الفرح',
+    invitationsTitle: 'دعوات إلكترونية',
+    invitationsBody: 'دعوة لخطوبتك أو فرحك، بتتبعت برابط واحد على واتساب.',
+    invitationsCta: 'اعمل دعوتك',
+    /*
+     * Shown only when the cookie on this device still resolves to a draft. There are no
+     * accounts here, so this bar is the only way back in for somebody who closed the tab
+     * and came to the root instead of the builder.
+     */
+    continueTitle: 'دعوتك لسه مستنياك',
+    continueCta: 'كمّل دعوتك',
+    supportMessage: 'السلام عليكم، عايز أعرف أكتر عن خدمات QLTY',
+  },
+
   landing: {
     title: 'دعوة فرحك، بشكل يليق بيها',
     subtitle:
@@ -383,6 +405,16 @@ const EN: Dictionary = {
     stepDesign: 'Design',
     stepPreview: 'Preview',
     stepPayment: 'Payment',
+  },
+
+  home: {
+    tagline: 'We make the moments the event is remembered for',
+    invitationsTitle: 'Digital invitations',
+    invitationsBody: 'An invitation for your engagement or wedding, sent as one WhatsApp link.',
+    invitationsCta: 'Create your invitation',
+    continueTitle: 'Your invitation is where you left it',
+    continueCta: 'Continue',
+    supportMessage: 'Hello, I would like to know more about what QLTY does',
   },
 
   landing: {

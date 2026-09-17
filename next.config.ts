@@ -24,12 +24,17 @@ const nextConfig: NextConfig = {
     '/sample/opengraph-image': ['./src/assets/fonts/**'],
   },
   /**
-   * The four builder steps became one page at "/".
+   * The four builder steps became one page, and that page has since moved off the root
+   * to /invitations to make room for the booth.
    *
    * Redirected rather than deleted, because those paths are in WhatsApp threads, in
    * bookmarks and possibly in an ad, and a 404 is a lost customer. Next carries the
    * query string over on its own, so /build?package=UNLIMITED still arrives with the
    * tier the visitor picked and the flow still honours it.
+   *
+   * Still temporary redirects. These have been pointed at two different destinations
+   * now, and a 308 cached in a phone's browser from the first answer would outlive the
+   * second one.
    *
    * Listed one by one rather than as /build/:path*, which would swallow
    * /build/status/:editToken. That route survives untouched: it is where every paying
@@ -39,7 +44,7 @@ const nextConfig: NextConfig = {
   async redirects() {
     return ['/build', '/build/theme', '/build/preview', '/build/payment'].map((source) => ({
       source,
-      destination: '/',
+      destination: '/invitations',
       permanent: false,
     }));
   },

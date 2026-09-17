@@ -59,7 +59,7 @@ export default async function SamplePage({
       </div>
 
       <div className="fixed top-4 start-4 z-50">
-        <BackLink href="/" label={t.landing.sampleBack} />
+        <BackLink href="/invitations" label={t.landing.sampleBack} />
       </div>
 
       <div className="fixed inset-x-0 bottom-0 z-50 border-t border-line bg-cream/95 backdrop-blur">
@@ -70,7 +70,7 @@ export default async function SamplePage({
             {t.landing.sampleNote}
           </p>
           <Button asChild size="lg" className="w-full rounded-full text-base">
-            <Link href="/#packages">{t.landing.sampleCta}</Link>
+            <Link href="/invitations">{t.landing.sampleCta}</Link>
           </Button>
         </div>
       </div>

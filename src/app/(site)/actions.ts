@@ -21,6 +21,10 @@ import { clearEditToken } from '@/lib/session';
  *
  * The consequence is real and the confirmation says so: there are no accounts in this
  * product, so once the cookie is gone this device cannot reach that invitation again.
+ *
+ * Lands on the builder rather than the root. Starting over is somebody saying they want
+ * to build a different invitation, and answering that with the brand home would make
+ * them find their way back in.
  */
 export async function startOver(): Promise<void> {
   await clearEditToken();
@@ -28,5 +32,5 @@ export async function startOver(): Promise<void> {
   const store = await cookies();
   store.delete(FLOW_STEP_COOKIE);
 
-  redirect('/');
+  redirect('/invitations');
 }

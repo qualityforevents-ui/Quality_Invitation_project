@@ -39,7 +39,7 @@ export function FlowHeader({
   return (
     <header className="sticky top-0 z-30 -mx-5 border-b border-transparent bg-background/90 px-5 backdrop-blur transition-colors data-[started=true]:border-border" data-started={started}>
       <div className="flex h-14 items-center gap-3">
-        <Link href="/" className="press shrink-0">
+        <Link href="/invitations" className="press shrink-0">
           <BrandLogo className="h-10" />
         </Link>
 
