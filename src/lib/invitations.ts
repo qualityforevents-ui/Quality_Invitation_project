@@ -10,13 +10,33 @@ import { parseCrop } from './photo-url';
 import { getTheme } from '@/themes/registry';
 import type { DocumentData, DocumentSnapshot, Transaction } from 'firebase-admin/firestore';
 import type { InvitationPatch } from './validation';
-import type { Invitation, Lang } from './types';
+import type { Invitation, Lang, MetaAttribution } from './types';
 
 /** Statuses whose content the customer is still allowed to change. */
 const EDITABLE_STATUSES = new Set(['DRAFT', 'AWAITING_CONFIRMATION', 'ACTIVE']);
 
 export function isEditable(invitation: Invitation): boolean {
   return EDITABLE_STATUSES.has(invitation.status);
+}
+
+
+/**
+ * Reads the stored Meta signals back, tolerating every document written before the
+ * field existed — which is all of them, up to the commit that added this.
+ */
+function readAttribution(raw: unknown): MetaAttribution | null {
+  if (!raw || typeof raw !== 'object') return null;
+  const data = raw as Record<string, unknown>;
+  const str = (value: unknown): string | null =>
+    typeof value === 'string' && value ? value : null;
+
+  return {
+    fbp: str(data.fbp),
+    fbc: str(data.fbc),
+    clientIp: str(data.clientIp),
+    userAgent: str(data.userAgent),
+    sourceUrl: str(data.sourceUrl),
+  };
 }
 
 /**
@@ -63,6 +83,7 @@ export function mapInvitation(doc: DocumentSnapshot<DocumentData>): Invitation {
     ogImageUrl: data.ogImageUrl ?? null,
 
     customerPhone: data.customerPhone ?? null,
+    metaAttribution: readAttribution(data.metaAttribution),
     paymentNote: data.paymentNote ?? null,
     rejectReason: data.rejectReason ?? null,
     viewCount: Number(data.viewCount ?? 0),
@@ -302,4 +323,21 @@ export async function updateInvitation(
   const ref = invitations().doc(id);
   await ref.update(defined({ ...data, updatedAt: new Date() }));
   return mapInvitation(await ref.get());
+}
+
+
+/**
+ * Writes the Meta signals onto an invitation, and nothing else.
+ *
+ * Deliberately not routed through updateInvitation. That helper stamps `updatedAt`,
+ * which is what the admin's stale-request alert reads to decide who has gone quiet and
+ * needs chasing. A background reporting call is not the customer doing something, and
+ * letting it touch that timestamp would make every abandoned draft look permanently
+ * fresh and empty the one list the operator uses to recover lost money.
+ */
+export async function recordMetaAttribution(
+  id: string,
+  attribution: MetaAttribution,
+): Promise<void> {
+  await invitations().doc(id).update({ metaAttribution: attribution });
 }

@@ -3,6 +3,8 @@ import type { CSSProperties } from 'react';
 import Link from 'next/link';
 import { BackLink } from '@/components/site/BackLink';
 import { InvitationShell } from '@/components/invitation/InvitationShell';
+import { MetaPixel } from '@/components/meta/MetaPixel';
+import { SampleViewedBeacon } from '@/components/meta/SampleViewedBeacon';
 import { Button } from '@/components/ui/button';
 import { getDictionary } from '@/i18n/ui';
 import { buildSampleView } from '@/lib/sample';
@@ -42,6 +44,15 @@ export default async function SamplePage({
 
   return (
     <>
+      {/*
+        This page sits outside the (site) group, so it does not inherit that layout's
+        pixel — but it is squarely a customer surface. Somebody who opens the sample is
+        the most persuaded this product will ever have them, which makes it the single
+        most valuable audience on the site to be able to retarget.
+      */}
+      <MetaPixel />
+      <SampleViewedBeacon themeId={themeId ?? 'default'} />
+
       {/* Lifts the invitation's mute toggle clear of the bar along the bottom. */}
       <div style={{ '--inv-toggle-offset': '6.5rem' } as CSSProperties}>
         <InvitationShell view={buildSampleView(lang, themeId)} />

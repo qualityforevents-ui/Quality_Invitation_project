@@ -33,7 +33,7 @@ import { Button } from '@/components/ui/button';
 import { useAutosave } from '@/lib/useAutosave';
 import { COOKIE_MAX_AGE_SECONDS, FLOW_STEP_COOKIE } from '@/lib/constants';
 import { formatEventDate, formatEventTimeParts, fromDateInputValue } from '@/lib/format';
-import { packageName } from '@/lib/packages';
+import { packageName, packagePrice } from '@/lib/packages';
 import { getTheme, themeName } from '@/themes/registry';
 import { getTrack, trackName } from '@/lib/music';
 import { getVerse, verseLabel } from '@/lib/verses';
@@ -47,6 +47,8 @@ import {
 } from '@/lib/flow/sections';
 import { clampFurthest, isAnswered, toPatch, type FlowValues } from '@/lib/flow/values';
 import { viewFromValues } from '@/lib/flow/preview-view';
+import { useFlowTracking } from '@/lib/meta/useFlowTracking';
+import { metaTrack, priced } from '@/lib/meta/pixel';
 import type { Dictionary } from '@/i18n/ui';
 import type { Invitation } from '@/lib/types';
 import type { EventType, Lang } from '@/lib/types';
@@ -153,6 +155,19 @@ export function InvitationFlow({
   const { values, furthest, active } = state;
 
   const isDraft = !invitation || invitation.status === 'DRAFT';
+
+  /*
+   * Every question reached, the tier chosen, the checkout and the lead, reported to
+   * Meta from one place that watches this state rather than from fifteen call sites
+   * inside it. See the hook for why it cannot live in the reducer.
+   */
+  useFlowTracking({
+    started: furthest !== null,
+    furthest,
+    packageId: values.package,
+    invitationLang: values.invitationLang,
+    hasDraft: Boolean(invitation),
+  });
 
   const patch = useMemo(() => toPatch(values, lang), [values, lang]);
 
@@ -427,7 +442,10 @@ export function InvitationFlow({
             // customer — which meant an invitation could go out playing something nobody
             // had ever chosen. The music question is the only place music is decided.
             onChange={(themeId) => set({ themeId })}
-            onTry={() => setPreviewOpen(true)}
+            onTry={() => {
+              setPreviewOpen(true);
+              metaTrack('PreviewOpened', { source: 'theme', content_ids: [values.themeId] });
+            }}
             onNext={() => advance('theme')}
           />
         );
@@ -474,6 +492,7 @@ export function InvitationFlow({
             onOpen={() => {
               setPreviewOpen(true);
               setPreviewSeen(true);
+              metaTrack('PreviewOpened', { source: 'preview', content_ids: [values.themeId] });
             }}
             onNext={() => advance('preview')}
           />
@@ -509,6 +528,38 @@ export function InvitationFlow({
             statusPath={invitation ? `/build/status/${invitation.editToken}` : null}
             onHandoff={() => {
               void flush();
+
+              /*
+               * The most valuable moment on the site, and the last one it can see. Two
+               * events, because they answer different questions: `Contact` is Meta's
+               * standard name for "this person opened a conversation with the business",
+               * which is what a custom conversion and an optimisation goal can be built
+               * on, and `PaymentHandoff` carries the request id so a specific sale can be
+               * traced back to a specific click when one is disputed.
+               *
+               * Not a Purchase. Nobody has paid yet — payment is settled by a human on
+               * WhatsApp and reported from the admin when the operator confirms it. A
+               * Purchase fired here would count every person who tapped the button and
+               * then changed their mind, and there is no way to take it back afterwards.
+               *
+               * Both use keepalive inside metaTrack, which matters here more than
+               * anywhere: this handler is running as the tab navigates to WhatsApp, and
+               * an ordinary fetch would be cancelled by that navigation. It is the same
+               * reason the confirm call below sets the flag.
+               */
+              metaTrack(
+                'Contact',
+                priced(packagePrice(values.package), {
+                  content_ids: [values.package],
+                  content_type: 'product',
+                }),
+              );
+              metaTrack('PaymentHandoff', {
+                ...priced(packagePrice(values.package)),
+                request_id: invitation?.requestId ?? null,
+                content_ids: [values.package],
+              });
+
               void fetch('/api/invitation/confirm', { method: 'POST', keepalive: true }).catch(
                 () => {
                   // The operator can still find this request by its id, so a failure

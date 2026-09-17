@@ -8,6 +8,7 @@ import { getById } from '@/lib/admin-queries';
 import { DEFAULT_EXPIRY_DAYS_AFTER_EVENT } from '@/lib/constants';
 import { isValidSlug } from '@/lib/slug';
 import { getPackage } from '@/lib/packages';
+import { reportPurchase } from '@/lib/meta/sale';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -58,6 +59,28 @@ export async function activateInvitation(formData: FormData): Promise<void> {
       paymentNote,
       rejectReason: null,
     });
+
+  /*
+   * The sale, reported to Meta. This is the only place in the product that sends a
+   * Purchase, because it is the only place that knows money arrived — payment is
+   * settled by a human on WhatsApp, so nothing the customer's browser did could have
+   * told us this.
+   *
+   * Guarded on the invitation not having been activated before. `activatedAt` is
+   * preserved above rather than overwritten, so an operator reactivating something they
+   * had rejected, or double clicking the button, finds a timestamp already there. The
+   * event id derived from the invitation would make Meta drop the repeat anyway; this
+   * is the cheaper belt beside that brace.
+   *
+   * Awaited rather than left floating. A server action's runtime can be torn down the
+   * moment it returns, which kills a promise nobody is holding, and the redirect below
+   * would do exactly that. Four seconds is the sender's ceiling, it never throws, and
+   * this is an operator pressing a button in an admin screen rather than a customer
+   * waiting on a page.
+   */
+  if (!invitation.activatedAt) {
+    await reportPurchase(updated);
+  }
 
   revalidateInvitation(updated.slug, updated.editToken);
   revalidatePath('/admin');

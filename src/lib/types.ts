@@ -101,6 +101,21 @@ export type Invitation = {
   ogImageUrl: string | null;
 
   customerPhone: string | null;
+
+  /**
+   * What Meta needs to attribute this sale to the ad that produced it.
+   *
+   * Captured while the customer is still on the site and stored, because the sale is
+   * not confirmed here. Payment is settled by a human on WhatsApp and the operator
+   * presses Activate in the admin afterwards — a different session, a different device,
+   * none of the customer's cookies. The Purchase reported at that moment can only carry
+   * the original ad click if the click was written down while it was still readable.
+   *
+   * Null on every invitation created before this existed, and on anybody who arrived
+   * without the pixel being able to run.
+   */
+  metaAttribution: MetaAttribution | null;
+
   /** Operator pastes the InstaPay reference here. */
   paymentNote: string | null;
   rejectReason: string | null;
@@ -109,6 +124,22 @@ export type Invitation = {
   expiresAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
+};
+
+/**
+ * The Meta browser signals belonging to one invitation.
+ *
+ * `fbc` is the valuable one: it encodes the specific ad click that brought this
+ * customer here. `fbp` identifies the browser and is what matches the person when there
+ * was no click to record. Address and user agent are the weaker fallbacks Meta uses
+ * when neither cookie survived.
+ */
+export type MetaAttribution = {
+  fbp: string | null;
+  fbc: string | null;
+  clientIp: string | null;
+  userAgent: string | null;
+  sourceUrl: string | null;
 };
 
 export type Review = {

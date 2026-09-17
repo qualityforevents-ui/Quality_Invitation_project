@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { DirectionProvider } from '@/components/DirectionProvider';
+import { MetaPixel } from '@/components/meta/MetaPixel';
 import { SyncDocumentLang } from '@/components/SyncDocumentLang';
 import { Toaster } from '@/components/ui/sonner';
 import { uiFontVariables } from '@/lib/fonts';
@@ -12,6 +13,15 @@ import { getUiLang } from '@/lib/session';
  * The builder fonts are attached here rather than in the root layout so that the
  * public invitation, which lives outside this group and uses its own theme faces,
  * never downloads them.
+ *
+ * The Meta pixel is mounted here for the same reason, and it is a reason worth stating
+ * plainly. Everything in this group is a person deciding whether to buy an invitation.
+ * Everything outside it — /[slug] — is a wedding guest who was sent one, hundreds of
+ * strangers per sale who will never be customers. Pixelling them would drown the real
+ * signal: lookalike audiences would be built from guests, retargeting would chase
+ * guests, and the algorithm would learn to find more of the people who cost money
+ * rather than the ones who spend it. So the boundary of this route group is also the
+ * boundary of the tracking, and that is deliberate rather than incidental.
  */
 export default async function SiteLayout({ children }: { children: ReactNode }) {
   const lang = await getUiLang();
@@ -20,6 +30,7 @@ export default async function SiteLayout({ children }: { children: ReactNode }) 
   return (
     <div lang={htmlLangFor(lang)} dir={dir} className={`${uiFontVariables} min-h-dvh bg-background text-foreground`}>
       <SyncDocumentLang lang={lang} />
+      <MetaPixel />
       {/* Radix reads direction from context rather than from the dir attribute beside
           it, so the same value has to be handed over explicitly. See the component. */}
       <DirectionProvider dir={dir}>{children}</DirectionProvider>

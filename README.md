@@ -32,6 +32,9 @@ src/themes/hadiqa/        one theme per folder, nine of them
 src/components/invitation/  cover, reveal, countdown, audio, ornaments
 src/lib/flow/               section order, values, the autosave patch
 src/components/flow/        the one page flow and its questions
+src/lib/meta/               Meta pixel and Conversions API, both halves
+src/components/meta/        the pixel loader and the sample beacon
+src/app/api/meta/event/     mirrors browser events to the Conversions API
 ```
 
 ## Running it
@@ -271,8 +274,102 @@ Two smaller notes:
 
 ---
 
+## Meta pixel and Conversions API
+
+Every customer facing surface reports to Meta twice: once from the pixel in the browser,
+once from this server. Both copies carry the same `event_id`, which is what makes Meta
+count them as one conversion rather than two. That pairing is the whole design, and it
+exists because the browser half is not reliable on its own — Safari expires the `_fbp`
+cookie after seven days, every ad blocker removes the pixel outright, and iOS strips a
+large share of what survives. The losses skew toward mobile, which is nearly all of this
+product's traffic.
+
+Set `NEXT_PUBLIC_META_PIXEL_ID` and `META_CAPI_ACCESS_TOKEN`. With neither set nothing is
+injected and nothing is sent, which is the correct state of a local checkout. With only
+the pixel id set the browser half works alone.
+
+### What is reported, and when
+
+| Event | Kind | Fires when |
+| --- | --- | --- |
+| `PageView` | standard | Every load, and every client side navigation after it |
+| `ViewContent` | standard | The sample invitation is opened |
+| `StartFlow` | custom | Start is tapped on the hero |
+| `FlowStep` | custom | Each question is reached. Carries `step_name`, `step_index`, `step_total`, `progress_percent` |
+| `FlowResumed` | custom | The builder opens onto a draft that already existed |
+| `PreviewOpened` | custom | The live card is opened, from the design question or the preview question |
+| `AddToCart` | standard | A tier is chosen, and again if it is changed. Carries the price |
+| `Lead` | standard | Past the phone question, so the number is valid and the operator can call |
+| `InitiateCheckout` | standard | The payment panel is reached. Carries the price |
+| `Contact` | standard | The WhatsApp button is tapped |
+| `PaymentHandoff` | custom | The same tap, carrying the request id so a sale can be traced to a click |
+| `Purchase` | standard | **The operator presses Activate in the admin.** Nowhere else |
+
+Standard names are Meta's own and are the only ones a campaign can optimise toward.
+Custom names describe how somebody moved through the builder; they can back audiences and
+custom conversions but cannot be bid on directly. `FlowStep` carries the question in a
+parameter rather than being fifteen event names, because Meta's reporting becomes
+unreadable long before its limit on distinct names is reached.
+
+### Why Purchase is late, and why that is right
+
+There is no card checkout in this product. The customer taps through to WhatsApp, a human
+settles the payment, and the operator presses Activate. That press is the only moment the
+system knows money arrived, so it is the only thing allowed to be a `Purchase` — fired
+server side from `activateInvitation`, with a deterministic event id derived from the
+invitation so a double click or a retried action cannot report the sale twice.
+
+Firing it on the WhatsApp tap instead would be easy and would corrupt every number in the
+account: everybody who taps and changes their mind would count as revenue, and a
+conversion cannot be withdrawn once sent.
+
+The cost is a delay of hours between the ad click and the conversion, which is fine —
+Meta attributes within a seven day click window. What makes that work is
+`metaAttribution` on the invitation: the `_fbc` click id and `_fbp` browser id are
+captured while the customer is still on the site and stored, because by the time Activate
+is pressed the code is running in the operator's session with the operator's cookies. The
+biggest conversion in the funnel would otherwise be the one Meta could not attribute to
+any ad.
+
+### The route group is the tracking boundary
+
+The pixel is mounted in `src/app/(site)/layout.tsx` and on `/sample`. It is deliberately
+**not** on `/[slug]`, the public invitation. Everyone inside the group is deciding whether
+to buy; everyone on `/[slug]` is a wedding guest who was sent one — hundreds of strangers
+per sale who will never be customers. Pixelling them would build lookalike audiences out
+of guests and teach the algorithm to find more people who cost money instead of people
+who spend it.
+
+### Verifying it
+
+Set `META_TEST_EVENT_CODE` from Events Manager, Test events, and watch events arrive
+live. **Remove it before going live** — left set, every conversion goes to the test tab,
+the live dataset receives nothing, and every campaign optimises on an empty pixel.
+
+In development each event also prints one line to the browser console, carrying the id
+that ties the two copies together, so "is this firing?" is answerable without Events
+Manager and without fighting an ad blocker.
+
 ## Things that will bite if you forget them
 
+- **Every new customer facing page must report to Meta.** Anything added inside the
+  `(site)` group inherits the pixel from its layout and needs nothing. Anything added
+  outside it — as `/sample` is — must render `<MetaPixel />` itself, or it silently
+  reports nothing. A new step in the builder is picked up by `useFlowTracking` from
+  `SECTION_ORDER` automatically; a new *interaction* worth measuring needs a `metaTrack`
+  call, and the name has to be added to `src/lib/meta/events.ts` first or the server
+  half drops it. Never call `fbq` directly: a direct call fires a conversion the server
+  never mirrors, and the funnel develops a hole exactly where an ad blocker is installed.
+- **`META_CAPI_ACCESS_TOKEN` must never be prefixed `NEXT_PUBLIC_`.** Anything with that
+  prefix is compiled into the JavaScript every visitor downloads, and whoever holds that
+  token can write events into the ad account.
+- **Guards against firing an event twice cannot be refs.** The builder remounts during a
+  normal purchase — the first save creates the draft and calls `router.refresh()` — and a
+  ref-guarded event fires again for every customer who got far enough to matter.
+  `useFlowTracking` uses sessionStorage, which survives the remount and a reload, plus an
+  in-mount ref for React's double invoked effects. Both are needed. The same trap caught
+  `PageView`: a `mounted` flag set on the first effect run is read as already set by the
+  second, so it fires the duplicate it was written to prevent.
 - **No double hyphens in customer facing text.** The rule is enforced in copy and
   comments. CSS custom properties use two hyphens because the language requires it.
 - **Audio cannot start without a tap.** `useInvitationAudio.start()` must stay
