@@ -26,6 +26,23 @@
 export const META_CURRENCY = 'EGP';
 
 /**
+ * Which service an event belongs to.
+ *
+ * Sent as `content_category` on every event this product reports, without exception.
+ * QLTY sells two things at very different prices, and without this the account has one
+ * undifferentiated funnel: a three hundred pound invitation and an eight thousand pound
+ * booth booking both arrive as "a Lead", the algorithm optimises for whichever is
+ * easier to get, and the custom conversions cannot be split apart afterwards because
+ * the events were never labelled in the first place.
+ *
+ * "home" is its own value rather than being left off. An event from the home is a
+ * visitor who has not chosen yet, and that is a real and useful population.
+ */
+export const CONTENT_CATEGORIES = ['invitation', 'photobooth', 'home'] as const;
+
+export type ContentCategory = (typeof CONTENT_CATEGORIES)[number];
+
+/**
  * Meta's own list, as far as this product uses it.
  *
  * `PageView` is included even though the base pixel snippet fires it on its own,
@@ -63,6 +80,15 @@ export const CUSTOM_EVENTS = [
   'PaymentHandoff',
   /** Came back to a builder that already had a draft in it. */
   'FlowResumed',
+  /** Chose one of the two services from the home. Carries content_category. */
+  'ServiceSelected',
+  /** Picked a date on the booth calendar. Carries date_status, which is the useful half:
+      a visitor who keeps landing on "full" is a visitor we are losing to capacity. */
+  'AvailabilityChecked',
+  /** Tapped through to WhatsApp to confirm a booth booking. Intent, not money. The
+      booth's counterpart to PaymentHandoff, kept separate so the two funnels can be
+      read apart in Events Manager without unpicking a content_category filter. */
+  'BoothWhatsAppHandoff',
 ] as const;
 
 export type StandardEvent = (typeof STANDARD_EVENTS)[number];

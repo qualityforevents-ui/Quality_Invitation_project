@@ -1,10 +1,11 @@
+import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
 import { InvitationFlow } from '@/components/flow/InvitationFlow';
 import { SupportButton } from '@/components/SupportButton';
 import { HowItWorks } from '@/components/landing/HowItWorks';
 import { Reviews } from '@/components/landing/Reviews';
 import { getDictionary } from '@/i18n/ui';
-import { FLOW_STEP_COOKIE } from '@/lib/constants';
+import { FLOW_STEP_COOKIE, SITE_URL } from '@/lib/constants';
 import { loadDraft } from '@/lib/draft';
 import { todayInCairo } from '@/lib/format';
 import { clampFurthest, valuesFromInvitation } from '@/lib/flow/values';
@@ -15,6 +16,29 @@ import { getApprovedReviews } from '@/lib/reviews';
 import { getUiLang } from '@/lib/session';
 
 export const dynamic = 'force-dynamic';
+
+/**
+ * Written here rather than inherited, since the home took the root.
+ *
+ * In the visitor's own language, which is why it is a function and not a constant: the
+ * language is a cookie, and a static description would be Arabic for an English reader
+ * or the reverse for whichever half of the audience lost the coin toss.
+ */
+export async function generateMetadata(): Promise<Metadata> {
+  const t = getDictionary(await getUiLang());
+
+  return {
+    title: t.landing.metaTitle,
+    description: t.landing.metaDescription,
+    alternates: { canonical: '/invitations' },
+    openGraph: {
+      title: t.landing.metaTitle,
+      description: t.landing.metaDescription,
+      url: `${SITE_URL}/invitations`,
+      type: 'website',
+    },
+  };
+}
 
 /**
  * The whole invitations product, on one page.

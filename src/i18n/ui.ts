@@ -34,14 +34,31 @@ const AR = {
    * The root, which is a door rather than a room: QLTY sells invitations and it rents a
    * photo booth, and "/" belongs to neither of them.
    *
-   * Only what the root renders today. The designed home, with its service cards and its
-   * price tags, brings its own keys when it lands.
+   * The home says less than either service page does, deliberately. Somebody arriving
+   * from an Instagram story does not yet know which of the two they want, and the job
+   * of this page is to let them find out in one scroll rather than to sell.
    */
   home: {
+    navInvitations: 'الدعوات',
+    navBooth: 'الفوتوبوث',
+
     tagline: 'إحنا اللي بنعمل لحظات الفرح',
+    subline: 'دعوات إلكترونية وفوتوبوث لأفراح القاهرة والجيزة.',
+    ctaBooth: 'احجز فوتوبوث',
+    ctaInvitations: 'اعمل دعوتك',
+
+    /** The label before a starting price. Kept apart from the number so `numeric` stays on bare digits. */
+    fromLabel: 'يبدأ من',
+    currency: 'جنيه',
+
     invitationsTitle: 'دعوات إلكترونية',
     invitationsBody: 'دعوة لخطوبتك أو فرحك، بتتبعت برابط واحد على واتساب.',
     invitationsCta: 'اعمل دعوتك',
+
+    boothTitle: 'تأجير فوتوبوث',
+    boothBody: 'ركن تصوير في فرحك، وضيوفك ماشيين بصورهم في إيديهم.',
+    boothCta: 'شوف المواعيد الفاضية',
+
     /*
      * Shown only when the cookie on this device still resolves to a draft. There are no
      * accounts here, so this bar is the only way back in for somebody who closed the tab
@@ -49,10 +66,42 @@ const AR = {
      */
     continueTitle: 'دعوتك لسه مستنياك',
     continueCta: 'كمّل دعوتك',
+
+    howInvitationsTitle: 'الدعوة بتتعمل إزاي',
+    howInvitationsSteps: [
+      { title: 'جاوب على الأسئلة', body: 'الأسماء، التاريخ، المكان. سؤال واحد في المرة.' },
+      { title: 'اختار الشكل', body: 'تصاميم جاهزة، وتشوف دعوتك بتتغير قدامك.' },
+      { title: 'ابعتها لضيوفك', body: 'رابط واحد يتبعت على واتساب لأي عدد.' },
+    ],
+
+    howBoothTitle: 'الحجز بيتم إزاي',
+    howBoothSteps: [
+      { title: 'اختار يوم فاضي', body: 'التقويم بيوريك المواعيد المتاحة فعلاً.' },
+      { title: 'ابعتلنا طلبك', body: 'بتكلمنا على واتساب وبنثبتلك اليوم بعربون.' },
+      { title: 'إحنا بنيجي', body: 'بنركب الفوتوبوث قبل الفرح وفني بيفضل معاكم.' },
+    ],
+
+    instagramTitle: 'من شغلنا',
+    instagramCta: 'تابعنا على إنستجرام',
+
+    footerAreasLabel: 'بنشتغل في',
+    footerAreas: 'القاهرة والجيزة',
+    footerWhatsapp: 'كلمنا على واتساب',
+    footerInstagram: 'إنستجرام',
+
     supportMessage: 'السلام عليكم، عايز أعرف أكتر عن خدمات QLTY',
+
+    metaTitle: 'QLTY — دعوات إلكترونية وفوتوبوث',
+    metaDescription:
+      'دعوات فرح إلكترونية وتأجير فوتوبوث في القاهرة والجيزة. اعمل دعوتك في دقايق، أو احجز ركن تصوير لفرحك.',
   },
 
   landing: {
+    /* The page's own metadata, moved off the root layout when the home took the root. */
+    metaTitle: 'دعوات فرح إلكترونية',
+    metaDescription:
+      'اعمل دعوة إلكترونية لخطوبتك أو فرحك في دقايق، وابعتها لضيوفك على واتساب برابط واحد.',
+
     title: 'دعوة فرحك، بشكل يليق بيها',
     subtitle:
       'اعمل دعوة إلكترونية لخطوبتك أو فرحك في دقايق، وابعتها لضيوفك على واتساب برابط واحد.',
@@ -408,16 +457,62 @@ const EN: Dictionary = {
   },
 
   home: {
+    navInvitations: 'Invitations',
+    navBooth: 'Photo booth',
+
     tagline: 'We make the moments the event is remembered for',
+    subline: 'Digital invitations and photo booth hire, for events in Cairo and Giza.',
+    ctaBooth: 'Book a photo booth',
+    ctaInvitations: 'Create your invitation',
+
+    fromLabel: 'from',
+    currency: 'EGP',
+
     invitationsTitle: 'Digital invitations',
     invitationsBody: 'An invitation for your engagement or wedding, sent as one WhatsApp link.',
     invitationsCta: 'Create your invitation',
+
+    boothTitle: 'Photo booth hire',
+    boothBody: 'A photo corner at your event, and every guest leaves holding the picture.',
+    boothCta: 'Check available dates',
+
     continueTitle: 'Your invitation is where you left it',
     continueCta: 'Continue',
+
+    howInvitationsTitle: 'How an invitation is made',
+    howInvitationsSteps: [
+      { title: 'Answer the questions', body: 'Names, date, venue. One question at a time.' },
+      { title: 'Choose how it looks', body: 'Finished designs, changing in front of you as you pick.' },
+      { title: 'Send it to your guests', body: 'One link, on WhatsApp, to as many people as you like.' },
+    ],
+
+    howBoothTitle: 'How booking works',
+    howBoothSteps: [
+      { title: 'Pick a free date', body: 'The calendar shows what is genuinely still available.' },
+      { title: 'Send us the request', body: 'We talk on WhatsApp and a deposit holds the date.' },
+      { title: 'We come to you', body: 'Set up before the event, with an attendant who stays.' },
+    ],
+
+    instagramTitle: 'From our work',
+    instagramCta: 'Follow us on Instagram',
+
+    footerAreasLabel: 'We work in',
+    footerAreas: 'Cairo and Giza',
+    footerWhatsapp: 'Message us on WhatsApp',
+    footerInstagram: 'Instagram',
+
     supportMessage: 'Hello, I would like to know more about what QLTY does',
+
+    metaTitle: 'QLTY — digital invitations and photo booth hire',
+    metaDescription:
+      'Digital wedding invitations and photo booth hire in Cairo and Giza. Build an invitation in minutes, or book a photo corner for your event.',
   },
 
   landing: {
+    metaTitle: 'Digital wedding invitations',
+    metaDescription:
+      'Build a digital invitation for your engagement or wedding in minutes, then send it to your guests on WhatsApp as a single link.',
+
     title: 'An invitation worth sharing',
     subtitle:
       'Build a digital invitation for your engagement or wedding in minutes, then send it to your guests on WhatsApp as a single link.',
