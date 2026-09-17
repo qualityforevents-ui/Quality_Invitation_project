@@ -5,7 +5,7 @@ import {
   getReservationById,
   updateReservation,
 } from '@/lib/photobooth/reservations';
-import { boothDeposit, getBoothPackage } from '@/lib/photobooth/config';
+import { boothDeposit, matchPackageByPrice } from '@/lib/photobooth/config';
 import { isValidDateString } from '@/lib/photobooth/availability';
 import { createPage, getPage, isNotionConfigured, updatePage, type NotionPage } from './client';
 import { fromNotionPage, hashReservation, toNotionProperties } from './booth-schema';
@@ -161,15 +161,12 @@ export async function pullPageFromNotion(pageId: string): Promise<InboundResult>
     eventDate: merged.eventDate,
     startTime: merged.startTime,
     hours: merged.hours,
-    units: merged.units,
-    packageId: merged.packageId,
     price: merged.price,
     depositAmount: merged.depositAmount,
     depositPaid: merged.depositPaid,
     customerName: merged.customerName,
     customerPhone: merged.customerPhone,
     venue: merged.venue,
-    area: merged.area,
     eventType: merged.eventType,
     notes: merged.notes,
     notionPageId: pageId,
@@ -202,36 +199,54 @@ async function createFromNotion(
     return { action: 'ignored', reason: 'no date' };
   }
 
-  const tier = getBoothPackage(incoming.packageId);
-  const price = incoming.price ?? tier.price;
+  /*
+   * The tier is inferred from the price, because the operator's database has no package
+   * column: it has a price select, and the price is what the conversation was actually
+   * about. matchPackageByPrice finds the nearest tier so the admin has something to
+   * show, and the price itself is stored as given rather than being rounded to a tier.
+   */
+  const price = incoming.price ?? 0;
+  const tier = matchPackageByPrice(price);
 
   const created = await createReservation({
     eventDate: incoming.eventDate,
     startTime: incoming.startTime ?? '20:00',
     hours: incoming.hours ?? tier.hours,
-    units: incoming.units ?? 1,
-    packageId: incoming.packageId ?? tier.id,
-    price,
-    depositAmount: incoming.depositAmount ?? boothDeposit(price),
+    // Notion has no unit column. Every hand written row is one job.
+    units: 1,
+    packageId: tier.id,
+    price: price || tier.price,
+    depositAmount: incoming.depositAmount ?? boothDeposit(price || tier.price),
     extras: null,
     customerName: incoming.customerName || 'Notion',
     customerPhone: incoming.customerPhone ?? '',
     venue: incoming.venue ?? '',
-    area: incoming.area ?? '',
+    // No area column either. Left empty rather than guessed at from the venue text.
+    area: '',
     eventType: incoming.eventType ?? '',
     notes: incoming.notes,
     lang: 'AR',
     source: 'notion',
     metaAttribution: null,
     /*
-     * Whatever Notion says, defaulting to BLOCKED rather than REQUESTED.
+     * Whatever Notion says, and when it says nothing, something that holds the date.
      *
-     * A row typed into Notion by hand is the operator recording something that is
-     * already true: a booking taken on the phone, or a week they are away. Defaulting
-     * to REQUESTED would leave it not holding the date, and the first the operator
-     * would know is a second customer booking the same night through the website.
+     * This is the most consequential default in the integration. A row in the operator's
+     * Bookings database is a commitment they have already made, whether or not a deposit
+     * has landed: three of the live rows are future weddings with the deposit box
+     * unticked, and the operator is certainly not expecting the website to resell those
+     * nights. Defaulting to REQUESTED would leave them holding nothing and the first
+     * anybody would hear of it is two couples arriving at the same venue.
+     *
+     * CONFIRMED for a row with a customer's name on it, BLOCKED for one without, which
+     * is how "Blocked" and the two empty rows in the live data read. `depositPaid` still
+     * carries the truth about the money, separately, straight from the checkbox.
+     *
+     * Note that this does not raise a Purchase. Only the admin's own Confirm button
+     * does, which is what stops importing six months of history from reporting twenty
+     * six sales to Meta on a Tuesday afternoon.
      */
-    status: incoming.status ?? 'BLOCKED',
+    status: incoming.status ?? (incoming.customerName ? 'CONFIRMED' : 'BLOCKED'),
   });
 
   await boothReservations().doc(created.id).update({
@@ -321,17 +336,22 @@ function mergeOntoReservation(
     eventDate: incoming.eventDate ?? existing.eventDate,
     startTime: incoming.startTime ?? existing.startTime,
     hours: incoming.hours ?? existing.hours,
-    units: incoming.units ?? existing.units,
-    packageId: incoming.packageId ?? existing.packageId,
     price: incoming.price ?? existing.price,
     depositAmount: incoming.depositAmount ?? existing.depositAmount,
     depositPaid: incoming.depositPaid,
     customerName: incoming.customerName || existing.customerName,
     customerPhone: incoming.customerPhone ?? existing.customerPhone,
     venue: incoming.venue ?? existing.venue,
-    area: incoming.area ?? existing.area,
     eventType: incoming.eventType ?? existing.eventType,
     notes: incoming.notes ?? existing.notes,
+    /*
+     * Untouched by Notion, because Notion has no column for any of them. The area, the
+     * unit count, the package id and where the booking came from are the site's own
+     * knowledge, and an inbound edit must not quietly blank them.
+     */
+    units: existing.units,
+    packageId: existing.packageId,
+    area: existing.area,
   };
 }
 

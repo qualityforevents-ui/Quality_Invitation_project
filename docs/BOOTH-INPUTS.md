@@ -1,7 +1,9 @@
 # What still needs real values
 
-Everything the photo booth was built around was invented, because none of it was
-supplied. The numbers are plausible; not one of them is true.
+**Updated from the live Notion database.** The prices, the deposit and the capacity are
+now real, read out of the 26 bookings in 🗓️ Bookings. What is still invented is what
+each tier is *called*, what its feature list *claims*, how many hours it includes, the
+service areas, and every image.
 
 Until this list is done, `BOOTH_CONFIG_IS_PLACEHOLDER` stays `true` and every booth
 screen in the admin carries a warning. **The site must not be advertised to anybody
@@ -15,35 +17,45 @@ names the constant to change.
 
 ## 1. Prices and packages
 
-`BOOTH_PACKAGES` — three tiers. For each one:
+`BOOTH_PACKAGES` — three tiers, **priced from your real bookings**:
 
-| Field | What it is | Currently |
-| --- | --- | --- |
-| `price` | EGP, the whole booking | 3500 / 5500 / 8000 |
-| `hours` | booth time included | 2 / 4 / 5 |
-| `extraHourPrice` | EGP per hour beyond that | 1000 / 1000 / 1200 |
-| `nameAr`, `nameEn` | what the tier is called | الأساسية / الليلة كاملة / المميزة |
-| `taglineAr`, `taglineEn` | one line under the name | invented |
-| `featuresAr`, `featuresEn` | the bullet list | invented |
+| Tier | Price | Times booked | Still invented |
+| --- | --- | --- | --- |
+| Photo booth | 2000 | 4 | name, 4 hours, features |
+| Booth and guest book | 2999 | 8 | name, 5 hours, features |
+| Everything | 3500 | 5 | name, 5 hours, features |
 
-**The feature lists matter most.** They are what a customer is comparing, and they
-currently describe a booth nobody has seen: a props box, a named print frame, a guest
-book, a short film. Anything in there you do not actually provide is a promise made to
-somebody who will notice on the night.
+1500, 3700 and 4000 also appear in your history. They are treated as negotiated one offs
+rather than published tiers, which is what they look like. Say if any of them is really a
+standard package.
 
-There can be fewer or more than three tiers. Nothing assumes three.
+**What still needs you:**
+
+- **The hours.** Nothing in the database says how long a 2999 booking runs for. The 4, 5
+  and 5 above are guesses, and they are what the site quotes an extra hour against.
+- **`extraHourPrice`**, currently 500 across the board. A guess.
+- **The names.** "Photo booth", "Booth and guest book", "Everything" are descriptions,
+  not names you chose.
+- **The feature lists.** Built from your add on columns: PhotoBooth is ticked on nearly
+  every booking, Guestbook on most, Audio Guestbook occasionally. Reasonable, but it is
+  what was *bought*, not what was *promised*.
+- **360 Photo Booth and Plinker** are columns in your database that have never once been
+  ticked. They are not sold on the site. Say if they should be.
 
 > Changing a price here never reprices a booking already taken. The price agreed is
 > written onto the reservation when it is made.
 
 ---
 
-## 2. How many booths you own
+## 2. How many jobs you can run in a day
 
-`BOOTH_UNIT_COUNT` — currently **1**.
+`BOOTH_UNIT_COUNT` — now **2**, read from your history rather than guessed: 2026-08-28
+carries both "Mohamed & samiha" and "Mohamed & tasneem", and 2026-07-24 carries both
+"Mahmoud & hadeer" and "Oldies". You have already run two in a day, twice.
 
-This is the hard ceiling on bookings per day and the single most important number in the
-whole system. With one booth, one confirmed booking closes the day.
+**Confirm this is real capacity** and not two small jobs that happened to fit. If you can
+only ever do one properly, set it to 1 and the calendar will close a day as soon as one
+booking is confirmed.
 
 > It can also be changed from the admin, at **Settings → عدد الفوتوبوثات**, which is what
 > the operator should use. The value in the config file is the fallback for a fresh
@@ -58,10 +70,12 @@ booking sites run.
 
 ## 3. The deposit
 
-`BOOTH_DEPOSIT_PERCENT` — currently **30%**, rounded to the nearest 50 EGP.
+`BOOTH_DEPOSIT` — now a flat **500 EGP**, not a percentage, because that is what your
+history shows: of the fifteen deposits recorded, ten are exactly 500. The others are 250,
+350 and 1000, which look like negotiations rather than a rule.
 
-So a 5500 booking asks for 1650. If you take a flat figure instead, say it and the
-function becomes a constant.
+A percentage would have quoted 600 on a 2000 booking and 1050 on a 3500 one, and neither
+is a number you have ever asked for. Confirm 500 is the figure to quote publicly.
 
 The deposit is settled by a human on WhatsApp over InstaPay, exactly like an invitation.
 Nothing in a browser is ever told the money arrived.
@@ -143,12 +157,19 @@ go to `NEXT_PUBLIC_WHATSAPP_NUMBER`.
 
 ## 9. Notion
 
-Four values, all covered step by step in **`docs/notion-booth-setup.md`**:
+The database is **done**. Your 🗓️ Bookings database is wired up, three properties were
+added, and the data source id is already known:
 
-- `NOTION_TOKEN` — an internal integration secret
-- `NOTION_BOOTH_DATA_SOURCE_ID` — **the data source id, not the database id**
+```
+NOTION_BOOTH_DATA_SOURCE_ID=af2cfb8d-b3a5-4735-a717-69b915ff5d51
+```
+
+Still needed, and all covered step by step in **`docs/notion-booth-setup.md`**:
+
+- `NOTION_TOKEN` — an internal integration secret. **The Claude connector is not this**;
+  the deployed site needs its own, and the database must be shared with it
 - `NOTION_WEBHOOK_SECRET` — the verification token, after the handshake
-- the database itself, with the exact property names in that document
+- run `npm run notion:import` once, before the booth page is advertised
 
 ---
 

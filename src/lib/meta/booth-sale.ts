@@ -13,9 +13,14 @@ import type { BoothReservation } from '@/lib/types';
  * is the only moment in the system that means money arrived, so it is the only thing
  * allowed to be a Purchase.
  *
- * Two callers, not one: the admin's Confirm action, and a Notion status change to
- * Confirmed. Both are a human deciding the same thing in two different tools, and the
- * deterministic event id below is what keeps that from being counted twice.
+ * Exactly one caller: the admin's Confirm action.
+ *
+ * A Notion status change deliberately does not raise one, although a human moving a row
+ * to Confirmed in Notion means the same thing. The reason is the import: the live
+ * database holds six months of finished bookings, and the first sync would have
+ * reported twenty six purchases in an afternoon, every one of them months old and none
+ * of them attributable to any ad. A sale is reported when somebody presses the button
+ * in the admin, and only then.
  *
  * The value reported is the whole booking, not the deposit. Meta is being told what the
  * sale is worth, and the rest of it arrives on the night. Reporting the deposit would

@@ -6,13 +6,16 @@
  * recorded against it rather than silently repricing when this file changes.
  *
  * ────────────────────────────────────────────────────────────────────────────
- *  EVERY VALUE MARKED "PLACEHOLDER" IS A GUESS AND MUST BE REPLACED.
+ *  PRICES AND CAPACITY ARE REAL. NAMES, FEATURES AND IMAGES ARE NOT.
  *
- *  Nothing here was supplied by the business. The numbers are plausible rather
- *  than real, the ImageKit paths point at files that have not been uploaded, and
- *  `BOOTH_CONFIG_IS_PLACEHOLDER` below stays true until they are. While it is
- *  true the admin settings page shows a warning banner, so this cannot quietly
- *  ship and start quoting invented prices to customers.
+ *  The price points, the deposit and the unit count below were read out of the
+ *  live Notion Bookings database, which has been in daily use since July. They
+ *  are what customers have actually paid.
+ *
+ *  What is still invented: what each tier is CALLED, what its feature list
+ *  claims, how many hours it includes, the service areas, and every image path.
+ *  `BOOTH_CONFIG_IS_PLACEHOLDER` stays true until those are confirmed, and the
+ *  admin shows a warning on every booth screen while it is.
  * ────────────────────────────────────────────────────────────────────────────
  */
 
@@ -28,8 +31,18 @@ import { WHATSAPP_NUMBER } from '@/lib/constants';
  */
 export const BOOTH_CONFIG_IS_PLACEHOLDER = true;
 
-/** PLACEHOLDER. How many booths exist. This is the hard ceiling on bookings per day. */
-export const BOOTH_UNIT_COUNT = 1;
+/**
+ * How many jobs can run on one day. The hard ceiling on bookings per day.
+ *
+ * Two, from the live data rather than from a guess: 2026-08-28 carries both
+ * "Mohamed & samiha" and "Mohamed & tasneem", and 2026-07-24 carries both
+ * "Mahmoud & hadeer" and "Oldies". The business has already run two events in a day
+ * twice, so a ceiling of one would have refused bookings it went on to accept.
+ *
+ * Confirm this is a real capacity and not two jobs that happened to be small. The
+ * operator can change it from the admin settings screen without a deploy.
+ */
+export const BOOTH_UNIT_COUNT = 2;
 
 /**
  * PLACEHOLDER. How close to the event we will still take a booking.
@@ -78,92 +91,93 @@ export type BoothPackageDefinition = {
 };
 
 /**
- * PLACEHOLDER, all three tiers.
+ * The three tiers, priced from what customers have actually paid.
  *
- * Shaped after the invitation packages: a cheap entry, the one most people buy, and a
- * top tier. What each one includes is the part that most needs replacing, because it is
- * the part the customer is actually comparing.
+ * Every figure here is a real price point out of the Notion database, and the ordering
+ * is by how often it appears: 2999 is the most common booking by a distance, then 3500,
+ * then 2000. 1500, 3700 and 4000 also exist in the history and are treated as
+ * negotiated one offs rather than published tiers, which is what they look like.
+ *
+ * The feature lists are built from the add on columns the operator actually keeps:
+ * PhotoBooth is ticked on nearly every booking, Guestbook on most, Audio Guestbook
+ * occasionally. 360 Photo Booth and Plinker exist as columns and have never been
+ * ticked, so they are not sold here yet.
+ *
+ * STILL TO CONFIRM: the names, the hours, and whether these inclusions are right. The
+ * database records what was bought, not what was promised.
  */
 export const BOOTH_PACKAGES: BoothPackageDefinition[] = [
   {
-    id: 'ESSENTIAL',
-    price: 3500,
-    hours: 2,
-    extraHourPrice: 1000,
-    nameAr: 'الأساسية',
-    nameEn: 'Essential',
-    taglineAr: 'الفوتوبوث وكل اللي معاه',
-    taglineEn: 'The booth and everything with it',
+    id: 'BOOTH',
+    price: 2000,
+    hours: 4,
+    extraHourPrice: 500,
+    nameAr: 'الفوتوبوث',
+    nameEn: 'Photo booth',
+    taglineAr: 'الفوتوبوث وطباعة من غير عدد',
+    taglineEn: 'The booth, and unlimited prints',
     featuresAr: [
-      'ساعتين تصوير',
+      'فوتوبوث طول مدة الحجز',
       'طباعة فورية من غير عدد',
-      'خلفية واحدة تختارها',
+      'خلفية تختارها',
       'صندوق إكسسوارات',
       'فني معاكم طول الوقت',
       'ألبوم رقمي بكل الصور',
     ],
     featuresEn: [
-      'Two hours of booth time',
+      'The booth for the whole booking',
       'Unlimited instant prints',
-      'One backdrop of your choosing',
+      'A backdrop of your choosing',
       'A box of props',
       'An attendant with you throughout',
       'A digital gallery of every shot',
     ],
   },
   {
-    id: 'FULL_NIGHT',
-    price: 5500,
-    hours: 4,
-    extraHourPrice: 1000,
-    nameAr: 'الليلة كاملة',
-    nameEn: 'Full night',
-    taglineAr: 'من أول الفرح لآخره',
-    taglineEn: 'From the first guest to the last',
+    id: 'BOOTH_GUESTBOOK',
+    price: 2999,
+    hours: 5,
+    extraHourPrice: 500,
+    nameAr: 'الفوتوبوث والجيست بوك',
+    nameEn: 'Booth and guest book',
+    taglineAr: 'الأكثر طلباً',
+    taglineEn: 'What most people book',
     featuresAr: [
-      'أربع ساعات تصوير',
-      'كل مميزات الباقة الأساسية',
-      'خلفيتين تختاروهم',
-      'تصميم إطار مخصوص باسميكم',
-      'الألبوم الرقمي في نفس الليلة',
+      'كل مميزات باقة الفوتوبوث',
+      'جيست بوك بالصور المطبوعة',
+      'ساعة زيادة',
     ],
     featuresEn: [
-      'Four hours of booth time',
-      'Everything in Essential',
-      'Two backdrops of your choosing',
-      'A print frame designed with your names on it',
-      'The digital gallery the same night',
+      'Everything in Photo booth',
+      'A guest book of the printed photos',
+      'An extra hour',
     ],
   },
   {
-    id: 'SIGNATURE',
-    price: 8000,
+    id: 'BOOTH_FULL',
+    price: 3500,
     hours: 5,
-    extraHourPrice: 1200,
-    nameAr: 'المميزة',
-    nameEn: 'Signature',
-    taglineAr: 'ركن تصوير متعمل ليكم انتم',
-    taglineEn: 'A photo corner built around you',
+    extraHourPrice: 500,
+    nameAr: 'الباقة الكاملة',
+    nameEn: 'Everything',
+    taglineAr: 'الفوتوبوث والجيست بوك والأوديو',
+    taglineEn: 'Booth, guest book and audio',
     featuresAr: [
-      'خمس ساعات تصوير',
-      'كل مميزات باقة الليلة كاملة',
-      'خلفية متعملة مخصوص لفرحكم',
-      'ألبوم ضيوف بالصور المطبوعة',
-      'فيديو قصير من الليلة',
+      'كل مميزات باقة الفوتوبوث والجيست بوك',
+      'أوديو جيست بوك',
+      'جيست بوك مصمم مخصوص',
     ],
     featuresEn: [
-      'Five hours of booth time',
-      'Everything in Full night',
-      'A backdrop built for your event',
-      'A guest book of the printed photos',
-      'A short film from the night',
+      'Everything in Booth and guest book',
+      'An audio guest book',
+      'A guest book designed for your event',
     ],
   },
 ];
 
 const BOOTH_BY_ID = new Map(BOOTH_PACKAGES.map((p) => [p.id, p]));
 
-export const DEFAULT_BOOTH_PACKAGE = 'FULL_NIGHT';
+export const DEFAULT_BOOTH_PACKAGE = 'BOOTH_GUESTBOOK';
 
 export function getBoothPackage(id: string | null | undefined): BoothPackageDefinition {
   if (id) {
@@ -183,17 +197,39 @@ export function boothStartingPrice(): number {
 }
 
 /**
- * PLACEHOLDER. What is taken up front to hold the date, as a percentage of the price.
+ * What is taken up front to hold the date.
  *
- * A percentage rather than a flat figure so it stays proportionate across a 3500 and an
- * 8000 booking. Settled by a human over WhatsApp on InstaPay, exactly like an
- * invitation, which is why nothing in a browser is ever told the money arrived.
+ * A flat 500, not a percentage, because that is what the history shows: of the fifteen
+ * deposits recorded, ten are exactly 500. The rest are 250, 350 and 1000, which look
+ * like negotiations rather than a rule. A percentage would have quoted 600 on a 2000
+ * booking and 1050 on a 3500 one, and neither is a number this business has ever asked
+ * for.
+ *
+ * The admin can still record whatever was actually taken; this is only what the
+ * website quotes.
  */
-export const BOOTH_DEPOSIT_PERCENT = 30;
+export const BOOTH_DEPOSIT = 500;
 
 export function boothDeposit(price: number): number {
-  // Rounded to fifty so the customer is asked for a number a person would say out loud.
-  return Math.round((price * BOOTH_DEPOSIT_PERCENT) / 100 / 50) * 50;
+  // Never more than the booking itself, which would otherwise happen if a tier were
+  // ever priced below the deposit.
+  return Math.min(BOOTH_DEPOSIT, price);
+}
+
+/**
+ * The tier nearest a given price.
+ *
+ * Needed because the operator's database records a price, not a package: a row typed in
+ * by hand says "2999 EGP" and nothing about which tier that was. The admin still wants
+ * a name to show, so the closest tier is used as a label while the real price is kept
+ * exactly as it was recorded.
+ */
+export function matchPackageByPrice(price: number): BoothPackageDefinition {
+  if (!price) return getBoothPackage(DEFAULT_BOOTH_PACKAGE);
+
+  return BOOTH_PACKAGES.reduce((best, tier) =>
+    Math.abs(tier.price - price) < Math.abs(best.price - price) ? tier : best,
+  );
 }
 
 export type BoothArea = {
