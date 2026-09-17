@@ -1,16 +1,16 @@
 # Graph Report - qlty-invitation  (2026-09-17)
 
 ## Corpus Check
-- 259 files · ~215,935 words
+- 259 files · ~216,125 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1573 nodes · 4423 edges · 104 communities (78 shown, 26 thin omitted)
+- 1573 nodes · 4425 edges · 107 communities (81 shown, 26 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 52 edges (avg confidence: 0.76)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `fa0b48b9`
+- Built from commit: `f60e187c`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -114,10 +114,13 @@
 - Invitation Theme Set v2
 - InvitationExperience.tsx
 - ReviewForm.tsx
-- useAutosave.ts
+- events.test.ts
+- types.ts
+- FlowHeader.tsx
 - @radix-ui/react-dialog
 - @radix-ui/react-scroll-area
-- react
+- DesignSections.tsx
+- Invitation Theme Set v2
 
 ## God Nodes (most connected - your core abstractions)
 1. `cn()` - 222 edges
@@ -154,7 +157,7 @@
 - **Four-Path Colour Layer Stack Composing the Lockup** — public_logo_gold_layer, public_logo_cream_layer, public_logo_warm_gray_layer, public_logo_dark_brown_layer, public_logo_qlty_events_lockup [EXTRACTED 1.00]
 - **Three-Layer Knockout Composition of the Brand Mark** — src_app_icon_gold_badge_path, src_app_icon_cream_glyph_path, src_app_icon_dark_detail_path, src_app_icon_qlty_events_mark [EXTRACTED 1.00]
 
-## Communities (104 total, 26 thin omitted)
+## Communities (107 total, 26 thin omitted)
 
 ### Community 0 - "Firebase Auth & Data Layer"
 Cohesion: 0.09
@@ -166,7 +169,7 @@ Nodes (21): CardReviewPage(), metadata, EVENT_TYPES, metadata, PreviewFramePage(
 
 ### Community 2 - "Admin Pages & Chrome"
 Cohesion: 0.12
-Nodes (39): BACKUP_DIR, main(), plain(), stamp(), booking(), cleanup(), DATE, main() (+31 more)
+Nodes (43): BACKUP_DIR, main(), plain(), stamp(), booking(), cleanup(), DATE, main() (+35 more)
 
 ### Community 3 - "Admin Actions & API Routes"
 Cohesion: 0.10
@@ -177,16 +180,16 @@ Cohesion: 0.07
 Nodes (36): BAR, INSCRIPTION, IwanCover(), leafVariants(), LEAVES, PORTAL, Tier, AblaqCourses() (+28 more)
 
 ### Community 5 - "Music & Photo Upload"
-Cohesion: 0.15
-Nodes (23): BoothHero(), MetaPixel(), SampleViewedBeacon(), CONTENT_CATEGORIES, ContentCategory, CUSTOM_EVENTS, CustomEvent, isBrowserReportable() (+15 more)
+Cohesion: 0.08
+Nodes (43): POST(), BoothViewedBeacon(), ServiceCard(), MetaPixel(), SampleViewedBeacon(), TrackedSupportButton(), recordMetaAttribution(), reportBoothPurchase() (+35 more)
 
 ### Community 6 - "Font Registry"
 Cohesion: 0.05
 Nodes (42): alegreyaSans, alexandria, alice, almarai, amiri, amiriQuran, archivo, arefRuqaa (+34 more)
 
 ### Community 7 - "Card & Layout Primitives"
-Cohesion: 0.06
-Nodes (38): Corner(), Card(), CardAction(), CardContent(), CardDescription(), CardFooter(), CardHeader(), CardTitle() (+30 more)
+Cohesion: 0.08
+Nodes (30): Corner(), Badge(), badgeVariants, Card(), CardAction(), CardContent(), CardDescription(), CardFooter() (+22 more)
 
 ### Community 8 - "Build Tooling Dependencies"
 Cohesion: 0.10
@@ -197,8 +200,8 @@ Cohesion: 0.43
 Nodes (6): AvailabilityCalendar(), dateKey(), DayMap, LegendItem(), monthKey(), toLocalDate()
 
 ### Community 10 - "Theme Component Contract"
-Cohesion: 0.16
-Nodes (8): metadata, viewport, SiteFooter(), SupportButton(), SITE_URL, whatsappLink(), config, proxy()
+Cohesion: 0.23
+Nodes (11): DraftsPage(), signOut(), InvitationRow(), STATUS_LABELS, STATUS_STYLES, StatusPill(), SignOutControl(), counted() (+3 more)
 
 ### Community 11 - "TypeScript Configuration"
 Cohesion: 0.07
@@ -209,16 +212,16 @@ Cohesion: 0.17
 Nodes (11): startOver(), PreviewDialog(), StartOverButton(), Dialog(), DialogContent(), DialogDescription(), DialogFooter(), DialogHeader() (+3 more)
 
 ### Community 13 - "Date Formatting & Motion Tokens"
-Cohesion: 0.13
-Nodes (29): main(), HANDLED, POST(), WebhookBody, boothReservationHistory(), hashReservation(), boothDataSourceId(), createPage() (+21 more)
+Cohesion: 0.14
+Nodes (25): formatNotionPrice(), formatNotionTime(), fromNotionPage(), hashReservation(), NotionBooking, pad(), ParsedTime, parseNotionPrice() (+17 more)
 
 ### Community 14 - "Landing Page & Session"
-Cohesion: 0.07
-Nodes (53): GET(), POST(), CONTENT_FIELDS, hasContent(), POST(), POST(), GET(), GET() (+45 more)
+Cohesion: 0.09
+Nodes (41): GET(), POST(), CONTENT_FIELDS, hasContent(), POST(), POST(), GET(), GET() (+33 more)
 
 ### Community 15 - "Header, Reviews & Inputs"
-Cohesion: 0.15
-Nodes (20): BoothSettingsPage(), syncNow(), WEEKDAYS, authorised(), GET(), GET(), QuerySchema, readAvailability (+12 more)
+Cohesion: 0.11
+Nodes (38): main(), authorised(), GET(), HANDLED, POST(), WebhookBody, GET(), QuerySchema (+30 more)
 
 ### Community 16 - "Root Layout & Countdown"
 Cohesion: 0.19
@@ -246,7 +249,7 @@ Nodes (6): AdminLayout(), metadata, AdminNav(), ITEMS, NavCounts, getNavCounts()
 
 ### Community 22 - "Invitation i18n & Mashrabiya"
 Cohesion: 0.15
-Nodes (20): activateInvitation(), changeSlug(), deactivateInvitation(), extendExpiry(), rejectInvitation(), revalidateInvitation(), ApprovalPage(), FIELD_LABELS (+12 more)
+Nodes (23): activateInvitation(), changeSlug(), deactivateInvitation(), extendExpiry(), rejectInvitation(), revalidateInvitation(), ApprovalPage(), FIELD_LABELS (+15 more)
 
 ### Community 23 - "Verified & Unverified Gaps"
 Cohesion: 0.14
@@ -257,12 +260,12 @@ Cohesion: 0.17
 Nodes (12): CONTAINER_VARIANTS, FLAP_BOTTOM_VARIANTS, FLAP_LEFT_VARIANTS, FLAP_RIGHT_VARIANTS, FLAP_TOP_VARIANTS, SEAL_LEFT_VARIANTS, SEAL_RIGHT_VARIANTS, WHOLE_SEAL_VARIANTS (+4 more)
 
 ### Community 25 - "Photo Frame & Qandeel Theme"
-Cohesion: 0.09
-Nodes (31): AnsweredRow(), LanguageSection(), MusicSection(), PhotoSection(), PreviewSection(), ThemeSection(), Action, FlowState (+23 more)
+Cohesion: 0.12
+Nodes (18): BriefSection(), COMMON_TIMES, MapSection(), MessageSection(), NameSection(), NativePickerField(), OccasionSection(), PackageSection() (+10 more)
 
 ### Community 26 - "Reveal & Theme Sections"
-Cohesion: 0.15
-Nodes (13): DURATION, EASE_DRAWER, EASE_IN_OUT, EASE_OUT, INVITATION, PANEL_ENTRANCE, SECONDS, FloralCover() (+5 more)
+Cohesion: 0.19
+Nodes (14): Countdown(), Parts, partsUntil(), Monogram(), Divider(), OrnateFrame(), PaperTexture(), Pip() (+6 more)
 
 ### Community 27 - "Typography & Verse Rules"
 Cohesion: 0.20
@@ -273,8 +276,8 @@ Cohesion: 0.22
 Nodes (11): Who Can Reach What, .env Secrets Handling, Firestore Emulator for Local Development, Single Operator Account, Public Signup Disabled, Test Invitations Pile Up in the Admin List, In-Memory Admin Query Filtering, admin.qlty.events Subdomain Routing, Firestore as the Datastore (+3 more)
 
 ### Community 29 - "Monogram & Classic Ornaments"
-Cohesion: 0.27
-Nodes (12): POST(), reviews(), Bucket, buckets, checkRateLimit(), pruneRateLimits(), createReview(), getAllReviews() (+4 more)
+Cohesion: 0.54
+Nodes (7): reviews(), createReview(), getAllReviews(), getApprovedReviews(), getPendingReviews(), mapReview(), ReviewInput
 
 ### Community 30 - "Select Primitive"
 Cohesion: 0.17
@@ -305,16 +308,16 @@ Cohesion: 0.25
 Nodes (9): Backup Runbook, Composite Indexes And Rules Deploy, Firebase Project Provisioning, Local Firestore Emulator, Firestore eur3 Location Choice, Deny Everything Firestore Rules, Service Account Credentials, Vercel Functions Pinned To fra1 (+1 more)
 
 ### Community 37 - "Popover Primitive"
-Cohesion: 0.21
-Nodes (16): AllInvitationsPage(), FILTERS, Props, AdminHome(), Props, EmptyState(), AdminStats, getPending() (+8 more)
+Cohesion: 0.32
+Nodes (11): AdminHome(), Props, AdminStats, getPending(), getStats(), isStale(), listByStatus(), monthStart() (+3 more)
 
 ### Community 38 - "Package Catalog"
 Cohesion: 0.30
 Nodes (13): PhotoFrame(), PhotoShape, SHAPES, Reveal(), InvitationView, CountdownBlock(), DateBlock(), FooterBlock() (+5 more)
 
 ### Community 39 - "Mashrabiya Ornaments"
-Cohesion: 0.11
-Nodes (32): BoothCalendarPage(), Legend(), resolveMonth(), shiftMonth(), WEEKDAYS, BoothDetailPage(), Field(), Row() (+24 more)
+Cohesion: 0.29
+Nodes (10): SampleOgImage(), InvitationOgImage(), FONT_DIR, LoadedFont, loadFonts(), OG_SIZE, OgInput, renderOgImage() (+2 more)
 
 ### Community 40 - "Styling Utility Dependencies"
 Cohesion: 0.09
@@ -322,7 +325,7 @@ Nodes (23): class-variance-authority, clsx, date-fns, framer-motion, next, depen
 
 ### Community 41 - "Theme Selection Rationale"
 Cohesion: 0.19
-Nodes (14): Countdown(), Parts, partsUntil(), Monogram(), Divider(), OrnateFrame(), PaperTexture(), Pip() (+6 more)
+Nodes (15): PhotoCropper(), Transform, ERROR_KEYS, PhotoUpload(), Stage, ACCEPTED, checkFileType(), looksHeic() (+7 more)
 
 ### Community 42 - "App Icon Artwork"
 Cohesion: 0.43
@@ -341,8 +344,8 @@ Cohesion: 0.60
 Nodes (5): Firestore Has No Migrations, src/lib/types.ts Is Hand Written, InvitationRecord Document Shape, toPatch All-or-Nothing Rule, Hand Written Data Model (src/lib/types.ts)
 
 ### Community 46 - "Accordion Primitive"
-Cohesion: 0.16
-Nodes (14): HomePage(), Hero(), HowItWorksCompact(), PriceTag(), HowItWorks(), ContinueDraft(), AR, DICTIONARIES (+6 more)
+Cohesion: 0.05
+Nodes (56): metadata, viewport, SamplePage(), generateMetadata(), InvitationsPage(), generateMetadata(), HomePage(), generateMetadata() (+48 more)
 
 ### Community 47 - "Autosave Hook"
 Cohesion: 0.29
@@ -353,116 +356,128 @@ Cohesion: 0.40
 Nodes (4): fra1, crons, regions, $schema
 
 ### Community 50 - "Brand Logo & Not Available"
-Cohesion: 0.35
-Nodes (17): assertId(), blockDay(), cancelBooking(), changeBookingDate(), completeBooking(), confirmBooking(), createManualBooking(), editBooking() (+9 more)
+Cohesion: 0.11
+Nodes (33): assertId(), blockDay(), cancelBooking(), changeBookingDate(), completeBooking(), confirmBooking(), createManualBooking(), editBooking() (+25 more)
 
 ### Community 51 - "login/actions.ts"
-Cohesion: 0.19
-Nodes (16): clientKey(), LoginState, signIn(), signOut(), LoginForm(), AdminLoginPage(), SignOutControl(), getOperator (+8 more)
+Cohesion: 0.23
+Nodes (14): clientKey(), LoginState, signIn(), LoginForm(), AdminLoginPage(), getOperator, Operator, firebaseApp() (+6 more)
 
 ### Community 52 - "admin-auth.ts"
-Cohesion: 0.13
-Nodes (20): HandoffResult, handoffToWhatsApp(), requestBooking(), RequestBookingResult, BoothBooking(), NativeSelect(), Row(), Stage (+12 more)
+Cohesion: 0.21
+Nodes (7): RequestBookingResult, NativeSelect(), Row(), Stage, Input(), Label(), Textarea()
 
 ### Community 53 - "Next.js Proxy Config"
-Cohesion: 0.29
-Nodes (10): SampleOgImage(), InvitationOgImage(), FONT_DIR, LoadedFont, loadFonts(), OG_SIZE, OgInput, renderOgImage() (+2 more)
+Cohesion: 0.43
+Nodes (6): emptyValues(), inferFurthest(), valuesFromInvitation(), toDateInputValue(), parseCrop(), EventType
 
 ### Community 55 - "admin/actions.ts"
 Cohesion: 0.24
-Nodes (16): addDays(), daysBetween(), dayStatus, DayStatusInput, EMPTY_OCCUPANCY, isBookable(), isHoldExpired(), nextAvailableDates() (+8 more)
+Nodes (15): addDays(), daysBetween(), dayStatus, DayStatusInput, EMPTY_OCCUPANCY, isBookable(), isHoldExpired(), nextAvailableDates() (+7 more)
 
 ### Community 56 - "popover.tsx"
-Cohesion: 0.06
-Nodes (57): InvitationFlow(), reducer(), MusicSelector(), PhotoCropper(), Transform, ERROR_KEYS, PhotoUpload(), Stage (+49 more)
+Cohesion: 0.17
+Nodes (18): MusicSelector(), DateSection(), viewFromValues(), FlowValues, fromDateInputValue(), getEventInstant(), zoneOffsetMs(), toInvitationView() (+10 more)
 
 ### Community 57 - "Framer Motion Dependency"
-Cohesion: 0.33
-Nodes (7): PaymentPanel(), useIsDesktop(), PendingBanner(), Alert(), AlertDescription(), AlertTitle(), alertVariants
+Cohesion: 0.39
+Nodes (6): PaymentPanel(), useIsDesktop(), Alert(), AlertDescription(), AlertTitle(), alertVariants
 
 ### Community 58 - "heic2any Dependency"
 Cohesion: 0.13
 Nodes (14): 1. What was added, and why, 2. How your columns map, 3. The integration token, 4. Import what is already there, 5. The webhook, 6. The scheduled catch up, How it behaves once it is running, Notion booth sync: setting it up (+6 more)
 
 ### Community 60 - "getTheme"
-Cohesion: 0.29
-Nodes (9): CONTAINER_VARIANTS, NetigaCover(), TEAR_LEAF_VARIANTS_LTR, TEAR_LEAF_VARIANTS_RTL, NetigaCountdown(), NetigaInvitation(), CalendarHeaderBand(), formatNetigaDigits() (+1 more)
+Cohesion: 0.18
+Nodes (22): AnsweredRow(), Action, FlowState, InvitationFlow(), reducer(), PendingBanner(), isSectionActive(), isSkippable() (+14 more)
 
 ### Community 62 - "Radix UI Root Dependency"
-Cohesion: 0.15
-Nodes (24): formatNotionPrice(), formatNotionTime(), fromNotionPage(), NotionBooking, pad(), ParsedTime, parseNotionPrice(), parseNotionTime() (+16 more)
+Cohesion: 0.14
+Nodes (24): BoothCalendarPage(), Legend(), resolveMonth(), shiftMonth(), WEEKDAYS, BoothQueuePage(), BOOTH_STATUS_LABELS, BOOTH_STATUS_STYLES (+16 more)
 
 ### Community 64 - "BoothFaq.tsx"
 Cohesion: 0.48
 Nodes (5): BoothFaq(), Accordion(), AccordionContent(), AccordionItem(), AccordionTrigger()
 
 ### Community 66 - "(site)/layout.tsx"
+Cohesion: 0.29
+Nodes (9): CONTAINER_VARIANTS, NetigaCover(), TEAR_LEAF_VARIANTS_LTR, TEAR_LEAF_VARIANTS_RTL, NetigaCountdown(), NetigaInvitation(), CalendarHeaderBand(), formatNetigaDigits() (+1 more)
+
+### Community 69 - "Radix Scroll Area Dependency"
 Cohesion: 0.32
 Nodes (7): metadata, SectionShell(), BackLink(), Button(), buttonVariants, Calendar(), CalendarDayButton()
 
-### Community 69 - "Radix Scroll Area Dependency"
-Cohesion: 0.25
-Nodes (7): PhotoBoothPage(), BoothPackages(), BoothViewedBeacon(), HomeHeader(), BOOTH_BY_ID, BOOTH_PACKAGES, isValidBoothPackage()
-
 ### Community 70 - "class-variance-authority"
-Cohesion: 0.29
-Nodes (8): CONTAINER_VARIANTS, KhayamiyaCover(), LEFT_FLAP_VARIANTS, RIGHT_FLAP_VARIANTS, EightPetalMedallion(), LotusPalmette(), RunningStitchSeam(), SteppedMerlonBorder()
+Cohesion: 0.18
+Nodes (6): SheetContent(), SheetDescription(), SheetFooter(), SheetHeader(), SheetOverlay(), SheetTitle()
 
 ### Community 71 - "Radix Slot Dependency"
-Cohesion: 0.16
-Nodes (17): DraftsPage(), InvitationRow(), STATUS_LABELS, STATUS_STYLES, StatusPill(), BrandLogo(), NotAvailable(), counted() (+9 more)
+Cohesion: 0.25
+Nodes (4): PopoverContent(), PopoverDescription(), PopoverHeader(), PopoverTitle()
 
 ### Community 72 - "ActionButton.tsx"
-Cohesion: 0.15
-Nodes (13): NewBoothBookingPage(), AdminReviewsPage(), LABELS, setStatus(), STYLES, ArmedButton(), ConfirmSubmit(), SIZES (+5 more)
+Cohesion: 0.16
+Nodes (13): AllInvitationsPage(), FILTERS, Props, NewBoothBookingPage(), AdminReviewsPage(), LABELS, setStatus(), STYLES (+5 more)
 
 ### Community 75 - "(site)/layout.tsx"
 Cohesion: 0.36
 Nodes (4): SiteLayout(), DirectionProvider(), SyncDocumentLang(), Toaster()
 
 ### Community 89 - "proxy.ts"
-Cohesion: 0.27
-Nodes (8): CONTAINER_VARIANTS, LAMP_FAR_VARIANTS, LAMP_MID_VARIANTS, LAMP_NEAR_VARIANTS, QandeelCover(), MosqueLamp(), PLUMB_LENGTHS, PlumbLine()
+Cohesion: 0.15
+Nodes (13): DURATION, EASE_DRAWER, EASE_IN_OUT, EASE_OUT, INVITATION, PANEL_ENTRANCE, SECONDS, FloralCover() (+5 more)
 
 ### Community 91 - "packages.ts"
-Cohesion: 0.25
-Nodes (10): BoothGallery(), InstagramStrip(), ServiceCard(), SiteImage(), BOOTH_MEDIA, BoothArea, BoothPackageDefinition, INSTAGRAM_TILES (+2 more)
+Cohesion: 0.15
+Nodes (20): HandoffResult, handoffToWhatsApp(), requestBooking(), BoothBooking(), createFromNotion(), revalidateBoothAvailability(), BOOTH_AREAS, boothDeposit() (+12 more)
 
 ### Community 93 - "AvailabilityCalendar.tsx"
 Cohesion: 0.20
 Nodes (10): scripts, backup, build, check:booth, check:music, dev, notion:import, start (+2 more)
 
 ### Community 95 - "FlowHeader.tsx"
-Cohesion: 0.27
-Nodes (7): FlowHeader(), LanguageToggle(), Progress(), post(), SaveResult, SaveStatus, useAutosave()
+Cohesion: 0.50
+Nodes (4): post(), SaveResult, SaveStatus, useAutosave()
 
 ### Community 96 - "toggle-group.tsx"
 Cohesion: 0.31
 Nodes (7): react, react, ToggleGroup(), ToggleGroupContext, ToggleGroupItem(), Toggle(), toggleVariants
 
 ### Community 97 - "Invitation Theme Set v2"
-Cohesion: 0.29
-Nodes (7): Contrast Token Contract, Coverage Not Score Selection Rule, Mid Range Android Performance Budget, Rizma Theme, Tayya Dropped Concept, Invitation Theme Set v2, Eight Music Files In public music
+Cohesion: 0.47
+Nodes (3): CopyValue(), CopyField(), copyText()
 
 ### Community 98 - "InvitationExperience.tsx"
 Cohesion: 0.43
 Nodes (4): InvitationExperience(), MuteToggle(), InvitationAudio, useInvitationAudio()
 
 ### Community 99 - "ReviewForm.tsx"
-Cohesion: 0.43
-Nodes (3): Input(), Label(), Textarea()
+Cohesion: 0.29
+Nodes (8): CONTAINER_VARIANTS, KhayamiyaCover(), LEFT_FLAP_VARIANTS, RIGHT_FLAP_VARIANTS, EightPetalMedallion(), LotusPalmette(), RunningStitchSeam(), SteppedMerlonBorder()
 
-### Community 102 - "useAutosave.ts"
+### Community 100 - "events.test.ts"
+Cohesion: 0.27
+Nodes (8): CONTAINER_VARIANTS, LAMP_FAR_VARIANTS, LAMP_MID_VARIANTS, LAMP_NEAR_VARIANTS, QandeelCover(), MosqueLamp(), PLUMB_LENGTHS, PlumbLine()
+
+### Community 101 - "types.ts"
 Cohesion: 0.22
 Nodes (8): BoothDay, BoothSettings, BoothSource, BoothSyncCursor, BoothSyncStatus, Lang, ReviewStatus, Status
+
+### Community 102 - "FlowHeader.tsx"
+Cohesion: 0.31
+Nodes (5): BrandLogo(), FlowHeader(), NotAvailable(), LanguageToggle(), Progress()
 
 ### Community 104 - "@radix-ui/react-scroll-area"
 Cohesion: 0.33
 Nodes (5): name, overrides, jose, private, version
 
-### Community 109 - "react"
-Cohesion: 0.15
-Nodes (19): SamplePage(), generateMetadata(), InvitationsPage(), generateMetadata(), generateMetadata(), BoothStatusPage(), metadata, TONE (+11 more)
+### Community 105 - "DesignSections.tsx"
+Cohesion: 0.29
+Nodes (7): LanguageSection(), MusicSection(), PhotoSection(), PreviewSection(), ThemeSection(), scriptSuggestions(), LISTED_THEMES
+
+### Community 106 - "Invitation Theme Set v2"
+Cohesion: 0.29
+Nodes (7): Contrast Token Contract, Coverage Not Score Selection Rule, Mid Range Android Performance Budget, Rizma Theme, Tayya Dropped Concept, Invitation Theme Set v2, Eight Music Files In public music
 
 ## Ambiguous Edges - Review These
 - `Gold Layer (#b8924b)` → `Dark Brown Layer (#3b2a20)`  [AMBIGUOUS]
@@ -486,11 +501,11 @@ _Questions this graph is uniquely positioned to answer:_
   _Edge tagged AMBIGUOUS (relation: semantically_similar_to) - confidence is low._
 - **What is the exact relationship between `Backup Scheduling Not Automated` and `expiresAt Has No Policy Yet`?**
   _Edge tagged AMBIGUOUS (relation: semantically_similar_to) - confidence is low._
-- **Why does `cn()` connect `Card & Layout Primitives` to `Preview & Sample Pages`, `Iwan Theme`, `Flow Design Sections`, `Theme Component Contract`, `Preview Dialog & Buttons`, `Root Layout & Countdown`, `Ghouroub Theme`, `Hadiqa Theme`, `Payment Panel & Alerts`, `Invitation i18n & Mashrabiya`, `React & Toggle Primitives`, `Photo Frame & Qandeel Theme`, `Reveal & Theme Sections`, `Zarf Theme`, `Popover Primitive`, `Package Catalog`, `Mashrabiya Ornaments`, `Theme Selection Rationale`, `Autosave Hook`, `admin-auth.ts`, `popover.tsx`, `Framer Motion Dependency`, `getTheme`, `BoothFaq.tsx`, `(site)/layout.tsx`, `class-variance-authority`, `Radix Slot Dependency`, `ActionButton.tsx`, `proxy.ts`, `packages.ts`, `FlowHeader.tsx`, `toggle-group.tsx`, `ReviewForm.tsx`, `useAutosave.ts`?**
+- **Why does `cn()` connect `Card & Layout Primitives` to `Preview & Sample Pages`, `Iwan Theme`, `Flow Design Sections`, `Theme Component Contract`, `Preview Dialog & Buttons`, `Root Layout & Countdown`, `Ghouroub Theme`, `Hadiqa Theme`, `Payment Panel & Alerts`, `Invitation i18n & Mashrabiya`, `React & Toggle Primitives`, `Photo Frame & Qandeel Theme`, `Reveal & Theme Sections`, `Zarf Theme`, `Package Catalog`, `Accordion Primitive`, `Autosave Hook`, `Brand Logo & Not Available`, `admin-auth.ts`, `popover.tsx`, `Framer Motion Dependency`, `getTheme`, `Radix UI Root Dependency`, `BoothFaq.tsx`, `(site)/layout.tsx`, `Radix Scroll Area Dependency`, `class-variance-authority`, `Radix Slot Dependency`, `ActionButton.tsx`, `proxy.ts`, `toggle-group.tsx`, `Invitation Theme Set v2`, `ReviewForm.tsx`, `events.test.ts`, `types.ts`, `FlowHeader.tsx`?**
   _High betweenness centrality (0.195) - this node is a cross-community bridge._
 - **Why does `dependencies` connect `Styling Utility Dependencies` to `toggle-group.tsx`, `Radix Label Dependency`, `Radix Progress Dependency`, `Radix Radio Group Dependency`, `@radix-ui/react-dialog`, `@radix-ui/react-scroll-area`, `Radix Toggle Group Dependency`, `React Day Picker Dependency`, `Sonner Toast Dependency`, `heic2any`, `Zod Dependency`, `PaymentPanel.tsx`, `firebase-admin`, `Lucide Icons Dependency`, `class-variance-authority`, `SiteFooter.tsx`, `Invitation Theme Set v2`?**
   _High betweenness centrality (0.093) - this node is a cross-community bridge._
-- **Why does `react` connect `toggle-group.tsx` to `Styling Utility Dependencies`, `(site)/layout.tsx`?**
+- **Why does `react` connect `toggle-group.tsx` to `Styling Utility Dependencies`, `Radix Scroll Area Dependency`?**
   _High betweenness centrality (0.091) - this node is a cross-community bridge._
 - **What connects `$schema`, `style`, `rsc` to the rest of the system?**
   _391 weakly-connected nodes found - possible documentation gaps or missing edges._

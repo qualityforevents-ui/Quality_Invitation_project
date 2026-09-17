@@ -19,6 +19,7 @@ import { boothDays, boothReservations } from '../src/lib/db';
 import {
   createReservation,
   getAvailability,
+  getBoothSettings,
   getReservationById,
   holdReservation,
   updateReservation,
@@ -71,14 +72,43 @@ async function main(): Promise<void> {
 
   await cleanup();
 
-  console.log('\ntwo requests on one day, one booth');
+  /*
+   * Fill the day down to its last free booth before racing for it.
+   *
+   * This used to assume a capacity of one, which stopped being true the moment the
+   * real unit count was read out of the live database: with two booths both customers
+   * legitimately won and the script reported a failure that was not one. Reading the
+   * configured capacity means the test asks the question it means to ask — "can two
+   * people take the *last* booth" — whatever that capacity is set to.
+   */
+  const { unitCount } = await getBoothSettings();
+  console.log(`\ncapacity is ${unitCount}; filling it down to one free booth`);
+
+  for (let i = 0; i < unitCount - 1; i += 1) {
+    await createReservation({ ...booking(`Filler ${i + 1}`), status: 'CONFIRMED' });
+  }
+
+  expect(
+    'one booth is left before the race',
+    (await getAvailability(DATE, DATE))[DATE],
+    unitCount > 1 ? 'last' : 'available',
+  );
+
+  console.log('\ntwo requests for that last booth');
 
   const a = await createReservation(booking('Customer A'));
   const b = await createReservation(booking('Customer B'));
 
-  // Neither has been anywhere near WhatsApp, so the day is still for sale. This is the
-  // rule that stops a form submission from being able to close a Saturday.
-  expect('day is still available while both are only REQUESTED', (await getAvailability(DATE, DATE))[DATE], 'available');
+  /*
+   * Neither has been anywhere near WhatsApp, so the last booth is still for sale. This
+   * is the rule that stops a form submission from being able to close a Saturday: two
+   * REQUESTED rows on a day with one booth left must not have taken it.
+   */
+  expect(
+    'the last booth is still for sale while both are only REQUESTED',
+    (await getAvailability(DATE, DATE))[DATE],
+    unitCount > 1 ? 'last' : 'available',
+  );
 
   console.log('\nboth tap through to WhatsApp in the same instant');
 
@@ -108,8 +138,12 @@ async function main(): Promise<void> {
 
   console.log('\nthe winner cancels');
 
-  await updateReservation(held.length && resultA.ok ? a.id : b.id, { status: 'CANCELLED' });
-  expect('the day comes back', (await getAvailability(DATE, DATE))[DATE], 'available');
+  await updateReservation(resultA.ok ? a.id : b.id, { status: 'CANCELLED' });
+  expect(
+    'the last booth comes back',
+    (await getAvailability(DATE, DATE))[DATE],
+    unitCount > 1 ? 'last' : 'available',
+  );
 
   await cleanup();
 
