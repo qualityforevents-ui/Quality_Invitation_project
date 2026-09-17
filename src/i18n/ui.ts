@@ -114,12 +114,19 @@ const AR = {
     heroSubline: 'طباعة فورية، خلفية تختارها، وفني معاكم طول الفرح.',
     heroCta: 'شوف المواعيد الفاضية',
 
-    packagesTitle: 'اختار باقتك',
-    packagesSub: 'كل الباقات فيها طباعة من غير عدد وألبوم رقمي. الفرق في الوقت وفي التفاصيل.',
+    packagesTitle: 'الباقة',
+    packagesSub: 'باقة واحدة فيها كل حاجة. وتقدر تزود عليها اللي تحبه.',
     packagesChoose: 'اختار دي',
     packagesChosen: 'مختارة',
     hoursLabel: 'ساعات',
     extraHourLabel: 'الساعة الزيادة',
+    /** Shown beside the struck through standard rate. */
+    offerLabel: 'عرض',
+    listPriceLabel: 'السعر العادي',
+
+    addOnsTitle: 'زوّد على باقتك',
+    addOnsSub: 'اختياري. بيتحسب على الإجمالي على طول.',
+    addOnsNone: 'مفيش إضافات',
 
     galleryTitle: 'من أفراح فاتت',
 
@@ -129,6 +136,15 @@ const AR = {
     legendLast: 'آخر فوتوبوث',
     legendFull: 'محجوز',
     legendUnavailable: 'مش متاح',
+
+    /*
+     * A booked day is a conversation, not a closed door. There is a second booth we
+     * rent out, dates move, and people cancel — so the copy offers to talk without
+     * promising anything it cannot deliver.
+     */
+    fullDayTitle: 'اليوم ده محجوز',
+    fullDayBody: 'ممكن برضه نلاقي حل. كلمنا على واتساب ونشوف اليوم ده مع بعض.',
+    fullDayCta: 'اسأل عن اليوم ده على واتساب',
     calendarLoading: 'بنجيب المواعيد',
     calendarError: 'مش قادرين نجيب المواعيد دلوقتي. جرب تاني بعد شوية.',
 
@@ -266,8 +282,8 @@ const AR = {
         body: 'الدعوة بتفتح قدامك بالظبط زي ما الضيف هيشوفها، بالحركة والموسيقى. ده قبل ما تدفع، مش بعده.',
       },
       {
-        title: 'حوّل وابعتلنا',
-        body: 'تحوّل على إنستاباي، وتضغط زرار واحد يفتحلك واتساب برسالة فيها رقم طلبك جاهزة. ترفق صورة التحويل وتبعت.',
+        title: 'ابعتلنا الطلب',
+        body: 'زرار واحد يفتحلك واتساب برسالة فيها كل تفاصيل طلبك جاهزة، وإحنا بنظبط معاك الدفع في نفس المحادثة. الدفع بالكارت جاي قريب.',
       },
       {
         title: 'نفعّل الرابط',
@@ -461,15 +477,10 @@ const AR = {
     customRequestLabel: 'اكتبلنا التصميم اللي في بالك',
     customRequestHint:
       'الألوان، الاستايل، أي حاجة شوفتها وعجبتك. كل ما تكتب أكتر كل ما التصميم يطلع أقرب لتخيلك.',
-    methodsLabel: 'ادفع من هنا، الزرار هيفتحلك التطبيق وينسخلك العنوان',
-    payInstapay: 'ادفع بإنستاباي',
-    payVodafone: 'ادفع بفودافون كاش',
-    addressCopied: 'العنوان اتنسخ. الصقه في التطبيق وحوّل المبلغ.',
     afterPayLabel: 'اضغط هنا وابعتلنا الطلب، وحد من الفريق هيرد عليك على طول',
-    instapayTitle: 'حوّل على إنستاباي',
-    copyAddress: 'انسخ عنوان إنستاباي',
-    instapayAddress: 'عنوان إنستاباي',
-    instapayName: 'اسم المستلم',
+    /** Card payments are coming. Until then the whole payment is a WhatsApp conversation. */
+    cardsComingSoon: 'الدفع بالكارت جاي قريب',
+    cardsComingSoonBody: 'لحد ما يتفعّل، بنظبط الدفع معاك على واتساب في نفس المحادثة.',
     requestIdLabel: 'رقم الطلب',
     requestIdHint: 'الرقم ده بيربط تحويلك بدعوتك. ابعته معاك في الرسالة.',
     phoneLabel: 'رقم واتساب عشان نبعتلك رابط دعوتك',
@@ -639,12 +650,18 @@ const EN: Dictionary = {
     heroSubline: 'Instant prints, a backdrop you choose, and an attendant there all night.',
     heroCta: 'Check available dates',
 
-    packagesTitle: 'Choose your package',
-    packagesSub: 'Every package includes unlimited prints and a digital gallery. What changes is the time and the detail.',
+    packagesTitle: 'The package',
+    packagesSub: 'One package with everything in it. Add to it if you want to.',
     packagesChoose: 'Choose this',
     packagesChosen: 'Chosen',
     hoursLabel: 'hours',
     extraHourLabel: 'Extra hour',
+    offerLabel: 'Offer',
+    listPriceLabel: 'Standard rate',
+
+    addOnsTitle: 'Add to your package',
+    addOnsSub: 'Optional. Added to the total straight away.',
+    addOnsNone: 'No extras',
 
     galleryTitle: 'From past events',
 
@@ -654,6 +671,10 @@ const EN: Dictionary = {
     legendLast: 'Last booth',
     legendFull: 'Booked',
     legendUnavailable: 'Not available',
+
+    fullDayTitle: 'That day is booked',
+    fullDayBody: 'There may still be a way. Message us on WhatsApp and we will look at it with you.',
+    fullDayCta: 'Ask about this date on WhatsApp',
     calendarLoading: 'Loading dates',
     calendarError: 'We cannot load the dates right now. Try again in a moment.',
 
@@ -785,8 +806,8 @@ const EN: Dictionary = {
         body: 'The invitation opens exactly as a guest will see it, animation and music included. Before you pay, not after.',
       },
       {
-        title: 'Pay and send',
-        body: 'Transfer over InstaPay, then one button opens WhatsApp with your request number already written. Attach the screenshot and send.',
+        title: 'Send us the request',
+        body: 'One button opens WhatsApp with every detail already written, and we settle the payment with you in the same conversation. Card payments are coming soon.',
       },
       {
         title: 'We make it live',
@@ -970,15 +991,9 @@ const EN: Dictionary = {
     customRequestLabel: 'Tell us about the design you want',
     customRequestHint:
       'Colours, style, anything you have seen and liked. The more you tell us, the closer the result will be to what you pictured.',
-    methodsLabel: 'Pay here. The button opens the app and copies the address for you',
-    payInstapay: 'Pay with InstaPay',
-    payVodafone: 'Pay with Vodafone Cash',
-    addressCopied: 'Address copied. Paste it in the app and send the amount.',
     afterPayLabel: 'Tap here to send us the request, and someone from the team will reply straight away',
-    instapayTitle: 'Pay with InstaPay',
-    copyAddress: 'Copy the InstaPay address',
-    instapayAddress: 'InstaPay address',
-    instapayName: 'Recipient name',
+    cardsComingSoon: 'Card payments are coming soon',
+    cardsComingSoonBody: 'Until they are live, we settle the payment with you on WhatsApp in the same conversation.',
     requestIdLabel: 'Request ID',
     requestIdHint: 'This is what links your transfer to your invitation. Send it with your message.',
     phoneLabel: 'WhatsApp number so we can send you your invitation link',

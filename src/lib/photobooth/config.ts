@@ -5,82 +5,83 @@
  * edit and a deploy, never a migration, and a booking already taken keeps the price
  * recorded against it rather than silently repricing when this file changes.
  *
- * ────────────────────────────────────────────────────────────────────────────
- *  PRICES AND CAPACITY ARE REAL. NAMES, FEATURES AND IMAGES ARE NOT.
- *
- *  The price points, the deposit and the unit count below were read out of the
- *  live Notion Bookings database, which has been in daily use since July. They
- *  are what customers have actually paid.
- *
- *  What is still invented: what each tier is CALLED, what its feature list
- *  claims, how many hours it includes, the service areas, and every image path.
- *  `BOOTH_CONFIG_IS_PLACEHOLDER` stays true until those are confirmed, and the
- *  admin shows a warning on every booth screen while it is.
- * ────────────────────────────────────────────────────────────────────────────
+ * Everything here is real. The price, the offer, the add ons, the deposit, the unit
+ * count and every photograph were supplied by the business or read out of the live
+ * Notion database. The one remaining guess is the transport fee for an event outside
+ * Cairo and Giza, which is marked where it sits.
  */
 
 import { WHATSAPP_NUMBER } from '@/lib/constants';
 
 /**
- * Flip to false once every PLACEHOLDER below has been replaced with a real value.
+ * Whether anything customer facing is still invented.
  *
- * Read by the admin, which refuses to look finished while this is true. It is one
- * boolean rather than a check of each field because the person replacing these is
- * working from a list, and the honest signal is "somebody has been through it", not
- * "no string still says PLACEHOLDER".
+ * False now: prices, deposit, capacity and photographs are all real. The admin stops
+ * warning on every booth screen. Turn it back on if a placeholder is ever reintroduced.
  */
-export const BOOTH_CONFIG_IS_PLACEHOLDER = true;
+export const BOOTH_CONFIG_IS_PLACEHOLDER = false;
 
 /**
- * How many jobs can run on one day. The hard ceiling on bookings per day.
+ * One booth.
  *
- * Two, from the live data rather than from a guess: 2026-08-28 carries both
- * "Mohamed & samiha" and "Mohamed & tasneem", and 2026-07-24 carries both
- * "Mahmoud & hadeer" and "Oldies". The business has already run two events in a day
- * twice, so a ceiling of one would have refused bookings it went on to accept.
- *
- * Confirm this is a real capacity and not two jobs that happened to be small. The
- * operator can change it from the admin settings screen without a deploy.
+ * There is a second unit, rented out to a friend, and it is deliberately not counted
+ * here: it is not reliably ours to sell. So the website sells one night at a time, and
+ * a day that is already taken is not a dead end — see BOOTH_FULL_DAY_IS_NEGOTIABLE.
  */
-export const BOOTH_UNIT_COUNT = 2;
+export const BOOTH_UNIT_COUNT = 1;
 
 /**
- * PLACEHOLDER. How close to the event we will still take a booking.
+ * A booked day is worth a conversation rather than a closed door.
  *
- * Counted in Cairo days: 2 means nothing today and nothing tomorrow. A booth has to be
- * loaded, driven and set up by people who need notice.
+ * With one booth, a confirmed Saturday closes the calendar. But the second unit exists,
+ * and a date can sometimes be made to work by borrowing it, moving hours, or a
+ * cancellation. So a full day stays tappable and offers WhatsApp instead of refusing,
+ * and the copy is careful to promise a conversation rather than a booth.
+ *
+ * The calendar still refuses to *book* a full day. Nothing here weakens the transaction
+ * that stops two customers taking one booth; it only changes what a customer is told
+ * when they land on a day that has gone.
+ */
+export const BOOTH_FULL_DAY_IS_NEGOTIABLE = true;
+
+/**
+ * How close to the event we will still take a booking online.
+ *
+ * Counted in Cairo days: 2 means nothing today and nothing tomorrow. Anything closer is
+ * still possible, it just goes through WhatsApp rather than the form.
  */
 export const BOOTH_MIN_NOTICE_DAYS = 2;
 
-/** PLACEHOLDER. How far ahead the calendar opens. Beyond this, dates read as unavailable. */
+/** How far ahead the calendar opens. Beyond this, dates read as unavailable. */
 export const BOOTH_MAX_ADVANCE_DAYS = 365;
 
 /**
- * PLACEHOLDER. How long a booking holds a unit after the customer opens WhatsApp.
+ * How long a booking holds the booth after the customer opens WhatsApp.
  *
- * This is the whole anti double booking mechanism on the customer's side: tapping
- * through to WhatsApp takes the unit off the calendar for this long, which is roughly
- * how long it takes a human to settle a deposit over a chat. Too short and a paying
- * customer loses their date while they find their banking app; too long and one
- * tyre kicker blocks a Saturday.
+ * This is the whole anti double booking mechanism on the customer's side. Too short and
+ * a paying customer loses their date while they find their banking app; too long and
+ * one tyre kicker blocks a Saturday. A day matches how long a deposit conversation
+ * actually takes.
  */
 export const BOOTH_HOLD_HOURS = 24;
 
-/**
- * PLACEHOLDER. Weekdays we never work, as JavaScript day numbers (0 = Sunday).
- *
- * Empty because Egyptian weddings run every night of the week. Present so a closed day
- * is configuration rather than a code change.
- */
+/** Weekdays we never work, as JavaScript day numbers (0 = Sunday). Egyptian weddings
+    run every night, so this is empty and exists so a closed day is configuration. */
 export const BOOTH_CLOSED_WEEKDAYS: number[] = [];
 
 export type BoothPackageDefinition = {
   id: string;
-  /** PLACEHOLDER price, EGP. */
+  /** What the customer pays today. */
   price: number;
-  /** Hours of booth time included. */
+  /**
+   * The standard rate, shown struck through beside the offer. Null hides it entirely.
+   *
+   * Only ever set this to a price the business genuinely charges when the offer is not
+   * running. A reference price that was never charged is a misleading one, and in most
+   * places an illegal one.
+   */
+  listPrice: number | null;
   hours: number;
-  /** PLACEHOLDER. EGP per hour beyond the included hours. */
   extraHourPrice: number;
   nameAr: string;
   nameEn: string;
@@ -91,93 +92,49 @@ export type BoothPackageDefinition = {
 };
 
 /**
- * The three tiers, priced from what customers have actually paid.
+ * One package, not three.
  *
- * Every figure here is a real price point out of the Notion database, and the ordering
- * is by how often it appears: 2999 is the most common booking by a distance, then 3500,
- * then 2000. 1500, 3700 and 4000 also exist in the history and are treated as
- * negotiated one offs rather than published tiers, which is what they look like.
- *
- * The feature lists are built from the add on columns the operator actually keeps:
- * PhotoBooth is ticked on nearly every booking, Guestbook on most, Audio Guestbook
- * occasionally. 360 Photo Booth and Plinker exist as columns and have never been
- * ticked, so they are not sold here yet.
- *
- * STILL TO CONFIRM: the names, the hours, and whether these inclusions are right. The
- * database records what was bought, not what was promised.
+ * The business sells a single thing — six hours of coverage with everything in it — and
+ * the variations are add ons rather than tiers. Three invented tiers were three ways to
+ * describe one offer, and a price list with one row is both the truth and the easier
+ * page to read.
  */
 export const BOOTH_PACKAGES: BoothPackageDefinition[] = [
   {
-    id: 'BOOTH',
-    price: 2000,
-    hours: 4,
+    id: 'FULL_EVENT',
+    price: 2995,
+    listPrice: 6000,
+    hours: 6,
+    /*
+     * Six hours covers an entire Egyptian wedding, so nobody has ever needed a seventh.
+     * The figure exists because the booking form lets somebody ask for more hours, and
+     * it must quote something rather than nothing.
+     */
     extraHourPrice: 500,
-    nameAr: 'الفوتوبوث',
-    nameEn: 'Photo booth',
-    taglineAr: 'الفوتوبوث وطباعة من غير عدد',
-    taglineEn: 'The booth, and unlimited prints',
+    nameAr: 'تغطية الفرح كامل',
+    nameEn: 'Full event coverage',
+    taglineAr: 'ست ساعات، وكل حاجة معاها',
+    taglineEn: 'Six hours, everything included',
     featuresAr: [
-      'فوتوبوث طول مدة الحجز',
+      'ست ساعات تغطية للفرح',
       'طباعة فورية من غير عدد',
-      'خلفية تختارها',
-      'صندوق إكسسوارات',
+      'جيست بوك عادي',
+      'كل الصور بجودتها على موقعنا برابط بعد الفرح',
       'فني معاكم طول الوقت',
-      'ألبوم رقمي بكل الصور',
     ],
     featuresEn: [
-      'The booth for the whole booking',
+      'Six hours of event coverage',
       'Unlimited instant prints',
-      'A backdrop of your choosing',
-      'A box of props',
+      'A standard guest book',
+      'Every photo at full quality, as a link on our site after the event',
       'An attendant with you throughout',
-      'A digital gallery of every shot',
-    ],
-  },
-  {
-    id: 'BOOTH_GUESTBOOK',
-    price: 2999,
-    hours: 5,
-    extraHourPrice: 500,
-    nameAr: 'الفوتوبوث والجيست بوك',
-    nameEn: 'Booth and guest book',
-    taglineAr: 'الأكثر طلباً',
-    taglineEn: 'What most people book',
-    featuresAr: [
-      'كل مميزات باقة الفوتوبوث',
-      'جيست بوك بالصور المطبوعة',
-      'ساعة زيادة',
-    ],
-    featuresEn: [
-      'Everything in Photo booth',
-      'A guest book of the printed photos',
-      'An extra hour',
-    ],
-  },
-  {
-    id: 'BOOTH_FULL',
-    price: 3500,
-    hours: 5,
-    extraHourPrice: 500,
-    nameAr: 'الباقة الكاملة',
-    nameEn: 'Everything',
-    taglineAr: 'الفوتوبوث والجيست بوك والأوديو',
-    taglineEn: 'Booth, guest book and audio',
-    featuresAr: [
-      'كل مميزات باقة الفوتوبوث والجيست بوك',
-      'أوديو جيست بوك',
-      'جيست بوك مصمم مخصوص',
-    ],
-    featuresEn: [
-      'Everything in Booth and guest book',
-      'An audio guest book',
-      'A guest book designed for your event',
     ],
   },
 ];
 
 const BOOTH_BY_ID = new Map(BOOTH_PACKAGES.map((p) => [p.id, p]));
 
-export const DEFAULT_BOOTH_PACKAGE = 'BOOTH_GUESTBOOK';
+export const DEFAULT_BOOTH_PACKAGE = 'FULL_EVENT';
 
 export function getBoothPackage(id: string | null | undefined): BoothPackageDefinition {
   if (id) {
@@ -191,38 +148,100 @@ export function isValidBoothPackage(id: string): boolean {
   return BOOTH_BY_ID.has(id);
 }
 
-/** The "from X EGP" on the home and the booth hero. Always the cheapest tier. */
+/** The "from X EGP" on the home and the booth hero. */
 export function boothStartingPrice(): number {
   return Math.min(...BOOTH_PACKAGES.map((p) => p.price));
 }
 
+/* ------------------------------------------------------------------- add ons */
+
+export type BoothAddOn = {
+  id: string;
+  price: number;
+  nameAr: string;
+  nameEn: string;
+  noteAr: string;
+  noteEn: string;
+};
+
 /**
- * What is taken up front to hold the date.
+ * The two things that can be added to the package.
  *
- * A flat 500, not a percentage, because that is what the history shows: of the fifteen
- * deposits recorded, ten are exactly 500. The rest are 250, 350 and 1000, which look
- * like negotiations rather than a rule. A percentage would have quoted 600 on a 2000
- * booking and 1050 on a 3500 one, and neither is a number this business has ever asked
- * for.
+ * Both are real products with real prices. They are add ons rather than a second tier
+ * because that is how they are actually sold: a customer books the package and then
+ * decides about the guest book.
+ */
+export const BOOTH_ADD_ONS: BoothAddOn[] = [
+  {
+    id: 'CUSTOM_GUESTBOOK',
+    price: 600,
+    nameAr: 'جيست بوك مصمم مخصوص',
+    nameEn: 'Custom guest book',
+    noteAr: 'بدل الجيست بوك العادي اللي في الباقة، متصمم على فرحكم.',
+    noteEn: 'Replaces the standard guest book, designed around your event.',
+  },
+  {
+    id: 'AUDIO_GUESTBOOK',
+    price: 500,
+    nameAr: 'أوديو جيست بوك',
+    nameEn: 'Audio guest book',
+    noteAr: 'ضيوفك بيسجلوا رسايل صوتية، وتستلمها كلها بعد الفرح.',
+    noteEn: 'Guests record voice messages, and you get every one after the event.',
+  },
+];
+
+const ADD_ON_BY_ID = new Map(BOOTH_ADD_ONS.map((a) => [a.id, a]));
+
+export function getBoothAddOn(id: string): BoothAddOn | null {
+  return ADD_ON_BY_ID.get(id) ?? null;
+}
+
+/** Only the ids this file knows, so a crafted form post cannot invent a discount. */
+export function sanitiseAddOns(ids: readonly string[]): BoothAddOn[] {
+  const seen = new Set<string>();
+  const chosen: BoothAddOn[] = [];
+
+  for (const id of ids) {
+    if (seen.has(id)) continue;
+    const addOn = ADD_ON_BY_ID.get(id);
+    if (!addOn) continue;
+    seen.add(id);
+    chosen.push(addOn);
+  }
+
+  return chosen;
+}
+
+export function addOnsTotal(addOns: readonly BoothAddOn[]): number {
+  return addOns.reduce((total, addOn) => total + addOn.price, 0);
+}
+
+/* ------------------------------------------------------------------ deposit */
+
+/**
+ * What is taken up front to hold the date. A flat figure, not a percentage.
  *
- * The admin can still record whatever was actually taken; this is only what the
- * website quotes.
+ * 500 on every booking regardless of size, which is both what the business says and
+ * what its history shows: ten of the fifteen recorded deposits are exactly 500.
+ *
+ * Settled by a human on WhatsApp, which is why nothing in a browser is ever told the
+ * money arrived.
  */
 export const BOOTH_DEPOSIT = 500;
 
 export function boothDeposit(price: number): number {
-  // Never more than the booking itself, which would otherwise happen if a tier were
-  // ever priced below the deposit.
+  // Never more than the booking itself, which could only happen if a package were ever
+  // priced below the deposit.
   return Math.min(BOOTH_DEPOSIT, price);
 }
 
 /**
- * The tier nearest a given price.
+ * The package nearest a given price.
  *
- * Needed because the operator's database records a price, not a package: a row typed in
- * by hand says "2999 EGP" and nothing about which tier that was. The admin still wants
- * a name to show, so the closest tier is used as a label while the real price is kept
- * exactly as it was recorded.
+ * Needed because the operator's Notion database records a price, not a package: a row
+ * typed in by hand says "2999 EGP" and nothing about what it was. With a single package
+ * this nearly always returns that one, and it stays a function so a second package does
+ * not silently break the Notion import.
  */
 export function matchPackageByPrice(price: number): BoothPackageDefinition {
   if (!price) return getBoothPackage(DEFAULT_BOOTH_PACKAGE);
@@ -232,15 +251,22 @@ export function matchPackageByPrice(price: number): BoothPackageDefinition {
   );
 }
 
+/* -------------------------------------------------------------------- areas */
+
 export type BoothArea = {
   id: string;
   nameAr: string;
   nameEn: string;
-  /** PLACEHOLDER. EGP added for travel. Zero for the areas we already cover. */
   transportFee: number;
 };
 
-/** PLACEHOLDER. Where the booth goes, and what it costs to get there. */
+/**
+ * Where the booth goes.
+ *
+ * The 1500 on "somewhere else" is **the one figure in this file that is still a guess**.
+ * Cairo and Giza are covered at no extra cost. If the business does not travel further,
+ * delete the third entry and the form stops offering it.
+ */
 export const BOOTH_AREAS: BoothArea[] = [
   { id: 'CAIRO', nameAr: 'القاهرة', nameEn: 'Cairo', transportFee: 0 },
   { id: 'GIZA', nameAr: 'الجيزة', nameEn: 'Giza', transportFee: 0 },
@@ -251,40 +277,52 @@ export function getBoothArea(id: string | null | undefined): BoothArea | null {
   return BOOTH_AREAS.find((a) => a.id === id) ?? null;
 }
 
+/* -------------------------------------------------------------------- media */
+
 /**
- * The booth enquiry number.
- *
- * Falls back to the main number, which is almost certainly right: this is one business
- * with one phone. The variable exists so booth enquiries can be split off later without
- * a code change.
+ * The booth enquiry number. Falls back to the main one, which is almost certainly
+ * right: one business, one phone.
  */
 export const BOOTH_WHATSAPP_NUMBER =
   process.env.NEXT_PUBLIC_WHATSAPP_BOOTH_NUMBER || WHATSAPP_NUMBER;
 
 /**
- * PLACEHOLDER, every path. Nothing has been uploaded to ImageKit yet.
+ * Real photographs, from real events, uploaded to ImageKit.
  *
- * These are paths inside the ImageKit endpoint, not full URLs, so the transform builder
- * can resize and reformat them. Anything still starting with the placeholder prefix
- * renders as a calm empty frame rather than a broken image: see BoothImage.
+ * Every one is a portrait phone shot, which is what the layouts are built around: the
+ * hero is 3:4 and the gallery crops to square with ImageKit picking the focus, rather
+ * than letterboxing tall pictures into landscape boxes.
  */
 export const BOOTH_MEDIA = {
-  /** The one photo at the top of /photobooth, and the booth card on the home. */
-  hero: 'PLACEHOLDER/booth/hero.jpg',
-  /** Optional short muted loop for the home's booth card. Empty means use the photo. */
+  /** Indoors, marble and low sun. The calmest of the set, which is why it leads. */
+  hero: '/booth/hero.jpg',
+  /**
+   * No clip yet. A hero video has to be silent, a few seconds long and encoded for the
+   * web; the source footage is 9 to 27MB of phone MOV, which would be a worse first
+   * paint than the photograph it replaced. Left empty, the photograph is used.
+   */
   heroVideo: '',
-  /** PLACEHOLDER. Six to nine real shots from real events. */
+  /** Nine, deliberately varied: garden, palace, night, indoors, and a corporate job. */
   gallery: [
-    'PLACEHOLDER/booth/gallery-1.jpg',
-    'PLACEHOLDER/booth/gallery-2.jpg',
-    'PLACEHOLDER/booth/gallery-3.jpg',
-    'PLACEHOLDER/booth/gallery-4.jpg',
-    'PLACEHOLDER/booth/gallery-5.jpg',
-    'PLACEHOLDER/booth/gallery-6.jpg',
+    '/booth/gallery-1.jpg',
+    '/booth/gallery-2.jpg',
+    '/booth/gallery-3.jpg',
+    '/booth/gallery-4.jpg',
+    '/booth/gallery-5.jpg',
+    '/booth/gallery-6.jpg',
+    '/booth/gallery-7.jpg',
+    '/booth/gallery-8.jpg',
+    '/booth/gallery-9.jpg',
   ],
 } as const;
 
-/** PLACEHOLDER. The invitation card on the home wants a real photo too. */
+/**
+ * The invitations card on the home.
+ *
+ * Still a placeholder: every photograph supplied is of the booth, and an invitation is
+ * a screen rather than a thing that can be photographed at an event. A rendered card
+ * would do, and none exists yet.
+ */
 export const INVITATIONS_MEDIA = {
   hero: 'PLACEHOLDER/invitations/hero.jpg',
 } as const;
@@ -295,19 +333,19 @@ export function isPlaceholderMedia(path: string): boolean {
 }
 
 /**
- * PLACEHOLDER. The Instagram strip on the home.
+ * The Instagram strip on the home.
  *
- * Static images that link to the profile, deliberately not the embed script: that
- * script is third party JavaScript on the first paint of the home page, and it is
- * slower than the thing it renders is worth.
+ * Four of the booth photographs rather than the posts themselves. Instagram's embed
+ * script is third party JavaScript on the first paint of the page most of this
+ * business's traffic lands on, and what it renders is four pictures.
  */
 export const INSTAGRAM_HANDLE = process.env.NEXT_PUBLIC_INSTAGRAM_HANDLE || 'qlty.events';
 
 export const INSTAGRAM_URL = `https://instagram.com/${INSTAGRAM_HANDLE}`;
 
 export const INSTAGRAM_TILES: string[] = [
-  'PLACEHOLDER/instagram/1.jpg',
-  'PLACEHOLDER/instagram/2.jpg',
-  'PLACEHOLDER/instagram/3.jpg',
-  'PLACEHOLDER/instagram/4.jpg',
+  '/booth/gallery-1.jpg',
+  '/booth/gallery-3.jpg',
+  '/booth/gallery-6.jpg',
+  '/booth/gallery-9.jpg',
 ];

@@ -10,42 +10,17 @@ export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || 'https://qlty.event
   '',
 );
 
-export const INSTAPAY_ADDRESS = process.env.NEXT_PUBLIC_INSTAPAY_ADDRESS || 'qlty@instapay';
-export const INSTAPAY_NAME = process.env.NEXT_PUBLIC_INSTAPAY_NAME || 'QLTY EVENTS';
-
-/**
- * What the two pay buttons open.
+/*
+ * The InstaPay and Vodafone Cash configuration used to live here: an app link, an
+ * address, a recipient name, a dialer code, and a clipboard copy on every pay button.
  *
- * Both are configuration rather than constants, and that is the whole point. Neither
- * InstaPay nor Vodafone Cash publishes a documented link that opens their app with a
- * recipient and an amount already filled in, so what actually works has to be found on a
- * real phone and pasted in here rather than guessed at in the source. The defaults open
- * each app and nothing more.
+ * All of it is gone. Payment is a conversation now — the customer taps through to
+ * WhatsApp with the request id and the amount already written, and a person settles it.
+ * Card payments are coming and will replace that; nothing in between is worth the three
+ * apps and four steps the old flow asked a customer to get right.
  *
- * Because that is all they can be relied on to do, every pay button copies the recipient
- * to the clipboard as it opens the app. If the app lands on its own home screen, the
- * address is already waiting to be pasted, which is the difference between an awkward
- * payment and an impossible one.
- *
- * Vodafone Cash is off unless a number is set. A payment method that has not been
- * configured is worse than one that is missing: it takes the customer into an app with
- * nowhere to send the money.
+ * The constants were already unused by every component before being deleted here.
  */
-/**
- * The InstaPay payment link, e.g. https://ipn.eg/S/<handle>/instapay/<code>.
- *
- * Empty by default, and deliberately not `instapay://`. That bare scheme was the
- * default here for a long time and it is not a link to anything: it opens the app on
- * its own home screen with no recipient, no amount and nothing to confirm, which every
- * customer reads as the pay button being broken. An unset link now renders no button at
- * all, and the address underneath — which is what they actually need — is promoted.
- */
-export const INSTAPAY_APP_LINK = process.env.NEXT_PUBLIC_INSTAPAY_LINK || '';
-
-export const VODAFONE_CASH_NUMBER = process.env.NEXT_PUBLIC_VODAFONE_CASH_NUMBER || '';
-
-/** `*9#` opens the Vodafone Cash menu in the dialer. `#` has to be percent encoded. */
-export const VODAFONE_CASH_LINK = process.env.NEXT_PUBLIC_VODAFONE_CASH_LINK || 'tel:*9%23';
 
 /**
  * Holds the editToken. httpOnly, so only the server reads it. This is the whole of

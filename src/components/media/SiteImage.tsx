@@ -26,6 +26,7 @@ export function SiteImage({
   className,
   priority = false,
   sizes = '(max-width: 768px) 100vw, 768px',
+  fit = 'cover',
 }: {
   path: string;
   alt: string;
@@ -35,6 +36,8 @@ export function SiteImage({
   /** True only for the one image above the fold. */
   priority?: boolean;
   sizes?: string;
+  /** 'cover' crops to fill the box. 'pad' letterboxes. See buildPhotoUrl. */
+  fit?: 'pad' | 'cover';
 }) {
   if (isPlaceholderMedia(path)) {
     return (
@@ -57,7 +60,7 @@ export function SiteImage({
 
   return (
     <Image
-      src={buildPhotoUrl(path, null, { width, height })}
+      src={buildPhotoUrl(path, null, { width, height, fit })}
       alt={alt}
       width={width}
       height={height}

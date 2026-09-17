@@ -4,7 +4,13 @@ import { headers } from 'next/headers';
 import { checkRateLimit, pruneRateLimits } from '@/lib/rate-limit';
 import { readRequestSignals, toStoredAttribution } from '@/lib/meta/request';
 import { setBoothStatusToken } from '@/lib/session';
-import { boothDeposit, getBoothArea, getBoothPackage } from '@/lib/photobooth/config';
+import {
+  addOnsTotal,
+  boothDeposit,
+  getBoothArea,
+  getBoothPackage,
+  sanitiseAddOns,
+} from '@/lib/photobooth/config';
 import { revalidateBoothAvailability } from '@/lib/photobooth/cache';
 import { BoothBookingSchema } from '@/lib/photobooth/validation';
 import {
@@ -85,9 +91,24 @@ export async function requestBooking(formData: FormData): Promise<RequestBooking
   const tier = getBoothPackage(input.packageId);
   const area = getBoothArea(input.area);
 
-  // Extra hours beyond the package, plus travel outside the areas we already cover.
+  /*
+   * Priced entirely on the server, from ids only.
+   *
+   * The form posts which add ons were ticked, never what they cost, and sanitiseAddOns
+   * drops anything not in the catalogue. Otherwise a crafted request could book a six
+   * hour wedding for nothing.
+   */
+  const addOns = sanitiseAddOns(input.addOns);
+
+  // Extra hours beyond the package, the add ons, and travel outside the covered areas.
   const extraHours = Math.max(0, input.hours - tier.hours);
-  const price = tier.price + extraHours * tier.extraHourPrice + (area?.transportFee ?? 0);
+  const price =
+    tier.price +
+    extraHours * tier.extraHourPrice +
+    addOnsTotal(addOns) +
+    (area?.transportFee ?? 0);
+
+  // Flat, and never more than the booking. Settled by a human on WhatsApp.
   const deposit = boothDeposit(price);
 
   const signals = await readRequestSignals();
@@ -101,7 +122,15 @@ export async function requestBooking(formData: FormData): Promise<RequestBooking
       packageId: tier.id,
       price,
       depositAmount: deposit,
-      extras: extraHours > 0 ? `+${extraHours}h` : null,
+      /*
+       * A human readable note of everything beyond the base package, which is what the
+       * operator reads in the admin and what goes into Notion's Notes column.
+       */
+      extras:
+        [
+          ...addOns.map((addOn) => (input.lang === 'AR' ? addOn.nameAr : addOn.nameEn)),
+          ...(extraHours > 0 ? [`+${extraHours}h`] : []),
+        ].join(' · ') || null,
       customerName: input.customerName,
       customerPhone: input.customerPhone,
       venue: input.venue,

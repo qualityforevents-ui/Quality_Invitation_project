@@ -53,6 +53,16 @@ export const BoothBookingSchema = z.object({
     .nullable()
     .optional(),
 
+  /*
+   * The add on ids, as however many checkboxes were ticked. Validated against the
+   * catalogue on the server rather than trusted, because a price that can be influenced
+   * by a request body is a price the customer chooses.
+   */
+  addOns: z
+    .union([z.string(), z.array(z.string())])
+    .optional()
+    .transform((value) => (value === undefined ? [] : Array.isArray(value) ? value : [value])),
+
   lang: z.enum(['AR', 'EN']),
 
   /**

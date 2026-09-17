@@ -10,7 +10,14 @@ import { cn } from '@/lib/cn';
 import { metaTrack } from '@/lib/meta/pixel';
 import { TrackedSupportButton } from '@/components/site/TrackedSupportButton';
 import { buildBoothEnquiryMessage } from '@/lib/whatsapp';
-import { BOOTH_AREAS, BOOTH_PACKAGES, getBoothPackage } from '@/lib/photobooth/config';
+import {
+  BOOTH_ADD_ONS,
+  BOOTH_AREAS,
+  BOOTH_PACKAGES,
+  addOnsTotal,
+  getBoothPackage,
+  sanitiseAddOns,
+} from '@/lib/photobooth/config';
 import {
   handoffToWhatsApp,
   requestBooking,
@@ -49,6 +56,7 @@ export function BoothBooking({
   const [date, setDate] = useState<string | null>(null);
   const [packageId, setPackageId] = useState(initialPackage);
   const [hours, setHours] = useState(() => getBoothPackage(initialPackage).hours);
+  const [addOnIds, setAddOnIds] = useState<string[]>([]);
   const [stage, setStage] = useState<Stage>('picking');
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [problem, setProblem] = useState<string | null>(null);
@@ -58,7 +66,13 @@ export function BoothBooking({
 
   const tier = getBoothPackage(packageId);
   const extraHours = Math.max(0, hours - tier.hours);
-  const runningTotal = tier.price + extraHours * tier.extraHourPrice;
+
+  /*
+   * What the customer sees while they fill the form in. The server prices the booking
+   * again from the ids alone, so this is a preview rather than the figure that counts.
+   */
+  const runningTotal =
+    tier.price + extraHours * tier.extraHourPrice + addOnsTotal(sanitiseAddOns(addOnIds));
 
   function chooseDate(value: string) {
     setDate(value);
@@ -300,38 +314,102 @@ export function BoothBooking({
               </Field>
             </div>
 
-            <Field label={t.photobooth.fieldPackage}>
-              <NativeSelect
-                name="packageDisplay"
-                value={packageId}
-                onChange={(value) => {
-                  setPackageId(value);
-                  setHours(getBoothPackage(value).hours);
+            {/*
+              Only offered when there is a choice to make. With a single package a
+              select showing one option is a control that does nothing.
+            */}
+            {BOOTH_PACKAGES.length > 1 ? (
+              <Field label={t.photobooth.fieldPackage}>
+                <NativeSelect
+                  name="packageDisplay"
+                  value={packageId}
+                  onChange={(value) => {
+                    setPackageId(value);
+                    setHours(getBoothPackage(value).hours);
 
-                  /*
-                   * A tier being chosen, with what it is worth. ViewContent rather than
-                   * a custom name because it is one of Meta's standard events and can
-                   * therefore carry a value and be optimised toward, which a custom one
-                   * cannot.
-                   */
-                  const chosen = getBoothPackage(value);
-                  metaTrack('ViewContent', {
-                    content_category: 'photobooth',
-                    content_name: chosen.id,
-                    content_type: 'product',
-                    content_ids: [chosen.id],
-                    value: chosen.price,
-                    currency: 'EGP',
-                  });
-                }}
-              >
-                {BOOTH_PACKAGES.map((option) => (
-                  <option key={option.id} value={option.id}>
-                    {lang === 'AR' ? option.nameAr : option.nameEn} · {option.price}
-                  </option>
-                ))}
-              </NativeSelect>
-            </Field>
+                    const chosen = getBoothPackage(value);
+                    metaTrack('ViewContent', {
+                      content_category: 'photobooth',
+                      content_name: chosen.id,
+                      content_type: 'product',
+                      content_ids: [chosen.id],
+                      value: chosen.price,
+                      currency: 'EGP',
+                    });
+                  }}
+                >
+                  {BOOTH_PACKAGES.map((option) => (
+                    <option key={option.id} value={option.id}>
+                      {lang === 'AR' ? option.nameAr : option.nameEn} · {option.price}
+                    </option>
+                  ))}
+                </NativeSelect>
+              </Field>
+            ) : null}
+
+            <fieldset>
+              <legend className="text-sm font-medium">{t.photobooth.addOnsTitle}</legend>
+              <p className="mt-0.5 text-xs text-ink-faint">{t.photobooth.addOnsSub}</p>
+
+              <div className="mt-2 flex flex-col gap-2">
+                {BOOTH_ADD_ONS.map((addOn) => {
+                  const checked = addOnIds.includes(addOn.id);
+
+                  return (
+                    <label
+                      key={addOn.id}
+                      className="flex cursor-pointer items-start gap-3 rounded-lg border border-line bg-white/60 px-3 py-2.5"
+                    >
+                      {/*
+                        A real checkbox with a name, so the form still posts the right
+                        thing without JavaScript. The state is mirrored only so the
+                        running total can update as it is ticked.
+                      */}
+                      <input
+                        type="checkbox"
+                        name="addOns"
+                        value={addOn.id}
+                        checked={checked}
+                        onChange={(event) => {
+                          const { checked: next } = event.currentTarget;
+
+                          setAddOnIds((previous) =>
+                            next
+                              ? [...previous, addOn.id]
+                              : previous.filter((id) => id !== addOn.id),
+                          );
+
+                          if (next) {
+                            metaTrack('AddToCart', {
+                              content_category: 'photobooth',
+                              content_name: addOn.id,
+                              content_type: 'product',
+                              content_ids: [addOn.id],
+                              value: addOn.price,
+                              currency: 'EGP',
+                            });
+                          }
+                        }}
+                        className="mt-0.5 size-4 shrink-0 accent-gold"
+                      />
+
+                      <span className="min-w-0 flex-1">
+                        <span className="block text-sm font-medium">
+                          {lang === 'AR' ? addOn.nameAr : addOn.nameEn}
+                        </span>
+                        <span className="mt-0.5 block text-xs leading-relaxed text-ink-soft">
+                          {lang === 'AR' ? addOn.noteAr : addOn.noteEn}
+                        </span>
+                      </span>
+
+                      <span className="shrink-0 whitespace-nowrap text-sm font-semibold text-gold-deep">
+                        <span className="numeric">+{addOn.price}</span>
+                      </span>
+                    </label>
+                  );
+                })}
+              </div>
+            </fieldset>
 
             <Field
               label={t.photobooth.fieldVenue}

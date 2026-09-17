@@ -48,6 +48,12 @@ export function ServiceCard({
 }) {
   return (
     <article className="overflow-hidden rounded-2xl border border-line bg-white/60">
+      {/*
+        4:5 throughout. Every photograph the business has is a portrait phone shot of a
+        booth standing on its end, and a landscape frame crops the top off the only
+        subject in the picture. Both cards share the ratio so the home reads as one
+        page rather than two components built separately.
+      */}
       <div className="relative">
         {videoPath && !isPlaceholderMedia(videoPath) ? (
           <video
@@ -58,16 +64,16 @@ export function ServiceCard({
             playsInline
             preload="none"
             aria-label={imageAlt}
-            className="aspect-[4/3] w-full object-cover"
+            className="aspect-[4/5] w-full object-cover"
           />
         ) : (
           <SiteImage
             path={imagePath}
             alt={imageAlt}
             width={720}
-            height={540}
+            height={900}
             priority={priority}
-            className="aspect-[4/3] object-cover"
+            className="aspect-[4/5] object-cover"
           />
         )}
 

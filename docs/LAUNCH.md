@@ -15,7 +15,8 @@ Everything left between here and a working `qlty.events`, in the order it has to
 | Music | All 5 tracks present |
 | Notion | Database ready, 3 columns added. **No integration token yet** |
 | Meta | **Nothing configured** |
-| InstaPay link | **Empty.** No pay button renders on the invitation |
+| Booth content | **Done.** Real prices, add ons, deposit, and 10 photographs on ImageKit |
+| Payments | Card payments show as "coming soon". Everything else is settled on WhatsApp |
 
 Steps marked **you** need a password, a card or a dashboard. Steps marked **terminal**
 can be run from this repo.
@@ -24,58 +25,28 @@ can be run from this repo.
 
 # Stage A — the decisions only you can make
 
-Nothing below works around these. **Roughly an hour of your time.**
+Almost all of this is now done. **Fifteen minutes, not an hour.**
 
-## A1. Fill in the booth inputs — you
+## A1. Booth content — done
 
-Open [BOOTH-INPUTS.md](BOOTH-INPUTS.md). Prices, deposit and capacity are already real,
-read out of your Notion database. What is still invented:
+Prices, the offer, the add ons, the deposit, the capacity and ten real photographs are
+all in place. `BOOTH_CONFIG_IS_PLACEHOLDER` is false and the admin no longer warns.
 
-- **The hours each tier includes.** Currently 4 / 5 / 5. Nothing in your database records
-  this, and it is what an extra hour is charged against.
-- **`extraHourPrice`**, currently 500 across all three. A guess.
-- **The tier names.** "Photo booth", "Booth and guest book", "Everything" are
-  descriptions, not names you chose.
-- **The feature lists.** Built from which add on columns you tick. Anything listed that
-  you do not actually provide is a promise somebody discovers on the night.
-- **Do you sell 360 Photo Booth or Plinker?** Both are columns in your database that have
-  never been ticked, so neither is on the site.
-- **Service areas.** Cairo and Giza are free, "somewhere else" costs 1500. The 1500 is a
-  guess. If you never travel further, delete the third area.
+Three small things remain, all in [BOOTH-INPUTS.md](BOOTH-INPUTS.md):
 
-Confirm two things read from your data:
-- **Capacity 2.** You have run two events in a day twice. Is that real capacity?
-- **Deposit 500.** Ten of your fifteen recorded deposits are exactly 500.
+- **The transport fee outside Cairo and Giza** is still a guess at 1500 EGP. Delete the
+  third area entirely if you do not travel.
+- **The invitations photograph** on the home is still a grey frame. A rendered card on a
+  phone would do.
+- **The hero video** is optional and currently unused, which is fine. The clips supplied
+  need trimming and re-encoding before they could go on a page.
 
-Edit `src/lib/photobooth/config.ts`, then set `BOOTH_CONFIG_IS_PLACEHOLDER = false`.
+Also worth a decision: the struck through **6000** standard rate. Your Notion history
+has no booking at 6000 — the 26 recorded run 1500 to 4000. If 6000 is a genuine rack
+rate for the six hour package, leave it. If it is aspirational, set `listPrice` to
+`null` and 2995 stands on its own.
 
-## A2. Photographs — you
-
-All images are empty grey frames until you upload. Details and exact shapes in
-[BOOTH-INPUTS.md](BOOTH-INPUTS.md) section 6.
-
-| What | How many | Shape |
-| --- | --- | --- |
-| Booth hero | 1 | landscape 4:3 |
-| Booth gallery | 6 to 9 | **square** |
-| Invitations hero | 1 | landscape 4:3 |
-| Instagram strip | 4 | square |
-| Booth video (optional) | 1 | 4:3, **silent**, loops |
-
-Upload to ImageKit, then put the **paths** (`/booth/hero.jpg`), not full URLs, into
-`BOOTH_MEDIA`, `INVITATIONS_MEDIA` and `INSTAGRAM_TILES`.
-
-## A3. The InstaPay link — you
-
-`NEXT_PUBLIC_INSTAPAY_LINK` is **empty**, which means the invitation payment screen shows
-no pay button at all. It falls back to showing the address to copy, which works but is
-worse.
-
-Get the real link from the InstaPay app. It looks like
-`https://ipn.eg/S/<handle>/instapay/<code>`. It has to be found on a real phone; it
-cannot be guessed.
-
-## A4. Verify — terminal
+## A2. Verify — terminal
 
 ```bash
 npm run typecheck && npm test && npm run build
@@ -170,7 +141,6 @@ Project `qlty-invitation` → **Settings → Environment Variables → Productio
 | `NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT` | `https://ik.imagekit.io/e0n2xobeb/` |
 | `NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY`, `IMAGEKIT_PRIVATE_KEY` | from ImageKit |
 | `NEXT_PUBLIC_WHATSAPP_NUMBER` | `201010014346` |
-| `NEXT_PUBLIC_INSTAPAY_LINK` | from A3 |
 | `NEXT_PUBLIC_META_PIXEL_ID`, `META_CAPI_ACCESS_TOKEN` | from C3 |
 | `NOTION_TOKEN`, `NOTION_BOOTH_DATA_SOURCE_ID` | from C2 |
 | `CRON_SECRET` | from C4 |
@@ -325,14 +295,15 @@ cookie handling, the iOS keyboard, or the WhatsApp handoff.
 
 | Stage | Who | Time |
 | --- | --- | --- |
-| A — inputs, photos, InstaPay link | you | ~1 hour, plus a photo shoot |
+| A — three small content items | you | ~15 min |
 | B — push and merge | you | 15 min |
 | C — indexes, Notion, Meta, secret | you | ~45 min |
 | D — Vercel, DNS, Firebase, webhook, import | you | ~1 hour, plus DNS propagation |
 | E — testing on a phone | you | ~45 min |
 
-**The long pole is Stage A.** Everything else is dashboards; the photographs and the
-package details are the part that needs a decision and a camera.
+**The long pole is now Stage D**, and specifically the DNS change: `qlty.events` is a
+parked Hostinger page and has to be repointed at Vercel, with `admin` created from
+scratch. Everything else is dashboards.
 
 ---
 
@@ -348,4 +319,3 @@ package details are the part that needs a decision and a camera.
 | Notion never syncs | token missing, or database not shared, C2 |
 | Notion webhook silent, cron works | subscription unverified or `NOTION_WEBHOOK_SECRET` unset |
 | Booth admin warns about placeholders | `BOOTH_CONFIG_IS_PLACEHOLDER` still true, A1 |
-| No pay button on the invitation | `NEXT_PUBLIC_INSTAPAY_LINK` empty, A3 |

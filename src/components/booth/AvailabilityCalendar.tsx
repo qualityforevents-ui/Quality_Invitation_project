@@ -4,6 +4,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/cn';
 import { metaTrack } from '@/lib/meta/pixel';
+import { BOOTH_FULL_DAY_IS_NEGOTIABLE } from '@/lib/photobooth/config';
+import { boothWhatsappLink, buildBoothEnquiryMessage } from '@/lib/whatsapp';
 import type { DayStatus } from '@/lib/photobooth/availability';
 import type { Dictionary } from '@/i18n/ui';
 import type { Lang } from '@/lib/types';
@@ -62,6 +64,15 @@ export function AvailabilityCalendar({
   selected: string | null;
   onSelect: (date: string, status: DayStatus) => void;
 }) {
+  /*
+   * A booked day the visitor tapped anyway.
+   *
+   * With one booth a confirmed Saturday closes the calendar, but the business has a
+   * second unit it rents out and dates do sometimes move. Refusing the tap outright
+   * ends the conversation; offering WhatsApp keeps it alive without promising a booth
+   * that may not exist.
+   */
+  const [askingAbout, setAskingAbout] = useState<string | null>(null);
   const [month, setMonth] = useState(() => new Date());
   const [days, setDays] = useState<DayMap>({});
   const [loaded, setLoaded] = useState<Set<string>>(() => new Set());
@@ -140,13 +151,35 @@ export function AvailabilityCalendar({
           month={month}
           onMonthChange={setMonth}
           selected={selectedDate}
-          // A full or unavailable day is not selectable. Letting it be tapped and then
-          // refusing the booking later is a longer way to say the same no.
-          disabled={[...modifiers.full, ...modifiers.unavailable]}
+          /*
+           * Unavailable days are never selectable: they are in the past, inside the
+           * notice period, or beyond the horizon, and no conversation changes that.
+           *
+           * Full days stay tappable when a booked date is worth discussing, so the tap
+           * opens the WhatsApp prompt below rather than doing nothing at all.
+           */
+          disabled={
+            BOOTH_FULL_DAY_IS_NEGOTIABLE
+              ? modifiers.unavailable
+              : [...modifiers.full, ...modifiers.unavailable]
+          }
           onSelect={(date) => {
             if (!date) return;
             const key = dateKey(date);
             const status = days[key] ?? 'unavailable';
+
+            if (status === 'full') {
+              // Still reported, and this is the most valuable version of this event:
+              // a visitor landing on "full" is demand the business is turning away.
+              metaTrack('AvailabilityChecked', {
+                content_category: 'photobooth',
+                date_status: 'full',
+              });
+              setAskingAbout(key);
+              return;
+            }
+
+            setAskingAbout(null);
             if (status !== 'available' && status !== 'last') return;
 
             /*
@@ -165,7 +198,13 @@ export function AvailabilityCalendar({
           modifiers={modifiers}
           modifiersClassNames={{
             last: 'text-gold-deep font-bold underline decoration-gold decoration-2 underline-offset-4',
-            full: 'line-through opacity-40',
+            /*
+              Struck through but not faded away. It is still a real, tappable thing when
+              a booked day can be discussed, and 40 percent opacity reads as disabled.
+            */
+            full: BOOTH_FULL_DAY_IS_NEGOTIABLE
+              ? 'line-through decoration-ink-faint text-ink-faint'
+              : 'line-through opacity-40',
           }}
           className="w-full"
         />
@@ -184,6 +223,38 @@ export function AvailabilityCalendar({
           <span>{t.photobooth.calendarLoading}</span>
         ) : null}
       </div>
+
+      {/*
+        Shown in place of a refusal. The message carries the date, so the operator opens
+        a chat that already says which Saturday is being asked about.
+      */}
+      {askingAbout ? (
+        <div className="mt-4 rounded-lg border border-gold/40 bg-gold-wash px-4 py-3">
+          <p className="text-sm font-semibold text-gold-deep">
+            {t.photobooth.fullDayTitle} · <span className="numeric">{askingAbout}</span>
+          </p>
+          <p className="mt-1 text-xs leading-relaxed text-ink-soft text-pretty">
+            {t.photobooth.fullDayBody}
+          </p>
+
+          <a
+            href={boothWhatsappLink(
+              buildBoothEnquiryMessage(lang, { eventDate: askingAbout }),
+            )}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => {
+              metaTrack('Contact', {
+                content_category: 'photobooth',
+                page: 'photobooth-full-day',
+              });
+            }}
+            className="press mt-3 inline-flex w-full items-center justify-center rounded-full bg-whatsapp px-4 py-2.5 text-sm font-semibold text-white"
+          >
+            {t.photobooth.fullDayCta}
+          </a>
+        </div>
+      ) : null}
 
       <ul className="mt-2 flex flex-wrap gap-x-4 gap-y-2 text-xs text-ink-soft">
         <LegendItem className="bg-white ring-1 ring-line" label={t.photobooth.legendAvailable} />

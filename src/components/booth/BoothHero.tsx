@@ -34,13 +34,18 @@ export function BoothHero({ t }: { t: Dictionary }) {
   return (
     <section className="pt-6">
       <div className="relative overflow-hidden rounded-2xl">
+        {/*
+          4:5 rather than 4:3. Every photograph the business has is a portrait phone
+          shot of a booth standing on its end, and a landscape frame crops the top off
+          the only subject in the picture.
+        */}
         <SiteImage
           path={BOOTH_MEDIA.hero}
           alt={t.photobooth.heroTitle}
           width={760}
-          height={570}
+          height={950}
           priority
-          className="aspect-[4/3] object-cover"
+          className="aspect-[4/5] object-cover"
         />
       </div>
 

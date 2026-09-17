@@ -1,5 +1,5 @@
 import { Check } from 'lucide-react';
-import { BOOTH_PACKAGES } from '@/lib/photobooth/config';
+import { BOOTH_ADD_ONS, BOOTH_PACKAGES } from '@/lib/photobooth/config';
 import type { Dictionary } from '@/i18n/ui';
 import type { Lang } from '@/lib/types';
 
@@ -23,25 +23,27 @@ export function BoothPackages({ lang, t }: { lang: Lang; t: Dictionary }) {
       </p>
 
       <div className="mt-5 flex flex-col gap-4">
-        {BOOTH_PACKAGES.map((tier, index) => {
+        {BOOTH_PACKAGES.map((tier) => {
           const features = lang === 'AR' ? tier.featuresAr : tier.featuresEn;
-          const popular = index === 1;
 
           return (
-            <article
-              key={tier.id}
-              className={
-                popular
-                  ? 'rounded-xl border-2 border-gold bg-gold-wash p-5'
-                  : 'rounded-xl border border-line bg-white/60 p-5'
-              }
-            >
+            <article key={tier.id} className="rounded-xl border-2 border-gold bg-gold-wash p-5">
               <div className="flex items-baseline justify-between gap-3">
                 <h3 className="text-lg font-bold">{lang === 'AR' ? tier.nameAr : tier.nameEn}</h3>
-                <p>
+                <p className="text-end">
+                  {/*
+                    The standard rate, struck through, above the offer. Only rendered
+                    when one is configured, because a reference price that was never
+                    charged is a misleading price.
+                  */}
+                  {tier.listPrice ? (
+                    <span className="block text-xs text-ink-faint line-through">
+                      <span className="numeric">{tier.listPrice}</span> {t.home.currency}
+                    </span>
+                  ) : null}
                   {/* `numeric` wraps bare digits only. The currency word beside it would
                       be pushed to the wrong side by the LTR isolation it applies. */}
-                  <span className="numeric text-xl font-bold">{tier.price}</span>{' '}
+                  <span className="numeric text-2xl font-bold">{tier.price}</span>{' '}
                   <span className="text-xs text-ink-soft">{t.home.currency}</span>
                 </p>
               </div>
@@ -70,6 +72,39 @@ export function BoothPackages({ lang, t }: { lang: Lang; t: Dictionary }) {
             </article>
           );
         })}
+      </div>
+
+      {/*
+        The add ons, described here and chosen in the booking form further down. Two
+        places that both let you pick would be two places that can disagree about what
+        the customer wanted.
+      */}
+      <div className="mt-8">
+        <h3 className="text-base font-bold">{t.photobooth.addOnsTitle}</h3>
+        <p className="mt-1 text-sm text-ink-soft">{t.photobooth.addOnsSub}</p>
+
+        <ul className="mt-4 flex flex-col gap-3">
+          {BOOTH_ADD_ONS.map((addOn) => (
+            <li
+              key={addOn.id}
+              className="flex items-start justify-between gap-4 rounded-xl border border-line bg-white/60 px-4 py-3"
+            >
+              <span className="min-w-0">
+                <span className="block text-sm font-semibold">
+                  {lang === 'AR' ? addOn.nameAr : addOn.nameEn}
+                </span>
+                <span className="mt-0.5 block text-xs leading-relaxed text-ink-soft text-pretty">
+                  {lang === 'AR' ? addOn.noteAr : addOn.noteEn}
+                </span>
+              </span>
+
+              <span className="shrink-0 whitespace-nowrap text-sm font-bold text-gold-deep">
+                <span className="numeric">+{addOn.price}</span>{' '}
+                <span className="text-xs font-medium text-ink-soft">{t.home.currency}</span>
+              </span>
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
   );

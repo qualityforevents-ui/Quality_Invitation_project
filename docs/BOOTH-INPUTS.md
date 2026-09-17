@@ -1,184 +1,65 @@
 # What still needs real values
 
-**Updated from the live Notion database.** The prices, the deposit and the capacity are
-now real, read out of the 26 bookings in 🗓️ Bookings. What is still invented is what
-each tier is *called*, what its feature list *claims*, how many hours it includes, the
-service areas, and every image.
+Almost nothing. This list used to be the whole booth configuration; it is now three
+items.
 
-Until this list is done, `BOOTH_CONFIG_IS_PLACEHOLDER` stays `true` and every booth
-screen in the admin carries a warning. **The site must not be advertised to anybody
-while that warning is showing**: the public page is quoting made up prices and every
-photograph is an empty grey frame.
-
-Everything here lives in one file: **`src/lib/photobooth/config.ts`**. Each item below
-names the constant to change.
+Prices, the offer, the add ons, the deposit, the capacity and every booth photograph are
+real and in place. `BOOTH_CONFIG_IS_PLACEHOLDER` is **false** and the admin no longer
+warns.
 
 ---
 
-## 1. Prices and packages
+## Still open
 
-`BOOTH_PACKAGES` — three tiers, **priced from your real bookings**:
+### 1. The transport fee outside Cairo and Giza
 
-| Tier | Price | Times booked | Still invented |
-| --- | --- | --- | --- |
-| Photo booth | 2000 | 4 | name, 4 hours, features |
-| Booth and guest book | 2999 | 8 | name, 5 hours, features |
-| Everything | 3500 | 5 | name, 5 hours, features |
+`BOOTH_AREAS` in `src/lib/photobooth/config.ts`. Cairo and Giza are covered at no extra
+cost, which is right. **"Somewhere else" charges 1500 EGP, and that number is a guess.**
 
-1500, 3700 and 4000 also appear in your history. They are treated as negotiated one offs
-rather than published tiers, which is what they look like. Say if any of them is really a
-standard package.
+If you do not travel further than Cairo and Giza, delete the third entry and the booking
+form stops offering it.
 
-**What still needs you:**
+### 2. The invitations photograph on the home
 
-- **The hours.** Nothing in the database says how long a 2999 booking runs for. The 4, 5
-  and 5 above are guesses, and they are what the site quotes an extra hour against.
-- **`extraHourPrice`**, currently 500 across the board. A guess.
-- **The names.** "Photo booth", "Booth and guest book", "Everything" are descriptions,
-  not names you chose.
-- **The feature lists.** Built from your add on columns: PhotoBooth is ticked on nearly
-  every booking, Guestbook on most, Audio Guestbook occasionally. Reasonable, but it is
-  what was *bought*, not what was *promised*.
-- **360 Photo Booth and Plinker** are columns in your database that have never once been
-  ticked. They are not sold on the site. Say if they should be.
+`INVITATIONS_MEDIA.hero`. Still a placeholder grey frame, because every photograph
+supplied is of the booth and an invitation is a screen rather than something that can be
+photographed at an event. A rendered card on a phone would do.
 
-> Changing a price here never reprices a booking already taken. The price agreed is
-> written onto the reservation when it is made.
+Portrait, 4:5, uploaded to ImageKit like the booth photos.
+
+### 3. The hero video, if you want one
+
+`BOOTH_MEDIA.heroVideo`, currently empty, so the photograph is used instead. That is a
+perfectly good outcome and there is no hurry.
+
+If you do want one, it has to be **silent**, a few seconds, looping, and encoded for the
+web. The five clips in the media folder are 9 to 27MB of phone MOV, which would make the
+page slower than the photograph it replaced. They need trimming and re-encoding first.
 
 ---
 
-## 2. How many jobs you can run in a day
+## What is now real, for the record
 
-`BOOTH_UNIT_COUNT` — now **2**, read from your history rather than guessed: 2026-08-28
-carries both "Mohamed & samiha" and "Mohamed & tasneem", and 2026-07-24 carries both
-"Mahmoud & hadeer" and "Oldies". You have already run two in a day, twice.
+| | |
+| --- | --- |
+| Package | One: **Full event coverage**, 2995 EGP, standard rate 6000 shown struck through |
+| Includes | 6 hours, unlimited prints, standard guest book, full quality photos by link after the event, an attendant |
+| Extra hour | 500 EGP |
+| Add ons | Custom guest book +600, audio guest book +500 |
+| Deposit | Flat 500 EGP |
+| Booths | 1. A booked day offers WhatsApp rather than refusing |
+| Photographs | 1 hero and 9 gallery, real events, on ImageKit under `/booth/` |
+| Instagram strip | Four of the booth photographs |
+| Payment | Card payments "coming soon". Everything else settled on WhatsApp |
 
-**Confirm this is real capacity** and not two small jobs that happened to fit. If you can
-only ever do one properly, set it to 1 and the calendar will close a day as soon as one
-booking is confirmed.
+### A note on the 6000
 
-> It can also be changed from the admin, at **Settings → عدد الفوتوبوثات**, which is what
-> the operator should use. The value in the config file is the fallback for a fresh
-> install with no settings document.
+The struck through standard rate is shown because you said the usual price is 6000 and
+2995 is an offer. Worth knowing: **your Notion history has no booking at 6000** — the 26
+recorded bookings run from 1500 to 4000. A reference price that was never actually
+charged is the kind of thing a customer or a regulator can challenge.
 
-With more than one, the calendar starts saying "last booth" when one is left. With
-exactly one that label is suppressed on purpose: every free night would otherwise be
-labelled "last one", which is true, useless, and reads like the scarcity theatre fake
-booking sites run.
-
----
-
-## 3. The deposit
-
-`BOOTH_DEPOSIT` — now a flat **500 EGP**, not a percentage, because that is what your
-history shows: of the fifteen deposits recorded, ten are exactly 500. The others are 250,
-350 and 1000, which look like negotiations rather than a rule.
-
-A percentage would have quoted 600 on a 2000 booking and 1050 on a 3500 one, and neither
-is a number you have ever asked for. Confirm 500 is the figure to quote publicly.
-
-The deposit is settled by a human on WhatsApp over InstaPay, exactly like an invitation.
-Nothing in a browser is ever told the money arrived.
-
----
-
-## 4. Notice and horizon
-
-| Constant | Now | What it means |
-| --- | --- | --- |
-| `BOOTH_MIN_NOTICE_DAYS` | 2 | nothing today, nothing tomorrow |
-| `BOOTH_MAX_ADVANCE_DAYS` | 365 | how far ahead the calendar opens |
-| `BOOTH_HOLD_HOURS` | 24 | how long the WhatsApp handoff holds a date |
-| `BOOTH_CLOSED_WEEKDAYS` | none | days you never work, 0 = Sunday |
-
-`BOOTH_HOLD_HOURS` is the one worth thinking about. It is how long a date is off the
-calendar after a customer taps through to WhatsApp, which should be roughly how long it
-takes you to settle a deposit in a chat. Too short and a paying customer loses their
-date while they find their banking app. Too long and one tyre kicker blocks a Saturday.
-
-All four are also editable from the admin settings screen.
-
----
-
-## 5. Areas and travel
-
-`BOOTH_AREAS` — currently Cairo (free), Giza (free), and "somewhere else" at **1500
-EGP**, which is a guess.
-
-If you do not travel outside Cairo and Giza at all, remove the third entry. The form then
-offers two areas and nobody in Alexandria fills in a booking you cannot honour.
-
----
-
-## 6. Photographs and video
-
-`BOOTH_MEDIA`, `INVITATIONS_MEDIA` and `INSTAGRAM_TILES`. Every path starts with
-`PLACEHOLDER` and renders as an empty framed box at the right shape.
-
-Upload to ImageKit, then replace each path with the path inside your ImageKit endpoint
-(for example `/booth/hero.jpg`, not the full URL).
-
-| Constant | How many | Shape | Where it shows |
-| --- | --- | --- | --- |
-| `BOOTH_MEDIA.hero` | 1 | landscape, 4:3 | top of `/photobooth`, and the booth card on the home |
-| `BOOTH_MEDIA.heroVideo` | 0 or 1 | 4:3, **silent**, a few seconds, loops | the home's booth card, instead of the photo |
-| `BOOTH_MEDIA.gallery` | 6 to 9 | **square** | the gallery on `/photobooth` |
-| `INVITATIONS_MEDIA.hero` | 1 | landscape, 4:3 | the invitations card on the home |
-| `INSTAGRAM_TILES` | 4 | square | the strip at the bottom of the home |
-
-Notes that will save a re-upload:
-
-- **Square means square.** The gallery crops to square. A portrait photo loses the top
-  and bottom of itself, which on a group shot is the faces.
-- **The video must be silent and short.** It autoplays, and a clip with an audio track is
-  a clip iOS refuses to start, which leaves a blank box.
-- **Real events only.** Stock photography of somebody else's booth, on a page asking for
-  eight thousand pounds, is a lie the first customer discovers at their own wedding. An
-  honest grey frame is better than that, which is why the placeholder looks the way it
-  does rather than showing a stock photo.
-- Faces need permission. These are other people's weddings.
-
----
-
-## 7. The Instagram handle
-
-`NEXT_PUBLIC_INSTAGRAM_HANDLE`, an environment variable, defaulting to `qlty.events`.
-Only needed if the real handle is different.
-
----
-
-## 8. The booth phone number
-
-`NEXT_PUBLIC_WHATSAPP_BOOTH_NUMBER`, an environment variable. **Leave it unset** unless
-booth enquiries genuinely go to a different phone from invitation enquiries. Unset, both
-go to `NEXT_PUBLIC_WHATSAPP_NUMBER`.
-
----
-
-## 9. Notion
-
-The database is **done**. Your 🗓️ Bookings database is wired up, three properties were
-added, and the data source id is already known:
-
-```
-NOTION_BOOTH_DATA_SOURCE_ID=af2cfb8d-b3a5-4735-a717-69b915ff5d51
-```
-
-Still needed, and all covered step by step in **`docs/notion-booth-setup.md`**:
-
-- `NOTION_TOKEN` — an internal integration secret. **The Claude connector is not this**;
-  the deployed site needs its own, and the database must be shared with it
-- `NOTION_WEBHOOK_SECRET` — the verification token, after the handshake
-- run `npm run notion:import` once, before the booth page is advertised
-
----
-
-## When the list is done
-
-Set `BOOTH_CONFIG_IS_PLACEHOLDER = false` in `src/lib/photobooth/config.ts`, then:
-
-```bash
-npm run typecheck && npm test && npm run build
-```
-
-The warning disappears from the admin, and the booth is ready to be advertised.
+If 6000 is a genuine rack rate for the full six hour package and the older bookings were
+shorter or smaller jobs, it is fine as it stands. If it is aspirational, set `listPrice`
+to `null` in `src/lib/photobooth/config.ts` and the struck through price disappears,
+leaving 2995 on its own.
