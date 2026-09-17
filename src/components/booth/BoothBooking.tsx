@@ -8,6 +8,8 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/cn';
 import { metaTrack } from '@/lib/meta/pixel';
+import { TrackedSupportButton } from '@/components/site/TrackedSupportButton';
+import { buildBoothEnquiryMessage } from '@/lib/whatsapp';
 import { BOOTH_AREAS, BOOTH_PACKAGES, getBoothPackage } from '@/lib/photobooth/config';
 import {
   handoffToWhatsApp,
@@ -156,22 +158,49 @@ export function BoothBooking({
     });
   }
 
+  const supportMessage = buildBoothEnquiryMessage(lang, {
+    eventDate: date,
+    packageName: lang === 'AR' ? tier.nameAr : tier.nameEn,
+  });
+
+  const support = (
+    <TrackedSupportButton
+      message={supportMessage}
+      label={t.landing.support}
+      page="photobooth"
+      contentCategory="photobooth"
+    />
+  );
+
+  /*
+   * The summary screen gets no floating bubble.
+   *
+   * Its primary action is already a full width green WhatsApp button, and a second
+   * green WhatsApp circle in the corner is not a second option, it is a trap: tapping
+   * it sends a general enquiry instead of the booking confirmation, and the date the
+   * customer thinks they have just taken is still on sale. Support is one screen back,
+   * and the message they are about to send opens a conversation anyway.
+   */
   if (stage === 'done' && booking) {
     return (
-      <Summary
-        t={t}
-        booking={booking}
-        date={date ?? ''}
-        packageName={lang === 'AR' ? tier.nameAr : tier.nameEn}
-        pending={pending}
-        problem={problem}
-        onConfirm={confirmOnWhatsApp}
-      />
+      <>
+        <Summary
+          t={t}
+          booking={booking}
+          date={date ?? ''}
+          packageName={lang === 'AR' ? tier.nameAr : tier.nameEn}
+          pending={pending}
+          problem={problem}
+          onConfirm={confirmOnWhatsApp}
+        />
+      </>
     );
   }
 
   return (
     <div>
+      {support}
+
       <h2 className="text-xl font-bold">{t.photobooth.calendarTitle}</h2>
       <p className="mt-1.5 text-sm text-ink-soft">{t.photobooth.calendarSub}</p>
 

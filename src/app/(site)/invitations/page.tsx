@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
 import { InvitationFlow } from '@/components/flow/InvitationFlow';
-import { SupportButton } from '@/components/SupportButton';
+import { TrackedSupportButton } from '@/components/site/TrackedSupportButton';
 import { HowItWorks } from '@/components/landing/HowItWorks';
 import { Reviews } from '@/components/landing/Reviews';
 import { getDictionary } from '@/i18n/ui';
@@ -14,6 +14,7 @@ import { isImageKitConfigured } from '@/lib/imagekit';
 import { isValidPackage } from '@/lib/packages';
 import { getApprovedReviews } from '@/lib/reviews';
 import { getUiLang } from '@/lib/session';
+import { buildSupportMessage } from '@/lib/whatsapp';
 
 export const dynamic = 'force-dynamic';
 
@@ -149,7 +150,21 @@ export default async function InvitationsPage({
         <Reviews reviews={reviews} lang={lang} t={t} />
       </div>
 
-      <SupportButton message={t.landing.supportMessage} label={t.landing.support} />
+      {/*
+        Carries the request id whenever this device already has a draft. Support on this
+        page is nearly always somebody part way through their own invitation, and an
+        operator who has to ask "which one are you?" has already lost the thread.
+      */}
+      <TrackedSupportButton
+        message={
+          invitation
+            ? buildSupportMessage(lang, invitation.requestId)
+            : t.landing.supportMessage
+        }
+        label={t.landing.support}
+        page="invitations"
+        contentCategory="invitation"
+      />
     </main>
   );
 }

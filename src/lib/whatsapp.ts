@@ -182,3 +182,31 @@ export function buildBoothSupportMessage(lang: Lang, bookingId: string): string 
     ? `السلام عليكم، عندي استفسار عن حجز الفوتوبوث رقم ${bookingId}`
     : `Hello, I have a question about photo booth booking ${bookingId}`;
 }
+
+/**
+ * A booth enquiry from somebody who has not booked yet.
+ *
+ * Carries whatever they have already chosen. Somebody who has picked a Saturday and a
+ * package before deciding to ask a question has told us most of what the answer depends
+ * on, and making them repeat it into a chat box is the sort of small friction that ends
+ * conversations. When they have chosen nothing, it stays a plain enquiry.
+ */
+export function buildBoothEnquiryMessage(
+  lang: Lang,
+  chosen: { eventDate?: string | null; packageName?: string | null } = {},
+): string {
+  const lines =
+    lang === 'AR'
+      ? ['السلام عليكم، عايز أسأل عن تأجير الفوتوبوث']
+      : ['Hello, I would like to ask about photo booth hire'];
+
+  if (chosen.eventDate) {
+    lines.push(lang === 'AR' ? `اليوم: ${chosen.eventDate}` : `Date: ${chosen.eventDate}`);
+  }
+
+  if (chosen.packageName) {
+    lines.push(lang === 'AR' ? `الباقة: ${chosen.packageName}` : `Package: ${chosen.packageName}`);
+  }
+
+  return lines.join('\n');
+}

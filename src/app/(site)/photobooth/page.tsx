@@ -7,7 +7,6 @@ import { BoothPackages } from '@/components/booth/BoothPackages';
 import { BoothViewedBeacon } from '@/components/booth/BoothViewedBeacon';
 import { HomeHeader } from '@/components/home/HomeHeader';
 import { SiteFooter } from '@/components/home/SiteFooter';
-import { TrackedSupportButton } from '@/components/site/TrackedSupportButton';
 import { getDictionary } from '@/i18n/ui';
 import { SITE_URL } from '@/lib/constants';
 import { DEFAULT_BOOTH_PACKAGE, isValidBoothPackage } from '@/lib/photobooth/config';
@@ -94,14 +93,13 @@ export default async function PhotoBoothPage({
         <BoothFaq t={t} />
       </div>
 
+      {/*
+        The support bubble is rendered by BoothBooking rather than here, because on this
+        page it is not a constant. Somebody asking a question after choosing a Saturday
+        and a package has already said most of what the answer depends on, and only the
+        booking component knows what they picked.
+      */}
       <SiteFooter t={t} />
-
-      <TrackedSupportButton
-        message={t.photobooth.supportMessage}
-        label={t.landing.support}
-        page="photobooth"
-        contentCategory="photobooth"
-      />
     </main>
   );
 }
