@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import Script from 'next/script';
 import { META_PIXEL_ID, isPixelConfigured, metaTrack } from '@/lib/meta/pixel';
+import type { ContentCategory } from '@/lib/meta/events';
 
 /**
  * Loads the Meta pixel and keeps PageView honest across client side navigation.
@@ -37,6 +38,23 @@ export function MetaPixel() {
    * fires — a duplicate PageView on the very first page, which is exactly what this was
    * written to prevent. Comparing paths is immune to being run any number of times.
    */
+/**
+ * Which service a path belongs to.
+ *
+ * PageView is the one event whose category cannot be written at the call site, because
+ * this component is mounted once by the (site) layout and sees every route in the
+ * group. Deriving it from the path keeps the rule that every event is labelled, and
+ * gives Events Manager a per service page view count for free.
+ *
+ * Everything in this route group that is not the booth or the root is the invitation
+ * product: the builder, the sample, the waiting screen and the edit link.
+ */
+function categoryForPath(pathname: string): ContentCategory {
+  if (pathname === '/') return 'home';
+  if (pathname.startsWith('/photobooth')) return 'photobooth';
+  return 'invitation';
+}
+
   const lastReported = useRef(pathname);
 
   useEffect(() => {
@@ -44,7 +62,7 @@ export function MetaPixel() {
     if (lastReported.current === pathname) return;
 
     lastReported.current = pathname;
-    metaTrack('PageView', { page_path: pathname });
+    metaTrack('PageView', { content_category: categoryForPath(pathname), page_path: pathname });
   }, [pathname]);
 
   // Nothing is injected at all when no pixel id is set, which is the state of every

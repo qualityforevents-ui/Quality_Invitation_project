@@ -307,6 +307,22 @@ export function BoothBooking({
                 onChange={(value) => {
                   setPackageId(value);
                   setHours(getBoothPackage(value).hours);
+
+                  /*
+                   * A tier being chosen, with what it is worth. ViewContent rather than
+                   * a custom name because it is one of Meta's standard events and can
+                   * therefore carry a value and be optimised toward, which a custom one
+                   * cannot.
+                   */
+                  const chosen = getBoothPackage(value);
+                  metaTrack('ViewContent', {
+                    content_category: 'photobooth',
+                    content_name: chosen.id,
+                    content_type: 'product',
+                    content_ids: [chosen.id],
+                    value: chosen.price,
+                    currency: 'EGP',
+                  });
                 }}
               >
                 {BOOTH_PACKAGES.map((option) => (

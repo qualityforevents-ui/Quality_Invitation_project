@@ -444,7 +444,11 @@ export function InvitationFlow({
             onChange={(themeId) => set({ themeId })}
             onTry={() => {
               setPreviewOpen(true);
-              metaTrack('PreviewOpened', { source: 'theme', content_ids: [values.themeId] });
+              metaTrack('PreviewOpened', {
+                content_category: 'invitation',
+                source: 'theme',
+                content_ids: [values.themeId],
+              });
             }}
             onNext={() => advance('theme')}
           />
@@ -492,7 +496,11 @@ export function InvitationFlow({
             onOpen={() => {
               setPreviewOpen(true);
               setPreviewSeen(true);
-              metaTrack('PreviewOpened', { source: 'preview', content_ids: [values.themeId] });
+              metaTrack('PreviewOpened', {
+                content_category: 'invitation',
+                source: 'preview',
+                content_ids: [values.themeId],
+              });
             }}
             onNext={() => advance('preview')}
           />
@@ -549,13 +557,13 @@ export function InvitationFlow({
                */
               metaTrack(
                 'Contact',
-                priced(packagePrice(values.package), {
+                priced(packagePrice(values.package), 'invitation', {
                   content_ids: [values.package],
                   content_type: 'product',
                 }),
               );
               metaTrack('PaymentHandoff', {
-                ...priced(packagePrice(values.package)),
+                ...priced(packagePrice(values.package), 'invitation'),
                 request_id: invitation?.requestId ?? null,
                 content_ids: [values.package],
               });

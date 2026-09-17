@@ -1,8 +1,12 @@
+'use client';
+
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { SiteImage } from '@/components/media/SiteImage';
 import { Button } from '@/components/ui/button';
 import { isPlaceholderMedia } from '@/lib/photobooth/config';
+import { metaTrack } from '@/lib/meta/pixel';
+import type { ContentCategory } from '@/lib/meta/events';
 
 /**
  * One of the two things QLTY sells, as a card.
@@ -25,6 +29,7 @@ export function ServiceCard({
   videoPath = '',
   imageAlt,
   priority = false,
+  category,
   tag,
 }: {
   title: string;
@@ -36,6 +41,8 @@ export function ServiceCard({
   videoPath?: string;
   imageAlt: string;
   priority?: boolean;
+  /** Which service this card is, for the event it reports when it is chosen. */
+  category: ContentCategory;
   /** The price tag. Rendered on the booth card only, which is the motif's one use. */
   tag?: ReactNode;
 }) {
@@ -73,7 +80,21 @@ export function ServiceCard({
         <h2 className="text-lg font-bold">{title}</h2>
         <p className="mt-2 text-sm leading-relaxed text-ink-soft text-pretty">{body}</p>
 
-        <Button asChild className="mt-4 w-full">
+        {/*
+          The moment a visitor stops being undecided. This is the only signal on the home
+          that says which of the two things somebody came for, and it is what a campaign
+          optimising for one service rather than the brand is built on.
+
+          The handler cannot cancel the navigation: metaTrack mirrors with keepalive, so
+          the report survives the route change on its own.
+        */}
+        <Button
+          asChild
+          className="mt-4 w-full"
+          onClick={() => {
+            metaTrack('ServiceSelected', { content_category: category, content_name: href });
+          }}
+        >
           <Link href={href}>{cta}</Link>
         </Button>
       </div>

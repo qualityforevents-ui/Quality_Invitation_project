@@ -59,6 +59,9 @@ export async function reportPurchase(invitation: Invitation): Promise<void> {
       content_type: 'product',
       content_ids: [invitation.package],
       content_name: invitation.package,
+      // The one server side event that is not built through metaTrack, so the category
+      // the type system enforces everywhere else has to be written by hand here.
+      content_category: 'invitation',
       num_items: 1,
       // The operator's own reference for this sale, so a conversion in Events Manager
       // and a row in the admin can be matched up by hand when a number is disputed.

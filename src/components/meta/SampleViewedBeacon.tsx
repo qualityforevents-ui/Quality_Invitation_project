@@ -25,6 +25,7 @@ export function SampleViewedBeacon({ themeId }: { themeId: string }) {
     fired.current = true;
 
     metaTrack('ViewContent', {
+      content_category: 'invitation',
       content_name: 'sample_invitation',
       content_type: 'product',
       content_ids: [themeId],

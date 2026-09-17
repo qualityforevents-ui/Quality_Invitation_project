@@ -101,6 +101,7 @@ export default async function HomePage() {
           imagePath={BOOTH_MEDIA.hero}
           videoPath={BOOTH_MEDIA.heroVideo}
           imageAlt={t.home.boothTitle}
+          category="photobooth"
           priority
           tag={<PriceTag price={boothStartingPrice()} t={t} />}
         />
@@ -112,6 +113,7 @@ export default async function HomePage() {
           cta={t.home.invitationsCta}
           imagePath={INVITATIONS_MEDIA.hero}
           imageAlt={t.home.invitationsTitle}
+          category="invitation"
         />
       </div>
 
