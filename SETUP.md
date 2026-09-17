@@ -57,7 +57,7 @@ misdirected transfer, not a cosmetic bug. Check them character by character.
 There are no tables to create and no migrations to run. Firestore makes a collection the
 first time something is written to it.
 
-What it does need is the two composite indexes the admin lists sort by, which are
+What it does need are the composite indexes the admin's lists sort by, which are
 declared in `firestore.indexes.json`:
 
 ```sh
@@ -67,6 +67,11 @@ firebase deploy --only firestore
 That deploys the indexes and the security rules together. If a query ever fails with a
 "requires an index" error, the message contains a link that creates it — add it to
 `firestore.indexes.json` afterwards so it is not lost the next time the project is set up.
+
+The customer facing pages deliberately need none of these. The booth availability
+endpoint is written to use single field indexes only, which Firestore creates by itself,
+because an undeployed composite index is a 503 on the page the business advertises. Only
+the admin and the Notion retry depend on this step.
 
 ---
 
@@ -100,11 +105,19 @@ several things in this app behave differently there than in a desktop browser.
    database that does not exist.
 3. `vercel.json` already pins functions to `fra1`. Leave it that way, matching the
    Firestore location. Serving from a US region makes every query cross the Atlantic twice.
+4. `vercel.json` also declares the nightly Notion reconcile cron. It needs `CRON_SECRET`
+   set, or the endpoint refuses it.
+
+**For the domain, Meta and Notion, follow [docs/LAUNCH.md](docs/LAUNCH.md).** It covers
+`qlty.events`, `www`, `admin`, the DNS, the Firebase authorised domains, the Meta
+verification and the scheduled sync, in the order they have to happen.
 
 ## 6. Backups
 
-**The Firestore free tier has no scheduled export.** These documents hold wedding dates
-and customer phone numbers. Losing them is not something you recover from by apologising.
+**The Firestore free tier has no scheduled export.** These documents hold wedding dates,
+booth bookings and customer phone numbers. Losing an invitation is bad; losing a booth
+booking means a Saturday night gets sold twice and two couples both turn up expecting a
+booth. Losing them is not something you recover from by apologising.
 
 Run one now:
 
@@ -112,7 +125,8 @@ Run one now:
 npm run backup
 ```
 
-That writes every invitation and review to `backups/qlty-backup-YYYYMMDD-HHMM.json`,
+That writes every invitation, review, booth booking, day counter and the booth settings
+to `backups/qlty-backup-YYYYMMDD-HHMM.json`,
 with Timestamps rendered as ISO strings so the file can be read and restored without the
 Admin SDK. The `backups` folder is excluded from version control.
 
@@ -187,3 +201,8 @@ Nothing breaks.
 | Indexes and rules | `firestore.indexes.json`, `firestore.rules`, `firebase deploy --only firestore` |
 | Admin login | Firebase Auth, one account, session cookie for two weeks |
 | Vercel functions | `fra1`, pinned in `vercel.json` |
+| Booth bookings | `boothReservations`, `boothDays`, `boothSettings` in the same Firestore |
+| Booth mirror | Notion, both ways. `docs/notion-booth-setup.md` |
+| Scheduled sync | GitHub Actions every 15 min, Vercel cron nightly, both guarded by `CRON_SECRET` |
+| Unit tests | `npm test`, Node's built in runner, no dependencies added |
+| Concurrency check | `npm run check:booth`, against a real Firestore |

@@ -1,7 +1,8 @@
 import { NextResponse, type NextRequest } from 'next/server';
+import { SITE_URL } from '@/lib/constants';
 
 /**
- * Two jobs. This file is the Next 16 "proxy" convention, which replaced "middleware".
+ * Three jobs. This file is the Next 16 "proxy" convention, which replaced "middleware".
  *
  * admin.qlty.events and qlty.events are one deployment. Requests arriving on the admin
  * subdomain are rewritten onto the /admin route tree, so the operator surface has its
@@ -12,6 +13,11 @@ import { NextResponse, type NextRequest } from 'next/server';
  * serving it. Only the requests that were unmistakably meant for the builder can be
  * forwarded, and "?package=" is what makes them unmistakable. Every package link in
  * an ad or a WhatsApp thread carries one, and nothing else asks the root for a tier.
+ *
+ * The third is canonicalising the host: in production, the deployment's own
+ * *.vercel.app address is sent to qlty.events. Two hostnames serving the same pages
+ * split the SEO, break Meta's domain verification, and strand the cookies this product
+ * uses in place of accounts on whichever origin the customer happened to arrive at.
  *
  * It used to have one more: Supabase access tokens expired quickly, so every admin
  * request refreshed the session here and rebuilt the response so the rotated cookies
@@ -31,6 +37,33 @@ export function proxy(request: NextRequest) {
   if (isAdminHost && !url.pathname.startsWith('/admin')) {
     url.pathname = url.pathname === '/' ? '/admin' : `/admin${url.pathname}`;
     return NextResponse.rewrite(url, { request });
+  }
+
+  /*
+   * The deployment's own vercel.app hostname, sent to the real one.
+   *
+   * Every Vercel project keeps a *.vercel.app address alongside its custom domain, and
+   * that address is indexed, shared and linked exactly like the real one. Two hostnames
+   * serving identical pages splits the SEO between them, and it breaks two things that
+   * are pinned to a single origin: Meta's domain verification, and the cookies this
+   * product uses instead of accounts, so a customer who lands on the vercel.app address
+   * cannot see the draft they built on qlty.events.
+   *
+   * Only in production. Preview deployments are all on *.vercel.app by definition and
+   * redirecting them would make every pull request preview unreachable, which is the
+   * mistake this check exists to avoid.
+   *
+   * 308 rather than 307 here, unlike the package redirect below. This one is genuinely
+   * permanent: the canonical home of this site is not going to change again, and a
+   * cached redirect is the desired outcome rather than a risk.
+   */
+  if (
+    process.env.VERCEL_ENV === 'production' &&
+    hostname.endsWith('.vercel.app') &&
+    SITE_URL.startsWith('https://')
+  ) {
+    const canonical = new URL(`${url.pathname}${url.search}`, SITE_URL);
+    return NextResponse.redirect(canonical, { status: 308 });
   }
 
   /*
