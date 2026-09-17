@@ -2,25 +2,26 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Inbox, LayoutGrid, MessageSquareQuote, PenLine } from 'lucide-react';
+import { Camera, Inbox, LayoutGrid, MessageSquareQuote, PenLine } from 'lucide-react';
 import { cn } from '@/lib/cn';
 
-export type NavCounts = { pending: number; drafts: number; reviews: number };
+export type NavCounts = { pending: number; drafts: number; reviews: number; booth: number };
 
 const ITEMS = [
   { href: '/admin', label: 'الطلبات', icon: Inbox, badge: 'pending' as const, exact: true },
+  { href: '/admin/booth', label: 'الفوتوبوث', icon: Camera, badge: 'booth' as const, exact: false },
   { href: '/admin/all', label: 'الكل', icon: LayoutGrid, badge: null, exact: false },
   { href: '/admin/drafts', label: 'المسودات', icon: PenLine, badge: 'drafts' as const, exact: false },
   { href: '/admin/reviews', label: 'الآراء', icon: MessageSquareQuote, badge: 'reviews' as const, exact: false },
 ];
 
 /**
- * The four places there are to be, always on screen.
+ * The five places there are to be, always on screen.
  *
  * Everything here used to hang off the home screen: drafts and reviews were two links
  * at the bottom of it, and getting from one to the other meant going back through
  * home. That is a website's shape, and this is not a website — it is a tool one person
- * opens twenty times a day, on a phone, usually with one hand, to do one of four
+ * opens twenty times a day, on a phone, usually with one hand, to do one of five
  * things. A tab bar is the shape of that, and it puts every destination inside thumb
  * reach at the bottom of the screen rather than at the top where nothing on a modern
  * phone should live.
@@ -69,7 +70,7 @@ export function AdminNav({ counts }: { counts: NavCounts }) {
                     </span>
                   ) : null}
                 </span>
-                <span className="text-[0.6875rem] font-medium">{item.label}</span>
+                <span className="text-[0.625rem] font-medium whitespace-nowrap">{item.label}</span>
               </Link>
             </li>
           );
