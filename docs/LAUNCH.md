@@ -1,197 +1,351 @@
-# Launching qlty.events
+# Going live: the complete sequence
 
-Everything that has to happen outside this repository, in the order it has to happen.
+Everything left between here and a working `qlty.events`, in the order it has to happen.
 
-Each step says who can do it. The ones marked **Rashad only** need a password, a card,
-or a dashboard login, and cannot be done from a terminal by anybody else.
+**Where things actually stand, checked today:**
 
----
+| | |
+| --- | --- |
+| Code | Done. 15 commits on `feat/home-photobooth`, **not pushed** |
+| `qlty.events` | **Parked on Hostinger.** Nothing is deployed to it |
+| `admin.qlty.events` | No DNS record at all |
+| Vercel project | `qlty-invitation` exists and is linked |
+| Firebase | `qlty-invitations`, working. **Indexes not deployed** |
+| ImageKit | Configured, endpoint `ik.imagekit.io/e0n2xobeb` |
+| Music | All 5 tracks present |
+| Notion | Database ready, 3 columns added. **No integration token yet** |
+| Meta | **Nothing configured** |
+| InstaPay link | **Empty.** No pay button renders on the invitation |
 
-## 0. Before any of this
-
-Fill in the placeholders. The booth is currently quoting invented prices, and the admin
-shows a warning on every booth screen until somebody has been through them.
-
-See **`docs/BOOTH-INPUTS.md`** for the list. Nothing below depends on it, but the site
-must not be advertised until it is done.
-
----
-
-## 1. The domain — Rashad only
-
-In the Vercel project (`qlty-invitation`), **Settings → Domains**, add three:
-
-| Domain              | Configure as                          |
-| ------------------- | ------------------------------------- |
-| `qlty.events`       | **Primary**                           |
-| `www.qlty.events`   | Redirect to `qlty.events`             |
-| `admin.qlty.events` | Normal domain, no redirect            |
-
-Vercel then shows the exact DNS records to add at the registrar. **Use the records the
-screen shows you, not the ones written here** — Vercel changes its anycast addresses and
-a value copied from a document is how a domain ends up pointing at nothing.
-
-It is normally one of:
-
-- an `A` record on the apex plus `CNAME` records for `www` and `admin`, or
-- moving the whole domain onto Vercel's nameservers, which is less work and less control
-
-Wait for all three to show **Valid Configuration** and for the SSL certificates to be
-issued. This usually takes minutes and can take a few hours. Do not continue until all
-three load over HTTPS.
-
-`admin.qlty.events` is not a second deployment. `src/proxy.ts` rewrites anything on that
-hostname onto the `/admin` route tree of the same app.
+Steps marked **you** need a password, a card or a dashboard. Steps marked **terminal**
+can be run from this repo.
 
 ---
 
-## 2. Environment variables — Rashad only
+# Stage A — the decisions only you can make
 
-In **Settings → Environment Variables**, on **Production**:
+Nothing below works around these. **Roughly an hour of your time.**
+
+## A1. Fill in the booth inputs — you
+
+Open [BOOTH-INPUTS.md](BOOTH-INPUTS.md). Prices, deposit and capacity are already real,
+read out of your Notion database. What is still invented:
+
+- **The hours each tier includes.** Currently 4 / 5 / 5. Nothing in your database records
+  this, and it is what an extra hour is charged against.
+- **`extraHourPrice`**, currently 500 across all three. A guess.
+- **The tier names.** "Photo booth", "Booth and guest book", "Everything" are
+  descriptions, not names you chose.
+- **The feature lists.** Built from which add on columns you tick. Anything listed that
+  you do not actually provide is a promise somebody discovers on the night.
+- **Do you sell 360 Photo Booth or Plinker?** Both are columns in your database that have
+  never been ticked, so neither is on the site.
+- **Service areas.** Cairo and Giza are free, "somewhere else" costs 1500. The 1500 is a
+  guess. If you never travel further, delete the third area.
+
+Confirm two things read from your data:
+- **Capacity 2.** You have run two events in a day twice. Is that real capacity?
+- **Deposit 500.** Ten of your fifteen recorded deposits are exactly 500.
+
+Edit `src/lib/photobooth/config.ts`, then set `BOOTH_CONFIG_IS_PLACEHOLDER = false`.
+
+## A2. Photographs — you
+
+All images are empty grey frames until you upload. Details and exact shapes in
+[BOOTH-INPUTS.md](BOOTH-INPUTS.md) section 6.
+
+| What | How many | Shape |
+| --- | --- | --- |
+| Booth hero | 1 | landscape 4:3 |
+| Booth gallery | 6 to 9 | **square** |
+| Invitations hero | 1 | landscape 4:3 |
+| Instagram strip | 4 | square |
+| Booth video (optional) | 1 | 4:3, **silent**, loops |
+
+Upload to ImageKit, then put the **paths** (`/booth/hero.jpg`), not full URLs, into
+`BOOTH_MEDIA`, `INVITATIONS_MEDIA` and `INSTAGRAM_TILES`.
+
+## A3. The InstaPay link — you
+
+`NEXT_PUBLIC_INSTAPAY_LINK` is **empty**, which means the invitation payment screen shows
+no pay button at all. It falls back to showing the address to copy, which works but is
+worse.
+
+Get the real link from the InstaPay app. It looks like
+`https://ipn.eg/S/<handle>/instapay/<code>`. It has to be found on a real phone; it
+cannot be guessed.
+
+## A4. Verify — terminal
+
+```bash
+npm run typecheck && npm test && npm run build
+```
+
+---
+
+# Stage B — get the code onto main
+
+## B1. Push and merge — you + terminal
+
+```bash
+git push -u origin feat/home-photobooth
+```
+
+`origin` is `qualityforevents-ui/Quality_Invitation_project`, which you confirmed is the
+Vercel source. `main` is also one commit ahead locally (the Meta pixel work) and needs
+pushing too.
+
+Open a pull request, read the diff, merge. Vercel builds automatically.
+
+At this point the site is live on its `*.vercel.app` address and you can walk the whole
+thing before pointing the domain at it. **Do that.** It is much easier to fix things
+before the real address works.
+
+---
+
+# Stage C — the three accounts
+
+## C1. Firestore indexes — terminal
+
+```bash
+npx firebase deploy --only firestore
+```
+
+Deploys the indexes and the deny all rules. The customer facing calendar deliberately
+needs no composite index, so the public site works without this — but the **admin booth
+queue will 500** until it is done.
+
+## C2. Notion — you
+
+Full steps in [notion-booth-setup.md](notion-booth-setup.md). The database is already
+done; this is the token.
+
+1. <https://www.notion.so/my-integrations> → **New integration**, name it `QLTY site`,
+   workspace **Modern Sciences and Arts University**.
+2. Capabilities: **Read**, **Update**, **Insert** content. Leave user information off.
+3. Copy the secret (starts `ntn_`) → `NOTION_TOKEN`.
+4. Open **🗓️ Bookings** → **•••** → **Connections** → **Connect to** → `QLTY site`.
+   Nothing works until this is done and the error does not say so.
+
+The data source id is already known:
+
+```
+NOTION_BOOTH_DATA_SOURCE_ID=af2cfb8d-b3a5-4735-a717-69b915ff5d51
+```
+
+> **The Claude connector is not this.** That is a chat session authenticating as you. The
+> deployed site needs its own integration and will not have your session at 2am.
+
+## C3. Meta — you
+
+1. **Business Manager → Brand Safety → Domains**: add `qlty.events`, verify with the DNS
+   TXT record it gives you. Without this the pixel cannot attribute much under iOS.
+2. **Events Manager → your pixel → Settings → Domains**: add `qlty.events`.
+3. Copy the pixel id → `NEXT_PUBLIC_META_PIXEL_ID`.
+4. **Settings → Conversions API → Generate access token** → `META_CAPI_ACCESS_TOKEN`.
+5. Create custom conversions split on `content_category`, which every event carries:
+   `invitation`, `photobooth`, `home`.
+
+## C4. The cron secret — terminal
+
+```bash
+openssl rand -base64 32
+```
+
+→ `CRON_SECRET`. The same value goes in Vercel and in GitHub.
+
+---
+
+# Stage D — infrastructure
+
+## D1. Vercel environment variables — you
+
+Project `qlty-invitation` → **Settings → Environment Variables → Production**:
 
 | Variable | Value |
 | --- | --- |
 | `NEXT_PUBLIC_SITE_URL` | `https://qlty.events` |
-| `FIREBASE_PROJECT_ID`, `FIREBASE_CLIENT_EMAIL`, `FIREBASE_PRIVATE_KEY` | from the service account |
-| `NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT`, `NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY`, `IMAGEKIT_PRIVATE_KEY` | from ImageKit |
-| `NEXT_PUBLIC_META_PIXEL_ID` | the pixel id |
-| `META_CAPI_ACCESS_TOKEN` | the Conversions API token |
-| `NOTION_TOKEN`, `NOTION_BOOTH_DATA_SOURCE_ID`, `NOTION_WEBHOOK_SECRET` | see `docs/notion-booth-setup.md` |
-| `CRON_SECRET` | `openssl rand -base64 32` |
-| `NEXT_PUBLIC_WHATSAPP_BOOTH_NUMBER` | optional, only if booth enquiries go to a different phone |
+| `FIREBASE_PROJECT_ID` | `qlty-invitations` |
+| `FIREBASE_CLIENT_EMAIL`, `FIREBASE_PRIVATE_KEY` | from the service account |
+| `NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT` | `https://ik.imagekit.io/e0n2xobeb/` |
+| `NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY`, `IMAGEKIT_PRIVATE_KEY` | from ImageKit |
+| `NEXT_PUBLIC_WHATSAPP_NUMBER` | `201010014346` |
+| `NEXT_PUBLIC_INSTAPAY_LINK` | from A3 |
+| `NEXT_PUBLIC_META_PIXEL_ID`, `META_CAPI_ACCESS_TOKEN` | from C3 |
+| `NOTION_TOKEN`, `NOTION_BOOTH_DATA_SOURCE_ID` | from C2 |
+| `CRON_SECRET` | from C4 |
 
-> **Nothing secret may be given the `NEXT_PUBLIC_` prefix.** That prefix compiles the
-> value into the JavaScript every visitor downloads. `META_CAPI_ACCESS_TOKEN`,
-> `NOTION_TOKEN`, `IMAGEKIT_PRIVATE_KEY`, `CRON_SECRET` and the Firebase private key are
-> all secret. The ones that already carry the prefix are public by nature: a pixel id is
-> in the page source of every site that has one.
+Leave `NOTION_WEBHOOK_SECRET` for D4. Never set `FIRESTORE_EMULATOR_HOST`.
 
-Redeploy after adding them. Environment variables are read at build time.
+> Nothing secret may carry the `NEXT_PUBLIC_` prefix — that compiles it into the
+> JavaScript every visitor downloads. The Meta token, the Notion token, the ImageKit
+> private key, the Firebase private key and the cron secret are all secret.
 
----
+Redeploy after adding them. They are read at build time.
 
-## 3. Firebase — Rashad only
+## D2. The domain — you
+
+**This is the big one. `qlty.events` is currently a parked Hostinger page.**
+
+**In Vercel** → project → **Settings → Domains**, add three:
+
+| Domain | Configure as |
+| --- | --- |
+| `qlty.events` | **Primary** |
+| `www.qlty.events` | Redirect to `qlty.events` |
+| `admin.qlty.events` | Normal domain, no redirect |
+
+Vercel then shows the exact DNS records for each.
+
+**In Hostinger** → hPanel → **Domains → DNS / Nameservers**:
+
+- **Delete the parking records.** The apex `A` record currently points at `2.57.91.91`,
+  which is Hostinger's parking page, and `www` is a CNAME to it. Both must go.
+- Add what Vercel showed you: normally an `A` record on the apex, a `CNAME` for `www`,
+  and a `CNAME` for `admin` — which **does not exist at all today**.
+
+> **Use the values Vercel's screen shows, not any written here.** Vercel changes its
+> addresses, and a value copied out of a document is how a domain ends up pointing at
+> nothing.
+
+The alternative, if you would rather not manage records: point the whole domain at
+Vercel's nameservers from Hostinger. Less control, less to get wrong.
+
+Wait for all three to read **Valid Configuration** and for SSL to issue. Minutes,
+occasionally hours. Do not continue until all three load over HTTPS.
+
+## D3. Firebase authorised domains — you
 
 **Authentication → Settings → Authorised domains**, add:
 
 - `qlty.events`
 - `admin.qlty.events`
 
-The admin sign in will not work on the new hostnames until these are there, and the
-error it gives says the domain is unauthorised, which is at least honest.
+Admin sign in fails on the new hostnames until these are there. Then sign in at
+`https://admin.qlty.events` and confirm the session survives a reload.
 
-Then sign in at `https://admin.qlty.events` and confirm the session survives a reload.
-The session cookie is set on the subdomain it was issued on.
+## D4. The Notion webhook — you
 
-**Deploy the Firestore indexes** — this one can be done from a terminal:
+Needs D2 finished, because the URL has to be reachable. **This cannot be done from
+Claude** — webhook subscriptions belong to an integration, are created in its settings
+dashboard, and Notion has no API for it.
 
-```bash
-npx firebase deploy --only firestore:indexes
-```
+1. Your integration → **Webhooks** → **Create a subscription**.
+2. URL: `https://qlty.events/api/notion/webhook`
+3. Events: **page.created**, **page.properties_updated**, **page.deleted**,
+   **page.undeleted**, **page.moved**.
+4. Notion posts a one time verification token. Find it in the Vercel logs:
+   `[notion/webhook] verification token received...`
+5. Paste it into Notion to verify.
+6. Set the same value as `NOTION_WEBHOOK_SECRET` in Vercel and redeploy.
 
-The customer facing calendar deliberately needs no composite index, so the public site
-works without this. The admin queue and the Notion retry do need them.
+Step 6 is not optional. Until it is set the endpoint refuses everything with a 503,
+because an unverified webhook is an open door to your Notion on our token.
 
----
+## D5. GitHub Actions — you
 
-## 4. Meta — Rashad only
+Repository → **Settings → Secrets and variables → Actions**:
 
-1. **Business Manager → Brand Safety → Domains**, add `qlty.events` and verify it with
-   the DNS TXT record it gives you. This is what lets the pixel attribute conversions on
-   this domain at all under iOS restrictions.
-2. **Events Manager → your pixel → Settings → Domains**, add `qlty.events`.
-3. Create custom conversions split by `content_category`, which every event now carries:
-   - `invitation` — the invitation funnel
-   - `photobooth` — the booth funnel
-   - `home` — visitors who have not chosen yet
-4. Set `META_TEST_EVENT_CODE` temporarily and watch **Test Events**. Walk both funnels on
-   a real phone. Each event should appear **once**, marked **Browser and Server**. Two
-   separate rows for the same event means the event ids are not pairing.
-5. **Remove `META_TEST_EVENT_CODE` and redeploy.** Left set in production, every
-   conversion goes to the test tab, the live dataset receives nothing, and every campaign
-   optimises against an empty pixel.
-6. Open a real invitation link (`qlty.events/<slug>`) and confirm **nothing** is
-   reported. Guests are not customers, and pixelling them would build lookalike
-   audiences out of people who will never buy.
-
----
-
-## 5. Notion
-
-Follow **`docs/notion-booth-setup.md`** end to end. The webhook step needs the site to
-be live on `https://qlty.events`, so it comes after step 1.
-
-The webhook subscription URL is:
-
-```
-https://qlty.events/api/notion/webhook
-```
-
----
-
-## 6. The scheduled sync
-
-**GitHub repository → Settings → Secrets and variables → Actions**, add:
-
-- `CRON_SECRET` — the same value as in Vercel
+- `CRON_SECRET` — same value as Vercel
 - `SITE_URL` — `https://qlty.events`
 
-The workflow is already committed at `.github/workflows/booth-sync.yml` and runs every
-fifteen minutes. Trigger one by hand from the Actions tab to confirm it returns 200.
+Run the **Photo booth Notion sync** workflow by hand from the Actions tab and confirm it
+returns 200.
 
-The nightly full pass is in `vercel.json` and needs nothing beyond `CRON_SECRET`.
+## D6. Import the existing bookings — terminal
 
----
+```bash
+npm run notion:import
+```
 
-## 7. Backups — Rashad only
+**Before the booth page is advertised**, or the calendar will sell dates that are already
+sold. Pulls your 26 bookings in. Safe to re-run.
+
+Reports nothing to Meta, by design.
+
+## D7. Back up — terminal
 
 ```bash
 npm run backup
 ```
 
-writes every invitation, review and booth booking to `./backups`. It is gitignored,
-because it holds customer names and phone numbers.
-
-Firestore's free tier has no scheduled export, so this has to be run and the file copied
-somewhere off the machine. `SETUP.md` covers the two practical ways to schedule it.
-
-Run it once before launch, so there is a known good file from before any of this.
+Run it once now, and copy the file off the machine. Firestore's free tier has no
+scheduled export, and this file is the only copy of your wedding dates and phone numbers
+that is not in Google's hands. `SETUP.md` covers scheduling it.
 
 ---
 
-## Checking it actually works
+# Stage E — prove it works
 
-Walk these on a real phone, in both languages. A desktop browser will not reproduce the
-things that break: Safari's cookie handling, the iOS keyboard, and the WhatsApp handoff.
+On a **real phone**, in **both languages**. A desktop browser will not reproduce Safari's
+cookie handling, the iOS keyboard, or the WhatsApp handoff.
+
+## The site
 
 | Check | Expected |
 | --- | --- |
-| `qlty.events` | the home, in Arabic, right to left |
-| `www.qlty.events` | redirects to `qlty.events` |
+| `qlty.events` | the home, Arabic, right to left |
+| `www.qlty.events` | redirects to the apex |
 | the old `*.vercel.app` address | redirects to `qlty.events` |
-| `qlty.events/?package=UNLIMITED` | lands on `/invitations` with the tier chosen |
+| `qlty.events/?package=UNLIMITED` | lands on `/invitations`, tier chosen |
 | `qlty.events/build` | redirects to `/invitations` |
-| an old invitation link `qlty.events/<slug>` | opens, and reports nothing to Meta |
-| an old edit link `qlty.events/edit/<token>` | opens the builder with the draft in it |
-| `qlty.events/photobooth` | the calendar loads with real dates |
-| a full booking, to the WhatsApp handoff | the date disappears from the calendar |
-| the same date, in a second browser, at the same time | refused, with three other dates offered |
-| `admin.qlty.events` | the admin, and the booth tab shows the booking |
-| confirming it in the admin | Meta records a `Purchase` |
-| editing the date in Notion | the site calendar follows within a minute |
-| deleting the Notion row | the booking is cancelled, not deleted, and the date returns |
-| `qlty.events/sitemap.xml` | four URLs, none of them a slug or an admin page |
+| an existing invitation link | still opens |
+| an existing edit link | opens the builder with the draft in it |
+| `qlty.events/sitemap.xml` | four URLs, no slugs, no admin |
 | `qlty.events/robots.txt` | disallows `/admin`, `/edit/`, `/build/`, `/photobooth/request/` |
+
+## The booth, end to end
+
+1. Open `/photobooth`. The calendar shows real dates, and the nights already booked in
+   Notion are **not** offered.
+2. Book one. Check the price and deposit on the summary.
+3. Tap **Confirm on WhatsApp**. The message arrives with the booking id.
+4. That date disappears from the calendar.
+5. **Open the same date in a second browser at the same moment.** One is refused and
+   offered three other dates. This is the one failure that costs you a wedding.
+6. In the admin, the booth tab badges the new booking.
+7. Confirm it. `Deposit Received` ticks in Notion.
+8. Change the date in Notion. The site calendar follows within a minute.
+9. Delete the Notion row. The booking is **cancelled**, not deleted, and the date returns.
+
+## Meta
+
+1. Set `META_TEST_EVENT_CODE` temporarily and open **Test Events**.
+2. Walk both funnels. Every event appears **once**, marked **Browser and Server**. Two
+   rows for one event means the ids are not pairing.
+3. Open a real invitation link `qlty.events/<slug>` and confirm **nothing** is reported.
+   Guests are not customers.
+4. **Remove `META_TEST_EVENT_CODE` and redeploy.** Left set, every conversion goes to the
+   test tab, the live dataset gets nothing, and every campaign optimises on an empty
+   pixel.
 
 ---
 
-## If something is wrong
+# Rough order of effort
+
+| Stage | Who | Time |
+| --- | --- | --- |
+| A — inputs, photos, InstaPay link | you | ~1 hour, plus a photo shoot |
+| B — push and merge | you | 15 min |
+| C — indexes, Notion, Meta, secret | you | ~45 min |
+| D — Vercel, DNS, Firebase, webhook, import | you | ~1 hour, plus DNS propagation |
+| E — testing on a phone | you | ~45 min |
+
+**The long pole is Stage A.** Everything else is dashboards; the photographs and the
+package details are the part that needs a decision and a camera.
+
+---
+
+# If something is wrong
 
 | Symptom | Look at |
 | --- | --- |
-| The booth calendar shows nothing and the console says 503 | Firestore credentials, or the indexes in step 3 |
-| The admin loads but sign in fails | Firebase authorised domains, step 3 |
-| Meta shows each event twice | the browser and server copies are not pairing on event id |
-| Meta shows nothing at all | `META_TEST_EVENT_CODE` is still set, step 4.5 |
-| Notion changes never arrive | `docs/notion-booth-setup.md`, the section at the end |
-| The admin booth screens warn about placeholders | `docs/BOOTH-INPUTS.md`, still unfilled |
+| Booth calendar empty, console shows 503 | Firebase credentials in Vercel |
+| Admin booth queue 500s | Firestore indexes, C1 |
+| Admin loads but sign in fails | Firebase authorised domains, D3 |
+| Meta shows every event twice | browser and server ids not pairing |
+| Meta shows nothing | `META_TEST_EVENT_CODE` still set |
+| Notion never syncs | token missing, or database not shared, C2 |
+| Notion webhook silent, cron works | subscription unverified or `NOTION_WEBHOOK_SECRET` unset |
+| Booth admin warns about placeholders | `BOOTH_CONFIG_IS_PLACEHOLDER` still true, A1 |
+| No pay button on the invitation | `NEXT_PUBLIC_INSTAPAY_LINK` empty, A3 |
