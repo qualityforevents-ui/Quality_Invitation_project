@@ -1,0 +1,51 @@
+# The booth sync heartbeat.
+#
+# Vercel's Hobby plan allows one cron a day, and once a day is not a sync, it is a
+# nightly repair. This runs every fifteen minutes, costs nothing, and is what actually
+# keeps Notion and the site in step when a webhook is dropped or delivered late.
+#
+# The nightly full pass stays on Vercel cron, in vercel.json, because it is the one run
+# that should happen even if this repository is archived or Actions is disabled.
+#
+# Needs two repository secrets:
+#   CRON_SECRET  the same value as the production environment variable
+#   SITE_URL     https://qlty.events
+name: Photo booth Notion sync
+
+on:
+  schedule:
+    # Every fifteen minutes. GitHub queues scheduled workflows under load, so the real
+    # interval drifts to twenty or so; the job is idempotent and holds a lock, so a late
+    # run and a doubled run are both harmless.
+    - cron: '*/15 * * * *'
+  # So a human can force one from the Actions tab without waiting for the schedule.
+  workflow_dispatch:
+
+# A slow run must never have a second one started on top of it. The lock document in
+# Firestore would refuse the overlap anyway; this saves the wasted request.
+concurrency:
+  group: booth-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Trigger the incremental sync
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          SITE_URL: ${{ secrets.SITE_URL }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "${CRON_SECRET}" ] || [ -z "${SITE_URL}" ]; then
+            echo "CRON_SECRET and SITE_URL must both be set as repository secrets."
+            exit 1
+          fi
+
+          # --fail-with-body so a 401 fails the step and still prints what the server
+          # said, rather than succeeding silently with an error page in the body.
+          curl --fail-with-body --silent --show-error --max-time 120 \
+            -H "authorization: Bearer ${CRON_SECRET}" \
+            "${SITE_URL}/api/notion/reconcile"

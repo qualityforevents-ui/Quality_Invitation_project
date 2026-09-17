@@ -1,10 +1,12 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, after } from 'next/server';
 import { headers } from 'next/headers';
 import { unstable_cache } from 'next/cache';
 import { z } from 'zod';
 import { checkRateLimit, pruneRateLimits } from '@/lib/rate-limit';
 import { getAvailability } from '@/lib/photobooth/reservations';
 import { BOOTH_AVAILABILITY_TAG } from '@/lib/photobooth/cache';
+import { isIncrementalStale, runIncrementalSync } from '@/lib/notion/reconcile';
+import { isNotionConfigured } from '@/lib/notion/client';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -86,6 +88,28 @@ export async function GET(request: Request) {
 
   try {
     const days = await readAvailability(firstDay, lastDay);
+
+    /*
+     * The opportunistic sync trigger.
+     *
+     * A site with visitors keeps itself in step with Notion without any scheduler at
+     * all, which matters because the Vercel plan this runs on allows one cron a day.
+     * Somebody browsing the calendar is the most useful possible moment to notice the
+     * sync has gone stale, because they are about to rely on what it says.
+     *
+     * In `after()`, so the visitor never waits for it, and behind the same lock
+     * document the cron uses, so a busy evening cannot start twenty of them at once.
+     */
+    if (isNotionConfigured()) {
+      after(async () => {
+        try {
+          if (await isIncrementalStale()) await runIncrementalSync();
+        } catch (error) {
+          console.error('[booth] opportunistic sync failed', error);
+        }
+      });
+    }
+
     return NextResponse.json({ ok: true, from: firstDay, to: lastDay, days });
   } catch (error) {
     console.error('[api/photobooth/availability] could not read the calendar', error);

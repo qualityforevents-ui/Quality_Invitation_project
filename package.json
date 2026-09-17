@@ -10,7 +10,8 @@
     "test": "node --import tsx --test \"src/**/*.test.ts\"",
     "backup": "tsx scripts/backup.ts",
     "check:music": "tsx scripts/check-music.ts",
-    "check:booth": "tsx scripts/check-booth.ts"
+    "check:booth": "tsx scripts/check-booth.ts",
+    "notion:import": "tsx scripts/notion-import.ts"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.20",
