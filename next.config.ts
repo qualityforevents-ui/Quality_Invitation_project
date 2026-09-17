@@ -61,6 +61,13 @@ const nextConfig: NextConfig = {
       { source: '/edit/:path*', headers: [noindex] },
       { source: '/admin/:path*', headers: [noindex] },
       { source: '/build/:path*', headers: [noindex] },
+      /*
+       * A booth booking's status URL is a secret token naming a customer, their phone
+       * number and the address they will be at on a given night. The page sets robots
+       * metadata of its own as well; this is the belt to that pair of braces, and it
+       * covers the case where the page fails to render at all.
+       */
+      { source: '/photobooth/request/:path*', headers: [noindex] },
     ];
   },
 };

@@ -295,11 +295,21 @@ export async function getAvailability(
    */
   const [daySnapshot, heldSnapshot] = await Promise.all([
     boothDays().where('date', '>=', from).where('date', '<=', to).get(),
-    boothReservations()
-      .where('status', '==', 'HELD')
-      .where('eventDate', '>=', from)
-      .where('eventDate', '<=', to)
-      .get(),
+    /*
+     * Every live hold, not just the ones in this range, and then filtered in memory.
+     *
+     * Adding the date range to this query would make it a composite index, and a
+     * composite index has to be deployed to Firebase before it will answer. That is
+     * fine for the admin, which an operator can be told to wait for; it is not fine
+     * here. This is the query behind the public calendar, and an undeployed index turns
+     * it into a 503 on the page the business advertises.
+     *
+     * It is cheap because of what HELD means: a hold lasts a day and is taken only by
+     * somebody who reached WhatsApp, so this set is a handful of documents at any
+     * moment, not a history. Both fields are single field indexes, which Firestore
+     * creates by itself.
+     */
+    boothReservations().where('status', '==', 'HELD').get(),
   ]);
 
   const stored = new Map<string, Occupancy>();
@@ -316,6 +326,7 @@ export async function getAvailability(
   const liveHeld = new Map<string, number>();
   for (const doc of heldSnapshot.docs) {
     const row = mapReservation(doc);
+    if (row.eventDate < from || row.eventDate > to) continue;
     if (row.holdExpiresAt && row.holdExpiresAt.getTime() <= now.getTime()) continue;
     liveHeld.set(row.eventDate, (liveHeld.get(row.eventDate) ?? 0) + row.units);
   }
@@ -675,15 +686,19 @@ export async function updateReservation(
  * there claiming a booth is taken when the availability API is already giving it away.
  */
 export async function releaseExpiredHolds(now: Date = new Date()): Promise<number> {
-  const snapshot = await boothReservations()
-    .where('status', '==', 'HELD')
-    .where('holdExpiresAt', '<=', Timestamp.fromDate(now))
-    .limit(100)
-    .get();
+  // Equality on one field only, for the same reason getAvailability avoids a composite
+  // index: this runs from a cron endpoint that must not start failing because an index
+  // was never deployed. Live holds are a handful of documents.
+  const snapshot = await boothReservations().where('status', '==', 'HELD').limit(200).get();
+
+  const expired = snapshot.docs.filter((doc) => {
+    const holdExpiresAt = toDate(doc.data().holdExpiresAt);
+    return holdExpiresAt !== null && holdExpiresAt.getTime() <= now.getTime();
+  });
 
   let released = 0;
 
-  for (const doc of snapshot.docs) {
+  for (const doc of expired) {
     /*
      * Back to REQUESTED rather than CANCELLED. The customer did fill in the form and
      * did open WhatsApp; they may still be mid conversation when the hold lapses, and

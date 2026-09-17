@@ -96,6 +96,128 @@ const AR = {
       'دعوات فرح إلكترونية وتأجير فوتوبوث في القاهرة والجيزة. اعمل دعوتك في دقايق، أو احجز ركن تصوير لفرحك.',
   },
 
+  /*
+   * The photo booth.
+   *
+   * A different sale from the invitations in every way that matters: five to ten times
+   * the money, a date that can be taken by somebody else while you think about it, and
+   * a decision usually made by two people looking at one phone. So the page leads with
+   * the calendar rather than the price list, and the copy says plainly when a date is
+   * nearly gone.
+   */
+  photobooth: {
+    metaTitle: 'تأجير فوتوبوث للأفراح',
+    metaDescription:
+      'فوتوبوث لفرحك في القاهرة والجيزة، بطباعة فورية وألبوم رقمي. شوف المواعيد الفاضية واحجز يومك.',
+
+    heroTitle: 'فوتوبوث يخلي ضيوفك يفتكروا الليلة',
+    heroSubline: 'طباعة فورية، خلفية تختارها، وفني معاكم طول الفرح.',
+    heroCta: 'شوف المواعيد الفاضية',
+
+    packagesTitle: 'اختار باقتك',
+    packagesSub: 'كل الباقات فيها طباعة من غير عدد وألبوم رقمي. الفرق في الوقت وفي التفاصيل.',
+    packagesChoose: 'اختار دي',
+    packagesChosen: 'مختارة',
+    hoursLabel: 'ساعات',
+    extraHourLabel: 'الساعة الزيادة',
+
+    galleryTitle: 'من أفراح فاتت',
+
+    calendarTitle: 'المواعيد الفاضية',
+    calendarSub: 'التقويم بيتحدث لحظة بلحظة. اختار يوم عشان تكمل الحجز.',
+    legendAvailable: 'فاضي',
+    legendLast: 'آخر فوتوبوث',
+    legendFull: 'محجوز',
+    legendUnavailable: 'مش متاح',
+    calendarLoading: 'بنجيب المواعيد',
+    calendarError: 'مش قادرين نجيب المواعيد دلوقتي. جرب تاني بعد شوية.',
+
+    formTitle: 'بيانات الحجز',
+    formSub: 'دقيقة واحدة، وبعدها بتأكد على واتساب.',
+    fieldDate: 'يوم الفرح',
+    fieldStart: 'الفوتوبوث يشتغل الساعة كام',
+    fieldHours: 'كام ساعة',
+    fieldPackage: 'الباقة',
+    fieldVenue: 'المكان',
+    fieldVenueHint: 'اسم القاعة أو الفندق',
+    fieldArea: 'المنطقة',
+    fieldName: 'اسمك',
+    fieldPhone: 'رقم موبايلك',
+    fieldPhoneHint: 'عشان نكلمك ونأكد الحجز',
+    fieldEventType: 'المناسبة',
+    fieldNotes: 'أي حاجة تحب تقولهالنا',
+    fieldNotesHint: 'اختياري',
+
+    eventTypeWedding: 'فرح',
+    eventTypeEngagement: 'خطوبة',
+    eventTypeKatb: 'كتب كتاب',
+    eventTypeBirthday: 'عيد ميلاد',
+    eventTypeCorporate: 'مناسبة شركة',
+    eventTypeOther: 'حاجة تانية',
+
+    submit: 'راجع الحجز',
+    submitting: 'ثانية واحدة',
+
+    summaryTitle: 'مراجعة الحجز',
+    summaryBooking: 'رقم الحجز',
+    summaryDate: 'اليوم',
+    summaryTime: 'الساعة',
+    summaryPackage: 'الباقة',
+    summaryVenue: 'المكان',
+    summaryTotal: 'الإجمالي',
+    summaryDeposit: 'العربون',
+    summaryCta: 'أكّد على واتساب',
+    summaryNote:
+      'الحجز بيتثبت بالعربون. هتبعتلنا الرسالة على واتساب وإحنا هنرد عليك بتفاصيل التحويل.',
+    summaryHoldNote: 'أول ما تبعت الرسالة، اليوم ده بيتحجزلك.',
+
+    errorTaken: 'اليوم ده اتحجز دلوقتي حالاً.',
+    errorTakenSuggest: 'أقرب مواعيد فاضية:',
+    errorRate: 'بعتّ طلبات كتير. استنى شوية وجرب تاني.',
+    errorServer: 'في حاجة وقعت عندنا. جرب تاني، ولو فضلت، كلمنا على واتساب.',
+    errorPickDate: 'اختار يوم من التقويم الأول.',
+
+    statusTitle: 'حجز الفوتوبوث',
+    statusRequested: 'طلبك وصلنا. أكّد على واتساب عشان نثبتلك اليوم.',
+    statusHeld: 'اليوم محجوزلك مؤقتاً لحد ما يوصل العربون.',
+    statusHeldExpiry: 'الحجز المؤقت بينتهي',
+    statusConfirmed: 'الحجز اتأكد. إحنا هنبقى عندك في المعاد.',
+    statusCompleted: 'الفرح خلص. ألف مبروك.',
+    statusCancelled: 'الحجز ده اتلغى.',
+    statusSupport: 'كلمنا على واتساب',
+    statusNotFound: 'مفيش حجز بالرابط ده.',
+
+    supportMessage: 'السلام عليكم، عايز أسأل عن تأجير الفوتوبوث',
+
+    faqTitle: 'أسئلة بتتسأل كتير',
+    faq: [
+      {
+        q: 'الفوتوبوث محتاج مساحة قد إيه؟',
+        a: 'حوالي متر ونص في متر ونص للفوتوبوث نفسه، وزيادة شوية قدامه عشان الضيوف يقفوا. بنحتاج كهرباء عادية قريبة.',
+      },
+      {
+        q: 'بتركبوه إمتى؟',
+        a: 'بنوصل قبل بداية الفرح بساعة ونص على الأقل، وبنفك بعد ما الوقت المتفق عليه يخلص.',
+      },
+      {
+        q: 'الصور بتتطبع على طول؟',
+        a: 'أيوة، الطباعة فورية ومن غير عدد طول مدة الحجز. الضيف بياخد صورته في إيده قبل ما يمشي من عند الفوتوبوث.',
+      },
+      {
+        q: 'هستلم الصور الرقمية إمتى؟',
+        a: 'بنبعتلكم ألبوم رقمي بكل الصور. في الباقة الأساسية بيوصل خلال يومين، وفي باقة الليلة كاملة بيوصل في نفس الليلة.',
+      },
+      {
+        q: 'ينفع ألغي أو أغير اليوم؟',
+        a: 'كلمنا على واتساب في أقرب وقت. تغيير اليوم بيعتمد على إن اليوم الجديد يكون فاضي، والعربون بيتحول معاه.',
+      },
+      {
+        q: 'بتشتغلوا برة القاهرة والجيزة؟',
+        a: 'بنشتغل أساساً في القاهرة والجيزة. لو الفرح في مكان تاني كلمنا وهنقولك لو ينفع وإيه تكلفة الانتقال.',
+      },
+    ],
+  },
+
   landing: {
     /* The page's own metadata, moved off the root layout when the home took the root. */
     metaTitle: 'دعوات فرح إلكترونية',
@@ -506,6 +628,119 @@ const EN: Dictionary = {
     metaTitle: 'QLTY — digital invitations and photo booth hire',
     metaDescription:
       'Digital wedding invitations and photo booth hire in Cairo and Giza. Build an invitation in minutes, or book a photo corner for your event.',
+  },
+
+  photobooth: {
+    metaTitle: 'Photo booth hire for weddings',
+    metaDescription:
+      'Photo booth hire in Cairo and Giza, with instant prints and a digital gallery. See which dates are free and book yours.',
+
+    heroTitle: 'A photo booth your guests will still talk about',
+    heroSubline: 'Instant prints, a backdrop you choose, and an attendant there all night.',
+    heroCta: 'Check available dates',
+
+    packagesTitle: 'Choose your package',
+    packagesSub: 'Every package includes unlimited prints and a digital gallery. What changes is the time and the detail.',
+    packagesChoose: 'Choose this',
+    packagesChosen: 'Chosen',
+    hoursLabel: 'hours',
+    extraHourLabel: 'Extra hour',
+
+    galleryTitle: 'From past events',
+
+    calendarTitle: 'Available dates',
+    calendarSub: 'Updated as bookings come in. Pick a date to carry on.',
+    legendAvailable: 'Free',
+    legendLast: 'Last booth',
+    legendFull: 'Booked',
+    legendUnavailable: 'Not available',
+    calendarLoading: 'Loading dates',
+    calendarError: 'We cannot load the dates right now. Try again in a moment.',
+
+    formTitle: 'Booking details',
+    formSub: 'A minute to fill in, then you confirm on WhatsApp.',
+    fieldDate: 'Date of the event',
+    fieldStart: 'What time should the booth start',
+    fieldHours: 'How many hours',
+    fieldPackage: 'Package',
+    fieldVenue: 'Venue',
+    fieldVenueHint: 'The name of the hall or hotel',
+    fieldArea: 'Area',
+    fieldName: 'Your name',
+    fieldPhone: 'Your mobile number',
+    fieldPhoneHint: 'So we can reach you and confirm',
+    fieldEventType: 'Occasion',
+    fieldNotes: 'Anything you want us to know',
+    fieldNotesHint: 'Optional',
+
+    eventTypeWedding: 'Wedding',
+    eventTypeEngagement: 'Engagement',
+    eventTypeKatb: 'Katb ketab',
+    eventTypeBirthday: 'Birthday',
+    eventTypeCorporate: 'Company event',
+    eventTypeOther: 'Something else',
+
+    submit: 'Review the booking',
+    submitting: 'One moment',
+
+    summaryTitle: 'Review your booking',
+    summaryBooking: 'Booking ID',
+    summaryDate: 'Date',
+    summaryTime: 'Start time',
+    summaryPackage: 'Package',
+    summaryVenue: 'Venue',
+    summaryTotal: 'Total',
+    summaryDeposit: 'Deposit',
+    summaryCta: 'Confirm on WhatsApp',
+    summaryNote:
+      'A deposit holds the date. Send us the message on WhatsApp and we will reply with the transfer details.',
+    summaryHoldNote: 'Sending the message holds this date for you.',
+
+    errorTaken: 'That date was taken while you were filling this in.',
+    errorTakenSuggest: 'The next free dates:',
+    errorRate: 'That is a lot of requests. Wait a little and try again.',
+    errorServer: 'Something broke on our side. Try again, and if it keeps happening, message us on WhatsApp.',
+    errorPickDate: 'Pick a date from the calendar first.',
+
+    statusTitle: 'Photo booth booking',
+    statusRequested: 'We have your request. Confirm on WhatsApp so we can hold the date.',
+    statusHeld: 'The date is held for you until the deposit arrives.',
+    statusHeldExpiry: 'The hold runs out',
+    statusConfirmed: 'Booked. We will be there.',
+    statusCompleted: 'The event is over. Congratulations.',
+    statusCancelled: 'This booking was cancelled.',
+    statusSupport: 'Message us on WhatsApp',
+    statusNotFound: 'There is no booking at this link.',
+
+    supportMessage: 'Hello, I would like to ask about photo booth hire',
+
+    faqTitle: 'Questions we get asked',
+    faq: [
+      {
+        q: 'How much space does the booth need?',
+        a: 'About a metre and a half square for the booth itself, plus room in front for guests to stand. We need an ordinary power socket nearby.',
+      },
+      {
+        q: 'When do you set up?',
+        a: 'We arrive at least an hour and a half before the event starts, and pack up once the booked time is over.',
+      },
+      {
+        q: 'Are the photos printed straight away?',
+        a: 'Yes. Printing is instant and unlimited for the whole booking. Guests walk away from the booth holding their photo.',
+      },
+      {
+        q: 'When do we get the digital photos?',
+        a: 'We send a digital gallery of every shot. On Essential it arrives within two days; on Full night it arrives the same night.',
+      },
+      {
+        q: 'Can I cancel or move the date?',
+        a: 'Message us on WhatsApp as soon as you can. Moving the date depends on the new one being free, and the deposit moves with it.',
+      },
+      {
+        q: 'Do you work outside Cairo and Giza?',
+        a: 'We mainly work in Cairo and Giza. If your event is elsewhere, message us and we will tell you whether we can and what the travel costs.',
+      },
+    ],
   },
 
   landing: {

@@ -178,6 +178,22 @@ describe('a day as the customer sees it', () => {
     assert.equal(on('2026-03-09', { unitsConfirmed: 0 }), 'unavailable');
   });
 
+  /*
+   * A business with one booth must not label every free night "last one". True, useless,
+   * and it reads exactly like the scarcity theatre fake booking sites run.
+   */
+  it('does not cry last booth when there is only ever one booth', () => {
+    const single = { ...SETTINGS, unitCount: 1 };
+    assert.equal(on('2026-03-20', {}, single), 'available');
+    assert.equal(on('2026-03-20', { unitsConfirmed: 1 }, single), 'full');
+  });
+
+  it('does say last booth when one of several is left', () => {
+    const three = { ...SETTINGS, unitCount: 3 };
+    assert.equal(on('2026-03-20', { unitsConfirmed: 1 }, three), 'available');
+    assert.equal(on('2026-03-20', { unitsConfirmed: 2 }, three), 'last');
+  });
+
   it('reports full rather than negative when a human has overbooked', () => {
     assert.equal(on('2026-03-20', { unitsConfirmed: 5 }), 'full');
   });

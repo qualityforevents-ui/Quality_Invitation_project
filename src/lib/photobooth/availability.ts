@@ -159,7 +159,18 @@ export function dayStatus({ date, today, occupancy, settings }: DayStatusInput):
   const free = settings.unitCount - occupiedUnits(occupancy);
 
   if (free <= 0) return 'full';
-  if (free === 1) return 'last';
+
+  /*
+   * "Last booth" is only information when there is more than one.
+   *
+   * A business that owns a single booth would otherwise have every free night on the
+   * calendar labelled "last one", which is true, useless, and indistinguishable from
+   * the scarcity theatre that fake booking sites run. Somebody looking at a month of
+   * identical warnings learns to ignore the one night it would actually have mattered
+   * on. With two or more booths the label means what it says: one is gone.
+   */
+  if (free === 1 && settings.unitCount > 1) return 'last';
+
   return 'available';
 }
 
