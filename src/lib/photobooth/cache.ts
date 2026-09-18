@@ -25,5 +25,25 @@ export const BOOTH_AVAILABILITY_TAG = 'booth-availability';
  * dates in it.
  */
 export function revalidateBoothAvailability(): void {
-  revalidateTag(BOOTH_AVAILABILITY_TAG, 'max');
+  /*
+   * Tolerates being called with no request around it.
+   *
+   * `revalidateTag` reaches for Next's per request store and throws an invariant when
+   * there is not one. Every path that changes a booking funnels through here, and two
+   * of them are plain Node processes rather than requests: `npm run notion:import` and
+   * anything else run from scripts/. Without this guard the import throws after the
+   * reservation has already been written, which leaves the database correct, the
+   * script reporting total failure, and somebody re-running it to fix a problem that
+   * does not exist.
+   *
+   * Swallowing it is right rather than merely convenient: outside a request there is no
+   * rendered cache to invalidate, so there is nothing being skipped. The running site
+   * picks the change up through the sixty second expiry, and the reconcile job that
+   * follows an import runs inside a route handler where the call works normally.
+   */
+  try {
+    revalidateTag(BOOTH_AVAILABILITY_TAG, 'max');
+  } catch {
+    // No request context. See above.
+  }
 }
