@@ -789,8 +789,8 @@
       "source_location": "L32",
       "_origin": "ast",
       "id": "package_dependencies_class_variance_authority",
-      "community": 95,
-      "community_name": "sheet.tsx",
+      "community": 40,
+      "community_name": "Styling Utility Dependencies",
       "norm_label": "class-variance-authority"
     },
     {
@@ -800,8 +800,8 @@
       "source_location": "L32",
       "_origin": "ast",
       "id": "class_variance_authority",
-      "community": 95,
-      "community_name": "sheet.tsx",
+      "community": 40,
+      "community_name": "Styling Utility Dependencies",
       "norm_label": "class-variance-authority"
     },
     {
@@ -965,8 +965,8 @@
       "source_location": "L40",
       "_origin": "ast",
       "id": "package_dependencies_radix_ui",
-      "community": 40,
-      "community_name": "Styling Utility Dependencies",
+      "community": 101,
+      "community_name": "(site)/layout.tsx",
       "norm_label": "radix-ui"
     },
     {
@@ -976,8 +976,8 @@
       "source_location": "L40",
       "_origin": "ast",
       "id": "radix_ui",
-      "community": 40,
-      "community_name": "Styling Utility Dependencies",
+      "community": 101,
+      "community_name": "(site)/layout.tsx",
       "norm_label": "radix-ui"
     },
     {
@@ -1735,8 +1735,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "scripts_notion_import",
-      "community": 57,
-      "community_name": "Framer Motion Dependency",
+      "community": 15,
+      "community_name": "Header, Reviews & Inputs",
       "norm_label": "notion-import.ts"
     },
     {
@@ -1746,8 +1746,8 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "scripts_notion_import_main",
-      "community": 57,
-      "community_name": "Framer Motion Dependency",
+      "community": 15,
+      "community_name": "Header, Reviews & Inputs",
       "norm_label": "main()"
     },
     {
@@ -1812,8 +1812,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_site_layout",
-      "community": 101,
-      "community_name": "(site)/layout.tsx",
+      "community": 37,
+      "community_name": "Popover Primitive",
       "norm_label": "(site)/layout.tsx"
     },
     {
@@ -1823,8 +1823,8 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "src_app_site_layout_sitelayout",
-      "community": 101,
-      "community_name": "(site)/layout.tsx",
+      "community": 37,
+      "community_name": "Popover Primitive",
       "norm_label": "sitelayout()"
     },
     {
@@ -1834,8 +1834,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_site_page",
-      "community": 37,
-      "community_name": "Popover Primitive",
+      "community": 14,
+      "community_name": "Landing Page & Session",
       "norm_label": "(site)/page.tsx"
     },
     {
@@ -1856,8 +1856,8 @@
       "source_location": "L54",
       "_origin": "ast",
       "id": "src_app_site_page_homepage",
-      "community": 37,
-      "community_name": "Popover Primitive",
+      "community": 14,
+      "community_name": "Landing Page & Session",
       "norm_label": "homepage()"
     },
     {
@@ -1922,8 +1922,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_site_photobooth_page",
-      "community": 58,
-      "community_name": "heic2any Dependency",
+      "community": 2,
+      "community_name": "Admin Pages & Chrome",
       "norm_label": "photobooth/page.tsx"
     },
     {
@@ -1955,8 +1955,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_site_photobooth_request_token_page",
-      "community": 70,
-      "community_name": "availability/route.ts",
+      "community": 50,
+      "community_name": "Brand Logo & Not Available",
       "norm_label": "[token]/page.tsx"
     },
     {
@@ -1966,8 +1966,8 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "src_app_site_photobooth_request_token_page_metadata",
-      "community": 70,
-      "community_name": "availability/route.ts",
+      "community": 50,
+      "community_name": "Brand Logo & Not Available",
       "norm_label": "metadata"
     },
     {
@@ -1977,8 +1977,8 @@
       "source_location": "L39",
       "_origin": "ast",
       "id": "src_app_site_photobooth_request_token_page_boothstatuspage",
-      "community": 70,
-      "community_name": "availability/route.ts",
+      "community": 50,
+      "community_name": "Brand Logo & Not Available",
       "norm_label": "boothstatuspage()"
     },
     {
@@ -1988,8 +1988,8 @@
       "source_location": "L130",
       "_origin": "ast",
       "id": "src_app_site_photobooth_request_token_page_tone",
-      "community": 70,
-      "community_name": "availability/route.ts",
+      "community": 50,
+      "community_name": "Brand Logo & Not Available",
       "norm_label": "tone"
     },
     {
@@ -1999,8 +1999,8 @@
       "source_location": "L139",
       "_origin": "ast",
       "id": "src_app_site_photobooth_request_token_page_statusbanner",
-      "community": 70,
-      "community_name": "availability/route.ts",
+      "community": 50,
+      "community_name": "Brand Logo & Not Available",
       "norm_label": "statusbanner()"
     },
     {
@@ -2010,8 +2010,8 @@
       "source_location": "L167",
       "_origin": "ast",
       "id": "src_app_site_photobooth_request_token_page_row",
-      "community": 70,
-      "community_name": "availability/route.ts",
+      "community": 50,
+      "community_name": "Brand Logo & Not Available",
       "norm_label": "row()"
     },
     {
@@ -2560,8 +2560,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_admin_booth_settings_page",
-      "community": 57,
-      "community_name": "Framer Motion Dependency",
+      "community": 5,
+      "community_name": "Music & Photo Upload",
       "norm_label": "settings/page.tsx"
     },
     {
@@ -2571,8 +2571,8 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "src_app_admin_booth_settings_page_weekdays",
-      "community": 57,
-      "community_name": "Framer Motion Dependency",
+      "community": 5,
+      "community_name": "Music & Photo Upload",
       "norm_label": "weekdays"
     },
     {
@@ -2582,8 +2582,8 @@
       "source_location": "L37",
       "_origin": "ast",
       "id": "src_app_admin_booth_settings_page_syncnow",
-      "community": 57,
-      "community_name": "Framer Motion Dependency",
+      "community": 5,
+      "community_name": "Music & Photo Upload",
       "norm_label": "syncnow()"
     },
     {
@@ -2593,8 +2593,8 @@
       "source_location": "L48",
       "_origin": "ast",
       "id": "src_app_admin_booth_settings_page_boothsettingspage",
-      "community": 57,
-      "community_name": "Framer Motion Dependency",
+      "community": 5,
+      "community_name": "Music & Photo Upload",
       "norm_label": "boothsettingspage()"
     },
     {
@@ -2604,8 +2604,8 @@
       "source_location": "L201",
       "_origin": "ast",
       "id": "src_app_admin_booth_settings_page_number",
-      "community": 57,
-      "community_name": "Framer Motion Dependency",
+      "community": 5,
+      "community_name": "Music & Photo Upload",
       "norm_label": "number()"
     },
     {
@@ -2615,8 +2615,8 @@
       "source_location": "L227",
       "_origin": "ast",
       "id": "src_app_admin_booth_settings_page_row",
-      "community": 57,
-      "community_name": "Framer Motion Dependency",
+      "community": 5,
+      "community_name": "Music & Photo Upload",
       "norm_label": "row()"
     },
     {
@@ -3055,8 +3055,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_api_notion_reconcile_route",
-      "community": 57,
-      "community_name": "Framer Motion Dependency",
+      "community": 15,
+      "community_name": "Header, Reviews & Inputs",
       "norm_label": "reconcile/route.ts"
     },
     {
@@ -3066,8 +3066,8 @@
       "source_location": "L33",
       "_origin": "ast",
       "id": "src_app_api_notion_reconcile_route_authorised",
-      "community": 57,
-      "community_name": "Framer Motion Dependency",
+      "community": 15,
+      "community_name": "Header, Reviews & Inputs",
       "norm_label": "authorised()"
     },
     {
@@ -3077,8 +3077,8 @@
       "source_location": "L46",
       "_origin": "ast",
       "id": "src_app_api_notion_reconcile_route_get",
-      "community": 57,
-      "community_name": "Framer Motion Dependency",
+      "community": 15,
+      "community_name": "Header, Reviews & Inputs",
       "norm_label": "get()"
     },
     {
@@ -3132,8 +3132,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_api_photobooth_availability_route",
-      "community": 57,
-      "community_name": "Framer Motion Dependency",
+      "community": 15,
+      "community_name": "Header, Reviews & Inputs",
       "norm_label": "availability/route.ts"
     },
     {
@@ -3143,8 +3143,8 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "src_app_api_photobooth_availability_route_queryschema",
-      "community": 57,
-      "community_name": "Framer Motion Dependency",
+      "community": 15,
+      "community_name": "Header, Reviews & Inputs",
       "norm_label": "queryschema"
     },
     {
@@ -3154,8 +3154,8 @@
       "source_location": "L44",
       "_origin": "ast",
       "id": "src_app_api_photobooth_availability_route_readavailability",
-      "community": 57,
-      "community_name": "Framer Motion Dependency",
+      "community": 15,
+      "community_name": "Header, Reviews & Inputs",
       "norm_label": "readavailability"
     },
     {
@@ -3165,8 +3165,8 @@
       "source_location": "L50",
       "_origin": "ast",
       "id": "src_app_api_photobooth_availability_route_get",
-      "community": 57,
-      "community_name": "Framer Motion Dependency",
+      "community": 15,
+      "community_name": "Header, Reviews & Inputs",
       "norm_label": "get()"
     },
     {
@@ -3352,8 +3352,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_sample_page",
-      "community": 72,
-      "community_name": "ActionButton.tsx",
+      "community": 76,
+      "community_name": "[token]/page.tsx",
       "norm_label": "sample/page.tsx"
     },
     {
@@ -3363,8 +3363,8 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "src_app_sample_page_metadata",
-      "community": 72,
-      "community_name": "ActionButton.tsx",
+      "community": 76,
+      "community_name": "[token]/page.tsx",
       "norm_label": "metadata"
     },
     {
@@ -3638,8 +3638,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_brandlogo",
-      "community": 70,
-      "community_name": "availability/route.ts",
+      "community": 50,
+      "community_name": "Brand Logo & Not Available",
       "norm_label": "brandlogo.tsx"
     },
     {
@@ -3649,8 +3649,8 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "src_components_brandlogo_brandlogo",
-      "community": 70,
-      "community_name": "availability/route.ts",
+      "community": 50,
+      "community_name": "Brand Logo & Not Available",
       "norm_label": "brandlogo()"
     },
     {
@@ -3660,8 +3660,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_directionprovider",
-      "community": 101,
-      "community_name": "(site)/layout.tsx",
+      "community": 37,
+      "community_name": "Popover Primitive",
       "norm_label": "directionprovider.tsx"
     },
     {
@@ -3671,8 +3671,8 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "src_components_directionprovider_directionprovider",
-      "community": 101,
-      "community_name": "(site)/layout.tsx",
+      "community": 37,
+      "community_name": "Popover Primitive",
       "norm_label": "directionprovider()"
     },
     {
@@ -3704,8 +3704,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_supportbutton",
-      "community": 76,
-      "community_name": "[token]/page.tsx",
+      "community": 72,
+      "community_name": "ActionButton.tsx",
       "norm_label": "supportbutton.tsx"
     },
     {
@@ -3715,8 +3715,8 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "src_components_supportbutton_supportbutton",
-      "community": 76,
-      "community_name": "[token]/page.tsx",
+      "community": 72,
+      "community_name": "ActionButton.tsx",
       "norm_label": "supportbutton()"
     },
     {
@@ -3726,8 +3726,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_syncdocumentlang",
-      "community": 101,
-      "community_name": "(site)/layout.tsx",
+      "community": 37,
+      "community_name": "Popover Primitive",
       "norm_label": "syncdocumentlang.tsx"
     },
     {
@@ -3737,8 +3737,8 @@
       "source_location": "L18",
       "_origin": "ast",
       "id": "src_components_syncdocumentlang_syncdocumentlang",
-      "community": 101,
-      "community_name": "(site)/layout.tsx",
+      "community": 37,
+      "community_name": "Popover Primitive",
       "norm_label": "syncdocumentlang()"
     },
     {
@@ -3880,8 +3880,8 @@
       "source_location": "L99",
       "_origin": "ast",
       "id": "src_components_admin_adminchrome_sectionheading",
-      "community": 57,
-      "community_name": "Framer Motion Dependency",
+      "community": 5,
+      "community_name": "Music & Photo Upload",
       "norm_label": "sectionheading()"
     },
     {
@@ -4276,8 +4276,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_booth_boothgallery",
-      "community": 14,
-      "community_name": "Landing Page & Session",
+      "community": 2,
+      "community_name": "Admin Pages & Chrome",
       "norm_label": "boothgallery.tsx"
     },
     {
@@ -4287,8 +4287,8 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "src_components_booth_boothgallery_boothgallery",
-      "community": 14,
-      "community_name": "Landing Page & Session",
+      "community": 2,
+      "community_name": "Admin Pages & Chrome",
       "norm_label": "boothgallery()"
     },
     {
@@ -4298,8 +4298,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_booth_boothhero",
-      "community": 37,
-      "community_name": "Popover Primitive",
+      "community": 14,
+      "community_name": "Landing Page & Session",
       "norm_label": "boothhero.tsx"
     },
     {
@@ -4309,8 +4309,8 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "src_components_booth_boothhero_boothhero",
-      "community": 37,
-      "community_name": "Popover Primitive",
+      "community": 14,
+      "community_name": "Landing Page & Session",
       "norm_label": "boothhero()"
     },
     {
@@ -4320,8 +4320,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_booth_boothpackages",
-      "community": 58,
-      "community_name": "heic2any Dependency",
+      "community": 2,
+      "community_name": "Admin Pages & Chrome",
       "norm_label": "boothpackages.tsx"
     },
     {
@@ -4331,8 +4331,8 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "src_components_booth_boothpackages_boothpackages",
-      "community": 58,
-      "community_name": "heic2any Dependency",
+      "community": 2,
+      "community_name": "Admin Pages & Chrome",
       "norm_label": "boothpackages()"
     },
     {
@@ -4595,8 +4595,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_flow_pendingbanner",
-      "community": 2,
-      "community_name": "Admin Pages & Chrome",
+      "community": 70,
+      "community_name": "availability/route.ts",
       "norm_label": "pendingbanner.tsx"
     },
     {
@@ -4980,8 +4980,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_home_hero",
-      "community": 37,
-      "community_name": "Popover Primitive",
+      "community": 14,
+      "community_name": "Landing Page & Session",
       "norm_label": "hero.tsx"
     },
     {
@@ -4991,8 +4991,8 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "src_components_home_hero_hero",
-      "community": 37,
-      "community_name": "Popover Primitive",
+      "community": 14,
+      "community_name": "Landing Page & Session",
       "norm_label": "hero()"
     },
     {
@@ -5013,8 +5013,8 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "src_components_home_homeheader_homeheader",
-      "community": 58,
-      "community_name": "heic2any Dependency",
+      "community": 2,
+      "community_name": "Admin Pages & Chrome",
       "norm_label": "homeheader()"
     },
     {
@@ -5024,8 +5024,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_home_howitworkscompact",
-      "community": 37,
-      "community_name": "Popover Primitive",
+      "community": 14,
+      "community_name": "Landing Page & Session",
       "norm_label": "howitworkscompact.tsx"
     },
     {
@@ -5035,8 +5035,8 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "src_components_home_howitworkscompact_howitworkscompact",
-      "community": 37,
-      "community_name": "Popover Primitive",
+      "community": 14,
+      "community_name": "Landing Page & Session",
       "norm_label": "howitworkscompact()"
     },
     {
@@ -5046,8 +5046,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_home_instagramstrip",
-      "community": 14,
-      "community_name": "Landing Page & Session",
+      "community": 58,
+      "community_name": "heic2any Dependency",
       "norm_label": "instagramstrip.tsx"
     },
     {
@@ -5057,8 +5057,8 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "src_components_home_instagramstrip_instagramstrip",
-      "community": 14,
-      "community_name": "Landing Page & Session",
+      "community": 58,
+      "community_name": "heic2any Dependency",
       "norm_label": "instagramstrip()"
     },
     {
@@ -5068,8 +5068,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_home_pricetag",
-      "community": 37,
-      "community_name": "Popover Primitive",
+      "community": 14,
+      "community_name": "Landing Page & Session",
       "norm_label": "pricetag.tsx"
     },
     {
@@ -5079,8 +5079,8 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "src_components_home_pricetag_pricetag",
-      "community": 37,
-      "community_name": "Popover Primitive",
+      "community": 14,
+      "community_name": "Landing Page & Session",
       "norm_label": "pricetag()"
     },
     {
@@ -5090,8 +5090,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_home_servicecard",
-      "community": 14,
-      "community_name": "Landing Page & Session",
+      "community": 58,
+      "community_name": "heic2any Dependency",
       "norm_label": "servicecard.tsx"
     },
     {
@@ -5101,8 +5101,8 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "src_components_home_servicecard_servicecard",
-      "community": 14,
-      "community_name": "Landing Page & Session",
+      "community": 58,
+      "community_name": "heic2any Dependency",
       "norm_label": "servicecard()"
     },
     {
@@ -5112,8 +5112,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_home_sitefooter",
-      "community": 76,
-      "community_name": "[token]/page.tsx",
+      "community": 72,
+      "community_name": "ActionButton.tsx",
       "norm_label": "sitefooter.tsx"
     },
     {
@@ -5123,8 +5123,8 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "src_components_home_sitefooter_sitefooter",
-      "community": 76,
-      "community_name": "[token]/page.tsx",
+      "community": 72,
+      "community_name": "ActionButton.tsx",
       "norm_label": "sitefooter()"
     },
     {
@@ -5266,8 +5266,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_invitation_invitationexperience",
-      "community": 71,
-      "community_name": "@radix-ui/react-toggle",
+      "community": 75,
+      "community_name": "photobooth/validation.ts",
       "norm_label": "invitationexperience.tsx"
     },
     {
@@ -5277,8 +5277,8 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "src_components_invitation_invitationexperience_invitationexperience",
-      "community": 71,
-      "community_name": "@radix-ui/react-toggle",
+      "community": 75,
+      "community_name": "photobooth/validation.ts",
       "norm_label": "invitationexperience()"
     },
     {
@@ -5288,8 +5288,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_invitation_invitationshell",
-      "community": 101,
-      "community_name": "(site)/layout.tsx",
+      "community": 37,
+      "community_name": "Popover Primitive",
       "norm_label": "invitationshell.tsx"
     },
     {
@@ -5299,8 +5299,8 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "src_components_invitation_invitationshell_invitationshell",
-      "community": 101,
-      "community_name": "(site)/layout.tsx",
+      "community": 37,
+      "community_name": "Popover Primitive",
       "norm_label": "invitationshell()"
     },
     {
@@ -5310,8 +5310,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_invitation_miniinvitation",
-      "community": 101,
-      "community_name": "(site)/layout.tsx",
+      "community": 37,
+      "community_name": "Popover Primitive",
       "norm_label": "miniinvitation.tsx"
     },
     {
@@ -5321,8 +5321,8 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "src_components_invitation_miniinvitation_rule",
-      "community": 101,
-      "community_name": "(site)/layout.tsx",
+      "community": 37,
+      "community_name": "Popover Primitive",
       "norm_label": "rule()"
     },
     {
@@ -5332,8 +5332,8 @@
       "source_location": "L35",
       "_origin": "ast",
       "id": "src_components_invitation_miniinvitation_miniinvitation",
-      "community": 101,
-      "community_name": "(site)/layout.tsx",
+      "community": 37,
+      "community_name": "Popover Primitive",
       "norm_label": "miniinvitation()"
     },
     {
@@ -5365,8 +5365,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_invitation_mutetoggle",
-      "community": 71,
-      "community_name": "@radix-ui/react-toggle",
+      "community": 75,
+      "community_name": "photobooth/validation.ts",
       "norm_label": "mutetoggle.tsx"
     },
     {
@@ -5376,8 +5376,8 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "src_components_invitation_mutetoggle_mutetoggle",
-      "community": 71,
-      "community_name": "@radix-ui/react-toggle",
+      "community": 75,
+      "community_name": "photobooth/validation.ts",
       "norm_label": "mutetoggle()"
     },
     {
@@ -5607,8 +5607,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_landing_reviews",
-      "community": 2,
-      "community_name": "Admin Pages & Chrome",
+      "community": 70,
+      "community_name": "availability/route.ts",
       "norm_label": "reviews.tsx"
     },
     {
@@ -5618,8 +5618,8 @@
       "source_location": "L18",
       "_origin": "ast",
       "id": "src_components_landing_reviews_reviews",
-      "community": 25,
-      "community_name": "Photo Frame & Qandeel Theme",
+      "community": 70,
+      "community_name": "availability/route.ts",
       "norm_label": "reviews()"
     },
     {
@@ -5629,8 +5629,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_media_siteimage",
-      "community": 14,
-      "community_name": "Landing Page & Session",
+      "community": 58,
+      "community_name": "heic2any Dependency",
       "norm_label": "siteimage.tsx"
     },
     {
@@ -5640,8 +5640,8 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "src_components_media_siteimage_siteimage",
-      "community": 14,
-      "community_name": "Landing Page & Session",
+      "community": 58,
+      "community_name": "heic2any Dependency",
       "norm_label": "siteimage()"
     },
     {
@@ -5673,8 +5673,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_meta_sampleviewedbeacon",
-      "community": 72,
-      "community_name": "ActionButton.tsx",
+      "community": 76,
+      "community_name": "[token]/page.tsx",
       "norm_label": "sampleviewedbeacon.tsx"
     },
     {
@@ -5684,8 +5684,8 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "src_components_meta_sampleviewedbeacon_sampleviewedbeacon",
-      "community": 72,
-      "community_name": "ActionButton.tsx",
+      "community": 76,
+      "community_name": "[token]/page.tsx",
       "norm_label": "sampleviewedbeacon()"
     },
     {
@@ -5695,8 +5695,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_site_backlink",
-      "community": 72,
-      "community_name": "ActionButton.tsx",
+      "community": 76,
+      "community_name": "[token]/page.tsx",
       "norm_label": "backlink.tsx"
     },
     {
@@ -5706,8 +5706,8 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "src_components_site_backlink_backlink",
-      "community": 72,
-      "community_name": "ActionButton.tsx",
+      "community": 76,
+      "community_name": "[token]/page.tsx",
       "norm_label": "backlink()"
     },
     {
@@ -5717,8 +5717,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_site_continuedraft",
-      "community": 2,
-      "community_name": "Admin Pages & Chrome",
+      "community": 14,
+      "community_name": "Landing Page & Session",
       "norm_label": "continuedraft.tsx"
     },
     {
@@ -5728,8 +5728,8 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "src_components_site_continuedraft_continuedraft",
-      "community": 37,
-      "community_name": "Popover Primitive",
+      "community": 14,
+      "community_name": "Landing Page & Session",
       "norm_label": "continuedraft()"
     },
     {
@@ -5739,8 +5739,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_site_trackedsupportbutton",
-      "community": 76,
-      "community_name": "[token]/page.tsx",
+      "community": 72,
+      "community_name": "ActionButton.tsx",
       "norm_label": "trackedsupportbutton.tsx"
     },
     {
@@ -5750,8 +5750,8 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "src_components_site_trackedsupportbutton_trackedsupportbutton",
-      "community": 76,
-      "community_name": "[token]/page.tsx",
+      "community": 72,
+      "community_name": "ActionButton.tsx",
       "norm_label": "trackedsupportbutton()"
     },
     {
@@ -6289,8 +6289,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_ui_popover",
-      "community": 50,
-      "community_name": "Brand Logo & Not Available",
+      "community": 57,
+      "community_name": "Framer Motion Dependency",
       "norm_label": "popover.tsx"
     },
     {
@@ -6300,8 +6300,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_components_ui_popover_popover",
-      "community": 50,
-      "community_name": "Brand Logo & Not Available",
+      "community": 57,
+      "community_name": "Framer Motion Dependency",
       "norm_label": "popover()"
     },
     {
@@ -6311,8 +6311,8 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "src_components_ui_popover_popovertrigger",
-      "community": 50,
-      "community_name": "Brand Logo & Not Available",
+      "community": 57,
+      "community_name": "Framer Motion Dependency",
       "norm_label": "popovertrigger()"
     },
     {
@@ -6322,8 +6322,8 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "src_components_ui_popover_popovercontent",
-      "community": 50,
-      "community_name": "Brand Logo & Not Available",
+      "community": 57,
+      "community_name": "Framer Motion Dependency",
       "norm_label": "popovercontent()"
     },
     {
@@ -6333,8 +6333,8 @@
       "source_location": "L42",
       "_origin": "ast",
       "id": "src_components_ui_popover_popoveranchor",
-      "community": 50,
-      "community_name": "Brand Logo & Not Available",
+      "community": 57,
+      "community_name": "Framer Motion Dependency",
       "norm_label": "popoveranchor()"
     },
     {
@@ -6344,8 +6344,8 @@
       "source_location": "L48",
       "_origin": "ast",
       "id": "src_components_ui_popover_popoverheader",
-      "community": 50,
-      "community_name": "Brand Logo & Not Available",
+      "community": 57,
+      "community_name": "Framer Motion Dependency",
       "norm_label": "popoverheader()"
     },
     {
@@ -6355,8 +6355,8 @@
       "source_location": "L58",
       "_origin": "ast",
       "id": "src_components_ui_popover_popovertitle",
-      "community": 50,
-      "community_name": "Brand Logo & Not Available",
+      "community": 57,
+      "community_name": "Framer Motion Dependency",
       "norm_label": "popovertitle()"
     },
     {
@@ -6366,8 +6366,8 @@
       "source_location": "L68",
       "_origin": "ast",
       "id": "src_components_ui_popover_popoverdescription",
-      "community": 50,
-      "community_name": "Brand Logo & Not Available",
+      "community": 57,
+      "community_name": "Framer Motion Dependency",
       "norm_label": "popoverdescription()"
     },
     {
@@ -6751,8 +6751,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_ui_sonner",
-      "community": 101,
-      "community_name": "(site)/layout.tsx",
+      "community": 37,
+      "community_name": "Popover Primitive",
       "norm_label": "sonner.tsx"
     },
     {
@@ -6762,8 +6762,8 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "src_components_ui_sonner_toaster",
-      "community": 101,
-      "community_name": "(site)/layout.tsx",
+      "community": 37,
+      "community_name": "Popover Primitive",
       "norm_label": "toaster()"
     },
     {
@@ -7015,8 +7015,8 @@
       "source_location": "L1082",
       "_origin": "ast",
       "id": "src_i18n_ui_dirfor",
-      "community": 101,
-      "community_name": "(site)/layout.tsx",
+      "community": 37,
+      "community_name": "Popover Primitive",
       "norm_label": "dirfor()"
     },
     {
@@ -7026,8 +7026,8 @@
       "source_location": "L1086",
       "_origin": "ast",
       "id": "src_i18n_ui_htmllangfor",
-      "community": 101,
-      "community_name": "(site)/layout.tsx",
+      "community": 37,
+      "community_name": "Popover Primitive",
       "norm_label": "htmllangfor()"
     },
     {
@@ -7367,8 +7367,8 @@
       "source_location": "L74",
       "_origin": "ast",
       "id": "src_lib_constants_whatsapplink",
-      "community": 76,
-      "community_name": "[token]/page.tsx",
+      "community": 72,
+      "community_name": "ActionButton.tsx",
       "norm_label": "whatsapplink()"
     },
     {
@@ -7554,8 +7554,8 @@
       "source_location": "L127",
       "_origin": "ast",
       "id": "src_lib_db_boothsyncstatedoc",
-      "community": 57,
-      "community_name": "Framer Motion Dependency",
+      "community": 15,
+      "community_name": "Header, Reviews & Inputs",
       "norm_label": "boothsyncstatedoc()"
     },
     {
@@ -7598,8 +7598,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_lib_draft",
-      "community": 2,
-      "community_name": "Admin Pages & Chrome",
+      "community": 70,
+      "community_name": "availability/route.ts",
       "norm_label": "draft.ts"
     },
     {
@@ -7609,8 +7609,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "src_lib_draft_loadeddraft",
-      "community": 2,
-      "community_name": "Admin Pages & Chrome",
+      "community": 70,
+      "community_name": "availability/route.ts",
       "norm_label": "loadeddraft"
     },
     {
@@ -9853,8 +9853,8 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "src_lib_notion_client_isnotionconfigured",
-      "community": 57,
-      "community_name": "Framer Motion Dependency",
+      "community": 15,
+      "community_name": "Header, Reviews & Inputs",
       "norm_label": "isnotionconfigured()"
     },
     {
@@ -9985,8 +9985,8 @@
       "source_location": "L195",
       "_origin": "ast",
       "id": "src_lib_notion_client_queryeditedsince",
-      "community": 57,
-      "community_name": "Framer Motion Dependency",
+      "community": 15,
+      "community_name": "Header, Reviews & Inputs",
       "norm_label": "queryeditedsince()"
     },
     {
@@ -10007,8 +10007,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_lib_notion_reconcile",
-      "community": 57,
-      "community_name": "Framer Motion Dependency",
+      "community": 15,
+      "community_name": "Header, Reviews & Inputs",
       "norm_label": "reconcile.ts"
     },
     {
@@ -10018,8 +10018,8 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "src_lib_notion_reconcile_reconcilereport",
-      "community": 57,
-      "community_name": "Framer Motion Dependency",
+      "community": 15,
+      "community_name": "Header, Reviews & Inputs",
       "norm_label": "reconcilereport"
     },
     {
@@ -10029,8 +10029,8 @@
       "source_location": "L43",
       "_origin": "ast",
       "id": "src_lib_notion_reconcile_acquirelock",
-      "community": 57,
-      "community_name": "Framer Motion Dependency",
+      "community": 15,
+      "community_name": "Header, Reviews & Inputs",
       "norm_label": "acquirelock()"
     },
     {
@@ -10040,8 +10040,8 @@
       "source_location": "L59",
       "_origin": "ast",
       "id": "src_lib_notion_reconcile_releaselock",
-      "community": 57,
-      "community_name": "Framer Motion Dependency",
+      "community": 15,
+      "community_name": "Header, Reviews & Inputs",
       "norm_label": "releaselock()"
     },
     {
@@ -10051,8 +10051,8 @@
       "source_location": "L71",
       "_origin": "ast",
       "id": "src_lib_notion_reconcile_runincrementalsync",
-      "community": 57,
-      "community_name": "Framer Motion Dependency",
+      "community": 15,
+      "community_name": "Header, Reviews & Inputs",
       "norm_label": "runincrementalsync()"
     },
     {
@@ -10062,8 +10062,8 @@
       "source_location": "L193",
       "_origin": "ast",
       "id": "src_lib_notion_reconcile_syncstate",
-      "community": 57,
-      "community_name": "Framer Motion Dependency",
+      "community": 15,
+      "community_name": "Header, Reviews & Inputs",
       "norm_label": "syncstate"
     },
     {
@@ -10073,8 +10073,8 @@
       "source_location": "L201",
       "_origin": "ast",
       "id": "src_lib_notion_reconcile_getsyncstate",
-      "community": 57,
-      "community_name": "Framer Motion Dependency",
+      "community": 15,
+      "community_name": "Header, Reviews & Inputs",
       "norm_label": "getsyncstate()"
     },
     {
@@ -10084,8 +10084,8 @@
       "source_location": "L227",
       "_origin": "ast",
       "id": "src_lib_notion_reconcile_isincrementalstale",
-      "community": 57,
-      "community_name": "Framer Motion Dependency",
+      "community": 15,
+      "community_name": "Header, Reviews & Inputs",
       "norm_label": "isincrementalstale()"
     },
     {
@@ -10953,8 +10953,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_lib_photobooth_config",
-      "community": 14,
-      "community_name": "Landing Page & Session",
+      "community": 58,
+      "community_name": "heic2any Dependency",
       "norm_label": "config.ts"
     },
     {
@@ -10964,8 +10964,8 @@
       "source_location": "L70",
       "_origin": "ast",
       "id": "src_lib_photobooth_config_booth_closed_weekdays",
-      "community": 14,
-      "community_name": "Landing Page & Session",
+      "community": 58,
+      "community_name": "heic2any Dependency",
       "norm_label": "booth_closed_weekdays"
     },
     {
@@ -10975,8 +10975,8 @@
       "source_location": "L72",
       "_origin": "ast",
       "id": "src_lib_photobooth_config_boothpackagedefinition",
-      "community": 14,
-      "community_name": "Landing Page & Session",
+      "community": 58,
+      "community_name": "heic2any Dependency",
       "norm_label": "boothpackagedefinition"
     },
     {
@@ -11030,8 +11030,8 @@
       "source_location": "L152",
       "_origin": "ast",
       "id": "src_lib_photobooth_config_boothstartingprice",
-      "community": 37,
-      "community_name": "Popover Primitive",
+      "community": 14,
+      "community_name": "Landing Page & Session",
       "norm_label": "boothstartingprice()"
     },
     {
@@ -11041,8 +11041,8 @@
       "source_location": "L158",
       "_origin": "ast",
       "id": "src_lib_photobooth_config_boothaddon",
-      "community": 14,
-      "community_name": "Landing Page & Session",
+      "community": 58,
+      "community_name": "heic2any Dependency",
       "norm_label": "boothaddon"
     },
     {
@@ -11063,8 +11063,8 @@
       "source_location": "L193",
       "_origin": "ast",
       "id": "src_lib_photobooth_config_add_on_by_id",
-      "community": 14,
-      "community_name": "Landing Page & Session",
+      "community": 58,
+      "community_name": "heic2any Dependency",
       "norm_label": "add_on_by_id"
     },
     {
@@ -11074,8 +11074,8 @@
       "source_location": "L195",
       "_origin": "ast",
       "id": "src_lib_photobooth_config_getboothaddon",
-      "community": 14,
-      "community_name": "Landing Page & Session",
+      "community": 58,
+      "community_name": "heic2any Dependency",
       "norm_label": "getboothaddon()"
     },
     {
@@ -11129,8 +11129,8 @@
       "source_location": "L256",
       "_origin": "ast",
       "id": "src_lib_photobooth_config_bootharea",
-      "community": 14,
-      "community_name": "Landing Page & Session",
+      "community": 58,
+      "community_name": "heic2any Dependency",
       "norm_label": "bootharea"
     },
     {
@@ -11173,8 +11173,8 @@
       "source_location": "L326",
       "_origin": "ast",
       "id": "src_lib_photobooth_config_invitations_media",
-      "community": 14,
-      "community_name": "Landing Page & Session",
+      "community": 58,
+      "community_name": "heic2any Dependency",
       "norm_label": "invitations_media"
     },
     {
@@ -11184,8 +11184,8 @@
       "source_location": "L331",
       "_origin": "ast",
       "id": "src_lib_photobooth_config_isplaceholdermedia",
-      "community": 14,
-      "community_name": "Landing Page & Session",
+      "community": 58,
+      "community_name": "heic2any Dependency",
       "norm_label": "isplaceholdermedia()"
     },
     {
@@ -11195,8 +11195,8 @@
       "source_location": "L346",
       "_origin": "ast",
       "id": "src_lib_photobooth_config_instagram_tiles",
-      "community": 14,
-      "community_name": "Landing Page & Session",
+      "community": 58,
+      "community_name": "heic2any Dependency",
       "norm_label": "instagram_tiles"
     },
     {
@@ -11316,8 +11316,8 @@
       "source_location": "L242",
       "_origin": "ast",
       "id": "src_lib_photobooth_reservations_getreservationbystatustoken",
-      "community": 70,
-      "community_name": "availability/route.ts",
+      "community": 50,
+      "community_name": "Brand Logo & Not Available",
       "norm_label": "getreservationbystatustoken()"
     },
     {
@@ -11448,8 +11448,8 @@
       "source_location": "L688",
       "_origin": "ast",
       "id": "src_lib_photobooth_reservations_releaseexpiredholds",
-      "community": 57,
-      "community_name": "Framer Motion Dependency",
+      "community": 15,
+      "community_name": "Header, Reviews & Inputs",
       "norm_label": "releaseexpiredholds()"
     },
     {
@@ -11503,8 +11503,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_lib_quotes",
-      "community": 2,
-      "community_name": "Admin Pages & Chrome",
+      "community": 70,
+      "community_name": "availability/route.ts",
       "norm_label": "quotes.ts"
     },
     {
@@ -11514,8 +11514,8 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "src_lib_quotes_sample_quotes",
-      "community": 2,
-      "community_name": "Admin Pages & Chrome",
+      "community": 70,
+      "community_name": "availability/route.ts",
       "norm_label": "sample_quotes"
     },
     {
@@ -11723,8 +11723,8 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "src_lib_seo_homejsonld",
-      "community": 37,
-      "community_name": "Popover Primitive",
+      "community": 14,
+      "community_name": "Landing Page & Session",
       "norm_label": "homejsonld()"
     },
     {
@@ -12108,8 +12108,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_lib_types",
-      "community": 2,
-      "community_name": "Admin Pages & Chrome",
+      "community": 70,
+      "community_name": "availability/route.ts",
       "norm_label": "types.ts"
     },
     {
@@ -12119,8 +12119,8 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "src_lib_types_status",
-      "community": 2,
-      "community_name": "Admin Pages & Chrome",
+      "community": 70,
+      "community_name": "availability/route.ts",
       "norm_label": "status"
     },
     {
@@ -12163,8 +12163,8 @@
       "source_location": "L44",
       "_origin": "ast",
       "id": "src_lib_types_reviewstatus",
-      "community": 2,
-      "community_name": "Admin Pages & Chrome",
+      "community": 70,
+      "community_name": "availability/route.ts",
       "norm_label": "reviewstatus"
     },
     {
@@ -12174,8 +12174,8 @@
       "source_location": "L52",
       "_origin": "ast",
       "id": "src_lib_types_invitation",
-      "community": 2,
-      "community_name": "Admin Pages & Chrome",
+      "community": 70,
+      "community_name": "availability/route.ts",
       "norm_label": "invitation"
     },
     {
@@ -12196,8 +12196,8 @@
       "source_location": "L145",
       "_origin": "ast",
       "id": "src_lib_types_review",
-      "community": 9,
-      "community_name": "Flow Design Sections",
+      "community": 70,
+      "community_name": "availability/route.ts",
       "norm_label": "review"
     },
     {
@@ -12218,8 +12218,8 @@
       "source_location": "L190",
       "_origin": "ast",
       "id": "src_lib_types_boothsource",
-      "community": 2,
-      "community_name": "Admin Pages & Chrome",
+      "community": 70,
+      "community_name": "availability/route.ts",
       "norm_label": "boothsource"
     },
     {
@@ -12229,8 +12229,8 @@
       "source_location": "L193",
       "_origin": "ast",
       "id": "src_lib_types_boothsyncstatus",
-      "community": 2,
-      "community_name": "Admin Pages & Chrome",
+      "community": 70,
+      "community_name": "availability/route.ts",
       "norm_label": "boothsyncstatus"
     },
     {
@@ -12273,8 +12273,8 @@
       "source_location": "L314",
       "_origin": "ast",
       "id": "src_lib_types_boothsynccursor",
-      "community": 2,
-      "community_name": "Admin Pages & Chrome",
+      "community": 70,
+      "community_name": "availability/route.ts",
       "norm_label": "boothsynccursor"
     },
     {
@@ -12339,8 +12339,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_lib_useinvitationaudio",
-      "community": 71,
-      "community_name": "@radix-ui/react-toggle",
+      "community": 75,
+      "community_name": "photobooth/validation.ts",
       "norm_label": "useinvitationaudio.ts"
     },
     {
@@ -12350,8 +12350,8 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "src_lib_useinvitationaudio_invitationaudio",
-      "community": 71,
-      "community_name": "@radix-ui/react-toggle",
+      "community": 75,
+      "community_name": "photobooth/validation.ts",
       "norm_label": "invitationaudio"
     },
     {
@@ -12361,8 +12361,8 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "src_lib_useinvitationaudio_useinvitationaudio",
-      "community": 71,
-      "community_name": "@radix-ui/react-toggle",
+      "community": 75,
+      "community_name": "photobooth/validation.ts",
       "norm_label": "useinvitationaudio()"
     },
     {
@@ -12680,8 +12680,8 @@
       "source_location": "L180",
       "_origin": "ast",
       "id": "src_lib_whatsapp_buildboothsupportmessage",
-      "community": 70,
-      "community_name": "availability/route.ts",
+      "community": 50,
+      "community_name": "Brand Logo & Not Available",
       "norm_label": "buildboothsupportmessage()"
     },
     {
@@ -14891,8 +14891,8 @@
       "source_location": "L608",
       "_origin": "ast",
       "id": "src_themes_registry_themes_by_id",
-      "community": 101,
-      "community_name": "(site)/layout.tsx",
+      "community": 37,
+      "community_name": "Popover Primitive",
       "norm_label": "themes_by_id"
     },
     {
@@ -14902,8 +14902,8 @@
       "source_location": "L616",
       "_origin": "ast",
       "id": "src_themes_registry_gettheme",
-      "community": 101,
-      "community_name": "(site)/layout.tsx",
+      "community": 37,
+      "community_name": "Popover Primitive",
       "norm_label": "gettheme()"
     },
     {
@@ -16702,9 +16702,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 75,
+      "community": 71,
       "norm_label": "eight music files in public music",
-      "community_name": "photobooth/validation.ts",
+      "community_name": "@radix-ui/react-toggle",
       "id": "setup_music_files"
     },
     {
@@ -16732,9 +16732,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 75,
+      "community": 71,
       "norm_label": "invitation theme set v2",
-      "community_name": "photobooth/validation.ts",
+      "community_name": "@radix-ui/react-toggle",
       "id": "docs_theme_set_v2_theme_set"
     },
     {
@@ -16747,9 +16747,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 75,
+      "community": 71,
       "norm_label": "coverage not score selection rule",
-      "community_name": "photobooth/validation.ts",
+      "community_name": "@radix-ui/react-toggle",
       "id": "docs_theme_set_v2_coverage_not_score"
     },
     {
@@ -16792,9 +16792,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 75,
+      "community": 71,
       "norm_label": "contrast token contract",
-      "community_name": "photobooth/validation.ts",
+      "community_name": "@radix-ui/react-toggle",
       "id": "docs_theme_set_v2_contrast_contract"
     },
     {
@@ -16867,9 +16867,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 75,
+      "community": 71,
       "norm_label": "mid range android performance budget",
-      "community_name": "photobooth/validation.ts",
+      "community_name": "@radix-ui/react-toggle",
       "id": "docs_theme_set_v2_mid_range_android_budget"
     },
     {
@@ -17062,9 +17062,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 75,
+      "community": 71,
       "norm_label": "rizma theme",
-      "community_name": "photobooth/validation.ts",
+      "community_name": "@radix-ui/react-toggle",
       "id": "docs_theme_set_v2_rizma"
     },
     {
@@ -17167,9 +17167,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 75,
+      "community": 71,
       "norm_label": "tayya dropped concept",
-      "community_name": "photobooth/validation.ts",
+      "community_name": "@radix-ui/react-toggle",
       "id": "docs_theme_set_v2_tayya"
     },
     {
@@ -17937,9 +17937,9 @@
       "author": null,
       "contributor": null,
       "rationale": "Upload, HEIC handling, compression, EXIF stripping and the cropper. A synthetic photo has been through the whole pipeline: upload signature accepted, crop stored as coordinates, delivered at 49KB with no EXIF or GPS markers left in the bytes.",
-      "community": 28,
+      "community": 23,
       "norm_label": "imagekit photo pipeline",
-      "community_name": "Firestore Ops & Access",
+      "community_name": "Verified & Unverified Gaps",
       "id": "readme_imagekit_photo_pipeline"
     },
     {
@@ -17952,9 +17952,9 @@
       "author": null,
       "contributor": null,
       "rationale": "HEIC has never been decoded. It is the iPhone default and the single most likely upload failure in this market, and it needs a real photo off a real camera roll, which cannot be done from a desktop.",
-      "community": 28,
+      "community": 23,
       "norm_label": "heic decoding unverified",
-      "community_name": "Firestore Ops & Access",
+      "community_name": "Verified & Unverified Gaps",
       "id": "readme_heic_unverified"
     },
     {
@@ -70957,5 +70957,5 @@
       "source_file": "src/app/icon.svg"
     }
   ],
-  "built_at_commit": "780b757e3d7cd24a8d0d5536e032dd9e8f702677"
+  "built_at_commit": "1a02fc108c777b899bb3ee2c9d23055cfdf90956"
 }
