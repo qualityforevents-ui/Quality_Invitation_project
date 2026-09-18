@@ -1,4 +1,5 @@
 import { whatsappLink } from './constants';
+import { BOOTH_WHATSAPP_NUMBER } from './photobooth/config';
 import { getPackage } from './packages';
 import type { Lang, Package } from '@/lib/types';
 
@@ -106,4 +107,106 @@ export function buildDraftNudgeMessage(requestId: string, name1: string, name2: 
     '',
     'لقيناها لسه مش مكتملة. لو في أي حاجة محتاجين مساعدة فيها، إحنا هنا.',
   ].join('\n');
+}
+
+/* ---------------------------------------------------------------- photo booth */
+
+/**
+ * The message a customer sends to confirm a booth booking.
+ *
+ * Shaped like buildPaymentMessage and for the same reason: the operator is matching a
+ * transfer against a job, from a WhatsApp thread, on a phone. The booking id leads
+ * because it is the only thing that is unique; a date and a name are not, and "the
+ * Saturday one" is how a double booking starts.
+ *
+ * The date is the plain stored string rather than a formatted one. This message is read
+ * by the operator and by the customer, and a localised date in a WhatsApp thread is one
+ * more thing that can disagree with what the calendar recorded.
+ */
+export function buildBoothBookingMessage({
+  lang,
+  bookingId,
+  eventDate,
+  startTime,
+  packageName,
+  venue,
+  price,
+  deposit,
+}: {
+  lang: Lang;
+  bookingId: string;
+  eventDate: string;
+  startTime: string;
+  packageName: string;
+  venue: string;
+  price: number;
+  deposit: number;
+}): string {
+  if (lang === 'AR') {
+    return [
+      'السلام عليكم',
+      `رقم الحجز: ${bookingId}`,
+      `فوتوبوث يوم: ${eventDate}`,
+      `الساعة: ${startTime}`,
+      `الباقة: ${packageName}`,
+      `المكان: ${venue}`,
+      `الإجمالي: ${price} جنيه`,
+      `العربون: ${deposit} جنيه`,
+      '',
+      'عايز أأكد الحجز ده',
+    ].join('\n');
+  }
+
+  return [
+    'Hello',
+    `Booking ID: ${bookingId}`,
+    `Photo booth on: ${eventDate}`,
+    `Start time: ${startTime}`,
+    `Package: ${packageName}`,
+    `Venue: ${venue}`,
+    `Total: ${price} EGP`,
+    `Deposit: ${deposit} EGP`,
+    '',
+    'I would like to confirm this booking',
+  ].join('\n');
+}
+
+/** Opens a chat with the booth number, which falls back to the main one. */
+export function boothWhatsappLink(message: string): string {
+  return `https://wa.me/${BOOTH_WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+}
+
+/** Support message for the booth status page, which quotes the booking id. */
+export function buildBoothSupportMessage(lang: Lang, bookingId: string): string {
+  return lang === 'AR'
+    ? `السلام عليكم، عندي استفسار عن حجز الفوتوبوث رقم ${bookingId}`
+    : `Hello, I have a question about photo booth booking ${bookingId}`;
+}
+
+/**
+ * A booth enquiry from somebody who has not booked yet.
+ *
+ * Carries whatever they have already chosen. Somebody who has picked a Saturday and a
+ * package before deciding to ask a question has told us most of what the answer depends
+ * on, and making them repeat it into a chat box is the sort of small friction that ends
+ * conversations. When they have chosen nothing, it stays a plain enquiry.
+ */
+export function buildBoothEnquiryMessage(
+  lang: Lang,
+  chosen: { eventDate?: string | null; packageName?: string | null } = {},
+): string {
+  const lines =
+    lang === 'AR'
+      ? ['السلام عليكم، عايز أسأل عن تأجير الفوتوبوث']
+      : ['Hello, I would like to ask about photo booth hire'];
+
+  if (chosen.eventDate) {
+    lines.push(lang === 'AR' ? `اليوم: ${chosen.eventDate}` : `Date: ${chosen.eventDate}`);
+  }
+
+  if (chosen.packageName) {
+    lines.push(lang === 'AR' ? `الباقة: ${chosen.packageName}` : `Package: ${chosen.packageName}`);
+  }
+
+  return lines.join('\n');
 }

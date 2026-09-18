@@ -19,6 +19,12 @@ import { getFirestore, Timestamp, type Firestore } from 'firebase-admin/firestor
 const COLLECTIONS = {
   invitations: 'invitations',
   reviews: 'reviews',
+  /* The photo booth. Four collections, three of which hold one kind of thing each and
+     one of which, boothDays, exists only to be the lock that stops double booking. */
+  boothReservations: 'boothReservations',
+  boothDays: 'boothDays',
+  boothSettings: 'boothSettings',
+  syncState: 'syncState',
 } as const;
 
 function missing(name: string): never {
@@ -101,6 +107,36 @@ export function invitations() {
 
 export function reviews() {
   return db().collection(COLLECTIONS.reviews);
+}
+
+export function boothReservations() {
+  return db().collection(COLLECTIONS.boothReservations);
+}
+
+/** Keyed by the date itself, so a day is reachable without a query. */
+export function boothDays() {
+  return db().collection(COLLECTIONS.boothDays);
+}
+
+/** One document, "main". A collection because Firestore has no other place to put it. */
+export function boothSettingsDoc() {
+  return db().collection(COLLECTIONS.boothSettings).doc('main');
+}
+
+/** Where the Notion sync keeps its cursor. One document, "notionBooth". */
+export function boothSyncStateDoc() {
+  return db().collection(COLLECTIONS.syncState).doc('notionBooth');
+}
+
+/**
+ * Everything the site has decided not to keep, per reservation.
+ *
+ * Written when a Notion edit and a site edit disagree and one of them has to lose. The
+ * losing version goes in here rather than being dropped, because "the date changed back
+ * on its own" is otherwise an unanswerable support question.
+ */
+export function boothReservationHistory(reservationId: string) {
+  return boothReservations().doc(reservationId).collection('history');
 }
 
 /* ------------------------------------------------------------------ mapping */

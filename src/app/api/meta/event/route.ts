@@ -8,7 +8,8 @@ import {
   toUserData,
 } from '@/lib/meta/request';
 import { getByEditToken, recordMetaAttribution } from '@/lib/invitations';
-import { getEditToken } from '@/lib/session';
+import { getReservationByStatusToken } from '@/lib/photobooth/reservations';
+import { getBoothStatusToken, getEditToken } from '@/lib/session';
 import { checkRateLimit } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
@@ -82,10 +83,32 @@ export async function POST(request: Request) {
   const sourceUrl = typeof eventSourceUrl === 'string' ? eventSourceUrl.slice(0, 1000) : null;
 
   try {
-    // The draft on this device, when there is one. It carries the phone number Meta
-    // matches on and the editToken that serves as a stable id for this customer.
-    const token = await getEditToken();
-    const invitation = token ? await getByEditToken(token) : null;
+    /*
+     * Who this is, from whichever of the two cookies this device happens to hold.
+     *
+     * Both are httpOnly and both are read here rather than sent by the browser, because
+     * a browser that can assert its own identity to a reporting endpoint is a browser
+     * that can assert somebody else's.
+     *
+     * A person can legitimately hold both: a couple who booked the booth and also built
+     * an invitation. The booth is preferred when the event says it belongs to the booth,
+     * and the invitation otherwise, so a Lead from the booking form is matched against
+     * the phone number the booking form collected rather than one from an invitation
+     * draft started last week.
+     */
+    const [editToken, boothToken] = await Promise.all([getEditToken(), getBoothStatusToken()]);
+
+    const isBoothEvent =
+      typeof customData === 'object' &&
+      customData !== null &&
+      (customData as Record<string, unknown>).content_category === 'photobooth';
+
+    const [invitation, reservation] = await Promise.all([
+      editToken ? getByEditToken(editToken).catch(() => null) : null,
+      boothToken && isBoothEvent
+        ? getReservationByStatusToken(boothToken).catch(() => null)
+        : null,
+    ]);
 
     if (invitation) {
       const fresh = toStoredAttribution(signals, sourceUrl);
@@ -113,12 +136,18 @@ export async function POST(request: Request) {
           sourceUrl,
         },
         {
-          phone: invitation?.customerPhone ?? null,
-          // The editToken, which is already this product's stand-in for a customer
-          // account. It never leaves the server unhashed, and Meta only ever sees the
-          // digest, so using it here tells Meta "these events are one person" without
-          // telling it anything about who.
-          externalId: invitation?.editToken ?? null,
+          /*
+           * The booth booking first when this is a booth event, because it is the more
+           * specific answer: the customer typed that number into the booking form a
+           * moment ago.
+           */
+          phone: reservation?.customerPhone || invitation?.customerPhone || null,
+          /*
+           * The token that stands in for a customer account on whichever side this is.
+           * It never leaves the server unhashed, and Meta only ever sees the digest, so
+           * it says "these events are one person" without saying anything about who.
+           */
+          externalId: reservation?.statusToken ?? invitation?.editToken ?? null,
         },
       ),
       customData:

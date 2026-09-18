@@ -111,7 +111,7 @@ export function useFlowTracking({
     // Worth its own event. Somebody who came back to an unfinished invitation is the
     // most qualified audience this product has — they have already done the work — and
     // they are the group a "finish your invitation" retargeting campaign exists for.
-    once('resumed', () => metaTrack('FlowResumed', {}));
+    once('resumed', () => metaTrack('FlowResumed', { content_category: 'invitation' }));
   }, [hasDraft, once]);
 
   /* --------------------------------------------------------- start and steps */
@@ -127,10 +127,15 @@ export function useFlowTracking({
       // have not chosen, the verse on a card they may set to English — and two events in
       // the same funnel disagreeing about how long the flow is makes the step numbers in
       // Events Manager unreadable.
-      metaTrack('StartFlow', { step_total: shape.step_total }),
+      metaTrack('StartFlow', {
+        content_category: 'invitation',
+        step_total: shape.step_total,
+      }),
     );
 
-    once(`step:${furthest}`, () => metaTrack('FlowStep', shape));
+    once(`step:${furthest}`, () =>
+      metaTrack('FlowStep', { content_category: 'invitation', ...shape }),
+    );
 
     /*
      * Reaching the payment panel is the checkout, and it is the last thing that happens
@@ -144,7 +149,7 @@ export function useFlowTracking({
       once('checkout', () =>
         metaTrack(
           'InitiateCheckout',
-          priced(packagePrice(packageId), {
+          priced(packagePrice(packageId), 'invitation', {
             content_type: 'product',
             content_ids: [packageId],
             num_items: 1,
@@ -169,7 +174,10 @@ export function useFlowTracking({
     if (sectionIndex(furthest) <= sectionIndex('phone')) return;
 
     once('lead', () =>
-      metaTrack('Lead', priced(packagePrice(packageId), { content_ids: [packageId] })),
+      metaTrack(
+        'Lead',
+        priced(packagePrice(packageId), 'invitation', { content_ids: [packageId] }),
+      ),
     );
   }, [furthest, packageId, once]);
 
@@ -188,7 +196,7 @@ export function useFlowTracking({
     once(`cart:${packageId}`, () =>
       metaTrack(
         'AddToCart',
-        priced(packagePrice(packageId), {
+        priced(packagePrice(packageId), 'invitation', {
           content_type: 'product',
           content_ids: [packageId],
           content_name: packageId,

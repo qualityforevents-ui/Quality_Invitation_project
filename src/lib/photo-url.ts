@@ -50,7 +50,7 @@ export function parseCrop(value: unknown): PhotoCrop | null {
 export function buildPhotoUrl(
   photoPath: string,
   crop: PhotoCrop | null,
-  options: { width: number; height?: number } = { width: 800 },
+  options: { width: number; height?: number; fit?: 'pad' | 'cover' } = { width: 800 },
 ): string {
   const transforms: string[] = [];
 
@@ -61,7 +61,26 @@ export function buildPhotoUrl(
   }
 
   const resize = [`w-${Math.round(options.width)}`];
-  if (options.height) resize.push(`h-${Math.round(options.height)}`, 'cm-pad_resize');
+
+  if (options.height) {
+    resize.push(`h-${Math.round(options.height)}`);
+
+    /*
+     * Two ways to make a photo fit a box it is not shaped like.
+     *
+     * `pad` letterboxes, which is right for an invitation photo: the couple chose that
+     * frame and cropping it further would cut somebody out.
+     *
+     * `cover` fills the box and crops the overflow, which is what the booth gallery
+     * needs. Every photograph the business has is a portrait phone shot, the gallery
+     * is square, and padding them would render nine tall pictures in grey boxes.
+     * `fo-auto` lets ImageKit pick the crop around the subject rather than the centre,
+     * which on a photo of a booth standing at one side of a frame is the difference
+     * between a square of booth and a square of curtain.
+     */
+    resize.push(options.fit === 'cover' ? 'fo-auto' : 'cm-pad_resize');
+  }
+
   resize.push('f-auto', 'q-80');
 
   transforms.push(resize.join(','));

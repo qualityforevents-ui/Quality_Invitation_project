@@ -38,5 +38,5 @@ export async function cancelRequest(editToken: string): Promise<void> {
   // The operator's pending list and stale alert are both built from this status.
   revalidatePath('/admin');
 
-  redirect('/');
+  redirect('/invitations');
 }

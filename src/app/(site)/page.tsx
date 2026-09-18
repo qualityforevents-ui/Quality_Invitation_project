@@ -1,123 +1,146 @@
-import { cookies } from 'next/headers';
-import { InvitationFlow } from '@/components/flow/InvitationFlow';
-import { SupportButton } from '@/components/SupportButton';
-import { HowItWorks } from '@/components/landing/HowItWorks';
+import type { Metadata } from 'next';
+import { ContinueDraft } from '@/components/site/ContinueDraft';
+import { Hero } from '@/components/home/Hero';
+import { HomeHeader } from '@/components/home/HomeHeader';
+import { HowItWorksCompact } from '@/components/home/HowItWorksCompact';
+import { InstagramStrip } from '@/components/home/InstagramStrip';
+import { PriceTag } from '@/components/home/PriceTag';
+import { ServiceCard } from '@/components/home/ServiceCard';
+import { SiteFooter } from '@/components/home/SiteFooter';
 import { Reviews } from '@/components/landing/Reviews';
+import { TrackedSupportButton } from '@/components/site/TrackedSupportButton';
 import { getDictionary } from '@/i18n/ui';
-import { FLOW_STEP_COOKIE } from '@/lib/constants';
+import { SITE_URL } from '@/lib/constants';
 import { loadDraft } from '@/lib/draft';
-import { todayInCairo } from '@/lib/format';
-import { clampFurthest, valuesFromInvitation } from '@/lib/flow/values';
-import { isValidSectionId, type SectionId } from '@/lib/flow/sections';
-import { isImageKitConfigured } from '@/lib/imagekit';
-import { isValidPackage } from '@/lib/packages';
+import { isEditable } from '@/lib/invitations';
+import { BOOTH_MEDIA, INVITATIONS_MEDIA, boothStartingPrice } from '@/lib/photobooth/config';
 import { getApprovedReviews } from '@/lib/reviews';
 import { getUiLang } from '@/lib/session';
+import { homeJsonLd } from '@/lib/seo';
 
 export const dynamic = 'force-dynamic';
 
+export async function generateMetadata(): Promise<Metadata> {
+  const t = getDictionary(await getUiLang());
+
+  return {
+    title: t.home.metaTitle,
+    description: t.home.metaDescription,
+    alternates: { canonical: '/' },
+    openGraph: {
+      title: t.home.metaTitle,
+      description: t.home.metaDescription,
+      url: SITE_URL,
+      type: 'website',
+    },
+  };
+}
+
 /**
- * The whole customer product, on one page.
+ * The QLTY home.
  *
- * There were four routes here until this rebuild: details, design, preview, payment.
- * They are gone, and what replaced them is a single sequence of questions that reveal
- * themselves one at a time. That is a change of shape rather than of scope, so
- * everything the four steps knew has to be assembled here instead and handed to the
- * client in one go.
+ * Two services, one brand, and a visitor who does not yet know which of the two they
+ * came for. Almost all of this traffic is a phone opening a link from an Instagram
+ * story or a WhatsApp message, so the page is built narrow first and the desktop is the
+ * same column with air around it.
  *
- * Three of those things are the reason this stays a server component rather than
- * becoming a client page that fetches:
+ * Restraint is the brief. No chips, no badges, no feature grids, and exactly one thing
+ * on the page that is not square to the grid: the gold price tag on the booth card.
  *
- * The editToken cookie is httpOnly, so only the server can read it, and it is the
- * entire mechanism by which somebody comes back tomorrow and finds their draft where
- * they left it. There are no accounts anywhere in this product.
- *
- * `todayInCairo()` must be resolved here. Asking the browser what day it is gets a
- * different answer from the one the server gives for the last three hours of every
- * Egyptian evening, and a date input whose `min` differs between the two renders is a
- * hydration mismatch, which can cost the whole tree its event handlers. That failure
- * looks exactly like a page where nothing responds to a tap.
- *
- * And a returning customer's position in the flow is read here too, so they land on
- * their unanswered question on first paint rather than watching the page rearrange
- * itself after hydration.
+ * Dynamic for the same single reason the builder is: the editToken cookie is httpOnly,
+ * so only the server can know whether this visitor already has an invitation half
+ * built and needs the way back into it.
  */
-export default async function HomePage({
-  searchParams,
-}: {
-  searchParams: Promise<{ package?: string }>;
-}) {
+export default async function HomePage() {
   const lang = await getUiLang();
   const t = getDictionary(lang);
 
-  const [{ invitation, unavailable }, reviews, store, { package: requestedPackage }] =
-    await Promise.all([loadDraft(), getApprovedReviews(), cookies(), searchParams]);
+  const [{ invitation }, reviews] = await Promise.all([loadDraft(), getApprovedReviews()]);
 
   /*
-   * `?package=` survives the deleted /build route, which redirects here carrying its
-   * query string. An explicit choice still beats whatever the draft was beginning to
-   * hold: arriving through a package link is somebody deciding, just now, and ignoring
-   * that because they started a draft last week would be the app arguing with them.
+   * A draft the customer can no longer change is not something to offer to continue. An
+   * expired or rejected invitation resolves from the cookie exactly like a live one, and
+   * sending somebody to the builder to edit it would show them a form that refuses every
+   * save. A database outage lands here as "no draft", which is the right way to be
+   * wrong: the bar is missing for a minute rather than promising a draft it cannot open.
    */
-  const chosenPackage =
-    requestedPackage && isValidPackage(requestedPackage) ? requestedPackage : null;
+  const draft = invitation && isEditable(invitation) ? invitation : null;
+  const names = draft ? [draft.name1, draft.name2].filter(Boolean).join(' • ') || null : null;
 
-  const values = valuesFromInvitation(invitation, chosenPackage);
-
-  const rememberedRaw = store.get(FLOW_STEP_COOKIE)?.value;
-  const remembered: SectionId | null =
-    rememberedRaw && isValidSectionId(rememberedRaw) ? rememberedRaw : null;
-
-  // Never trusted as given. A cookie outlives the draft it describes and can be edited
-  // by hand, so it is clamped against what is actually stored and can never open the
-  // payment panel on an invitation with no bride's name in it.
-  const furthest = invitation ? clampFurthest(remembered, values) : null;
-
+  // pb-24 clears the floating WhatsApp bubble, which is fixed to the viewport and
+  // otherwise sits on top of the footer's last two lines.
   return (
-    <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col px-5 pb-16">
+    <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col px-5 pb-24">
       {/*
-        Keyed on which invitation this is, so the flow remounts when that changes.
-        Its answers live in a useReducer seeded from initialValues, and a reducer's
-        initial state is read once: without a key change, clearing the cookie would
-        re-render the page with empty values while the customer carried on looking at
-        the old ones. This is what makes "start over" actually start over.
+        Both services in one LocalBusiness record rather than two. Google reads this as
+        one company in Cairo that offers two things, which is what it is, and splitting
+        it would compete with itself for the same brand query.
       */}
-      <InvitationFlow
-        key={invitation?.requestId ?? 'fresh'}
-        lang={lang}
-        t={t}
-        initialValues={values}
-        initialFurthest={furthest}
-        today={todayInCairo()}
-        photoEnabled={isImageKitConfigured()}
-        invitation={
-          invitation
-            ? {
-                requestId: invitation.requestId,
-                editToken: invitation.editToken,
-                status: invitation.status,
-                slug: invitation.slug,
-              }
-            : null
-        }
-        databaseUnavailable={unavailable}
+      <script
+        type="application/ld+json"
+        // The payload is built from our own constants. No user input reaches it.
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(homeJsonLd(t)) }}
       />
 
-      {/*
-        Below the fold, and mounted the whole time rather than only before the flow
-        starts. Somebody halfway through, about to be asked for money by a business they
-        have never heard of, is exactly who needs to be able to scroll down and read how
-        this works and what other couples said.
-      */}
-      <div className="mt-8">
-        <HowItWorks t={t} />
+      <HomeHeader lang={lang} t={t} />
+
+      <Hero t={t} />
+
+      {draft ? (
+        <div className="mt-8">
+          <ContinueDraft lang={lang} t={t} names={names} />
+        </div>
+      ) : null}
+
+      <div className="mt-10 flex flex-col gap-6">
+        <ServiceCard
+          title={t.home.boothTitle}
+          body={t.home.boothBody}
+          href="/photobooth"
+          cta={t.home.boothCta}
+          imagePath={BOOTH_MEDIA.hero}
+          videoPath={BOOTH_MEDIA.heroVideo}
+          imageAlt={t.home.boothTitle}
+          category="photobooth"
+          priority
+          tag={<PriceTag price={boothStartingPrice()} t={t} />}
+        />
+
+        <ServiceCard
+          title={t.home.invitationsTitle}
+          body={t.home.invitationsBody}
+          href="/invitations"
+          cta={t.home.invitationsCta}
+          imagePath={INVITATIONS_MEDIA.hero}
+          imageAlt={t.home.invitationsTitle}
+          category="invitation"
+        />
       </div>
 
-      <div className="mt-8">
+      <div className="mt-12 flex flex-col gap-10">
+        <HowItWorksCompact title={t.home.howBoothTitle} steps={t.home.howBoothSteps} />
+        <HowItWorksCompact
+          title={t.home.howInvitationsTitle}
+          steps={t.home.howInvitationsSteps}
+        />
+      </div>
+
+      <div className="mt-12">
         <Reviews reviews={reviews} lang={lang} t={t} />
       </div>
 
-      <SupportButton message={t.landing.supportMessage} label={t.landing.support} />
+      <div className="mt-12">
+        <InstagramStrip t={t} />
+      </div>
+
+      <SiteFooter t={t} />
+
+      <TrackedSupportButton
+        message={t.home.supportMessage}
+        label={t.landing.support}
+        page="home"
+        contentCategory="home"
+      />
     </main>
   );
 }

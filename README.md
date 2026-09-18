@@ -1,11 +1,20 @@
-# qlty.events digital invitations
+# qlty.events
 
-Self serve digital invitation builder for the Egyptian market. A customer builds a
-mobile invitation, previews the whole thing, pays 300 EGP over InstaPay, and gets a
-link to send guests on WhatsApp.
+Two products on one deployment, for the Egyptian market.
 
-No customer accounts exist anywhere in this codebase. Access to an invitation is by
-secret token only.
+**Digital invitations.** A customer builds a mobile invitation at `/invitations`,
+previews the whole thing, pays 300 EGP over InstaPay, and gets a link to send guests on
+WhatsApp.
+
+**Photo booth hire.** A customer picks a free date at `/photobooth`, sends a booking
+request, and a deposit settled on WhatsApp holds it. The bookings are mirrored into a
+Notion database in both directions, so the operator can work in the tool they already
+use.
+
+`/` is the brand home and belongs to neither: it is the door with two handles.
+
+No customer accounts exist anywhere in this codebase. Access to an invitation or a booth
+booking is by secret token in an httpOnly cookie, and nothing else.
 
 **Start here: [SETUP.md](SETUP.md).** Nothing that touches the database runs until the
 Firebase project is provisioned. Local development runs against the Firestore emulator
@@ -58,6 +67,11 @@ npm run backup        # dump every row to backups/
 ---
 
 ## The one page flow
+
+> The builder answered to `/` until the booth arrived. Every old link still works:
+> `/build` and its three dead siblings redirect to `/invitations`, and `/?package=...`
+> is forwarded by the proxy with its whole query string, so an ad or a WhatsApp thread
+> carrying a package link still lands on the right tier.
 
 The customer product used to be four routes: `/build`, `/build/theme`, `/build/preview`
 and `/build/payment`. It is now one page at `/` that asks one question at a time. Every
@@ -352,6 +366,32 @@ Manager and without fighting an ad blocker.
 
 ## Things that will bite if you forget them
 
+- **Booth dates are strings, never Timestamps.** `eventDate` is a Cairo calendar day as
+  `"YYYY-MM-DD"`. A booth booking is a day, not an instant: stored as a Timestamp, "the
+  14th" needs a timezone to become a day again, and for the last three hours of every
+  Egyptian evening the server and the operator's phone disagree about which day that is.
+  The booking silently moves to the day before. Day arithmetic lives in
+  `src/lib/photobooth/availability.ts` and is done in UTC on purpose, because Egypt
+  observes daylight saving and a 23 hour day makes naive millisecond arithmetic skip one.
+- **A booth `REQUESTED` holds nothing.** Only `HELD`, `CONFIRMED` and `BLOCKED` take a
+  unit off the calendar. If a bare form submission took a date, anybody with a browser
+  could empty a year of Saturdays in an afternoon. The unit is taken at the WhatsApp
+  handoff, which is the first act involving a real conversation.
+- **Every booth write that touches a status or a date must go through
+  `reservations.ts`.** Those functions run a Firestore transaction that reads the day's
+  reservations and recomputes its counters, which is the entire mechanism preventing two
+  customers taking the last booth at the same moment. Writing a status straight onto a
+  document skips the lock. `npm run check:booth` proves the guarantee against a real
+  database and should be run after any change in there.
+- **The public calendar must never need a composite Firestore index.** A composite index
+  has to be deployed before it answers, and the failure is a 503 on the page the
+  business advertises. That is why the availability read asks for live holds by status
+  alone and filters dates in memory. Admin queries may use composite indexes; the
+  customer path may not.
+- **`npm run typecheck` runs with `--incremental false` on purpose.** A stale
+  `tsconfig.tsbuildinfo` once made `tsc --noEmit` report success on a tree with twelve
+  real type errors in it. A check a cache can silence is not a check. Do not remove the
+  flag to make it faster.
 - **Every new customer facing page must report to Meta.** Anything added inside the
   `(site)` group inherits the pixel from its layout and needs nothing. Anything added
   outside it — as `/sample` is — must render `<MetaPixel />` itself, or it silently
@@ -360,9 +400,16 @@ Manager and without fighting an ad blocker.
   call, and the name has to be added to `src/lib/meta/events.ts` first or the server
   half drops it. Never call `fbq` directly: a direct call fires a conversion the server
   never mirrors, and the funnel develops a hole exactly where an ad blocker is installed.
-- **`META_CAPI_ACCESS_TOKEN` must never be prefixed `NEXT_PUBLIC_`.** Anything with that
-  prefix is compiled into the JavaScript every visitor downloads, and whoever holds that
-  token can write events into the ad account.
+- **Every Meta event carries `content_category`, and the compiler enforces it.**
+  `metaTrack` takes a `TrackParams` whose `content_category` is required, so a new call
+  site cannot forget one. QLTY sells a 300 EGP invitation and an 8000 EGP booth booking:
+  an event that does not say which it belongs to can never be split apart afterwards,
+  and the algorithm optimises for whichever is cheaper to get.
+- **`META_CAPI_ACCESS_TOKEN`, `NOTION_TOKEN` and `CRON_SECRET` must never be prefixed
+  `NEXT_PUBLIC_`.** Anything with that
+  prefix is compiled into the JavaScript every visitor downloads. Whoever holds the Meta
+  token can write events into the ad account; whoever holds the Notion token can read and
+  rewrite every booking, customer phone numbers included.
 - **Guards against firing an event twice cannot be refs.** The builder remounts during a
   normal purchase — the first save creates the draft and calls `router.refresh()` — and a
   ref-guarded event fires again for every customer who got far enough to matter.
@@ -410,6 +457,11 @@ Manager and without fighting an ad blocker.
 ## Next
 
 The code is complete. What remains is everything only you can do.
+
+**Start with [docs/BOOTH-INPUTS.md](docs/BOOTH-INPUTS.md)**, then
+[docs/LAUNCH.md](docs/LAUNCH.md). The booth is currently quoting invented prices and
+every photograph is an empty frame; the admin warns about it on every booth screen until
+`BOOTH_CONFIG_IS_PLACEHOLDER` is turned off.
 
 1. **Provision the Firebase project.** SETUP.md steps 1 to 3: Firestore in `eur3`, the
    service account key, the deny-all rules and the composite indexes. Disable public

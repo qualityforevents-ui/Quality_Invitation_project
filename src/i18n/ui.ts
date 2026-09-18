@@ -30,7 +30,216 @@ const AR = {
     stepPayment: 'الدفع',
   },
 
+  /*
+   * The root, which is a door rather than a room: QLTY sells invitations and it rents a
+   * photo booth, and "/" belongs to neither of them.
+   *
+   * The home says less than either service page does, deliberately. Somebody arriving
+   * from an Instagram story does not yet know which of the two they want, and the job
+   * of this page is to let them find out in one scroll rather than to sell.
+   */
+  home: {
+    navInvitations: 'الدعوات',
+    navBooth: 'الفوتوبوث',
+
+    tagline: 'إحنا اللي بنعمل لحظات الفرح',
+    subline: 'دعوات إلكترونية وفوتوبوث لأفراح القاهرة والجيزة.',
+    ctaBooth: 'احجز فوتوبوث',
+    ctaInvitations: 'اعمل دعوتك',
+
+    /** The label before a starting price. Kept apart from the number so `numeric` stays on bare digits. */
+    fromLabel: 'يبدأ من',
+    currency: 'جنيه',
+
+    invitationsTitle: 'دعوات إلكترونية',
+    invitationsBody: 'دعوة لخطوبتك أو فرحك، بتتبعت برابط واحد على واتساب.',
+    invitationsCta: 'اعمل دعوتك',
+
+    boothTitle: 'تأجير فوتوبوث',
+    boothBody: 'ركن تصوير في فرحك، وضيوفك ماشيين بصورهم في إيديهم.',
+    boothCta: 'شوف المواعيد الفاضية',
+
+    /*
+     * Shown only when the cookie on this device still resolves to a draft. There are no
+     * accounts here, so this bar is the only way back in for somebody who closed the tab
+     * and came to the root instead of the builder.
+     */
+    continueTitle: 'دعوتك لسه مستنياك',
+    continueCta: 'كمّل دعوتك',
+
+    howInvitationsTitle: 'الدعوة بتتعمل إزاي',
+    howInvitationsSteps: [
+      { title: 'جاوب على الأسئلة', body: 'الأسماء، التاريخ، المكان. سؤال واحد في المرة.' },
+      { title: 'اختار الشكل', body: 'تصاميم جاهزة، وتشوف دعوتك بتتغير قدامك.' },
+      { title: 'ابعتها لضيوفك', body: 'رابط واحد يتبعت على واتساب لأي عدد.' },
+    ],
+
+    howBoothTitle: 'الحجز بيتم إزاي',
+    howBoothSteps: [
+      { title: 'اختار يوم فاضي', body: 'التقويم بيوريك المواعيد المتاحة فعلاً.' },
+      { title: 'ابعتلنا طلبك', body: 'بتكلمنا على واتساب وبنثبتلك اليوم بعربون.' },
+      { title: 'إحنا بنيجي', body: 'بنركب الفوتوبوث قبل الفرح وفني بيفضل معاكم.' },
+    ],
+
+    instagramTitle: 'من شغلنا',
+    instagramCta: 'تابعنا على إنستجرام',
+
+    footerAreasLabel: 'بنشتغل في',
+    footerAreas: 'القاهرة والجيزة',
+    footerWhatsapp: 'كلمنا على واتساب',
+    footerInstagram: 'إنستجرام',
+
+    supportMessage: 'السلام عليكم، عايز أعرف أكتر عن خدمات QLTY',
+
+    metaTitle: 'QLTY — دعوات إلكترونية وفوتوبوث',
+    metaDescription:
+      'دعوات فرح إلكترونية وتأجير فوتوبوث في القاهرة والجيزة. اعمل دعوتك في دقايق، أو احجز ركن تصوير لفرحك.',
+  },
+
+  /*
+   * The photo booth.
+   *
+   * A different sale from the invitations in every way that matters: five to ten times
+   * the money, a date that can be taken by somebody else while you think about it, and
+   * a decision usually made by two people looking at one phone. So the page leads with
+   * the calendar rather than the price list, and the copy says plainly when a date is
+   * nearly gone.
+   */
+  photobooth: {
+    metaTitle: 'تأجير فوتوبوث للأفراح',
+    metaDescription:
+      'فوتوبوث لفرحك في القاهرة والجيزة، بطباعة فورية وألبوم رقمي. شوف المواعيد الفاضية واحجز يومك.',
+
+    heroTitle: 'فوتوبوث يخلي ضيوفك يفتكروا الليلة',
+    heroSubline: 'طباعة فورية، خلفية تختارها، وفني معاكم طول الفرح.',
+    heroCta: 'شوف المواعيد الفاضية',
+
+    packagesTitle: 'الباقة',
+    packagesSub: 'باقة واحدة فيها كل حاجة. وتقدر تزود عليها اللي تحبه.',
+    packagesChoose: 'اختار دي',
+    packagesChosen: 'مختارة',
+    hoursLabel: 'ساعات',
+    extraHourLabel: 'الساعة الزيادة',
+    /** Shown beside the struck through standard rate. */
+    offerLabel: 'عرض',
+    listPriceLabel: 'السعر العادي',
+
+    addOnsTitle: 'زوّد على باقتك',
+    addOnsSub: 'اختياري. بيتحسب على الإجمالي على طول.',
+    addOnsNone: 'مفيش إضافات',
+
+    galleryTitle: 'من أفراح فاتت',
+
+    calendarTitle: 'المواعيد الفاضية',
+    calendarSub: 'التقويم بيتحدث لحظة بلحظة. اختار يوم عشان تكمل الحجز.',
+    legendAvailable: 'فاضي',
+    legendLast: 'آخر فوتوبوث',
+    legendFull: 'محجوز',
+    legendUnavailable: 'مش متاح',
+
+    /*
+     * A booked day is a conversation, not a closed door. There is a second booth we
+     * rent out, dates move, and people cancel — so the copy offers to talk without
+     * promising anything it cannot deliver.
+     */
+    fullDayTitle: 'اليوم ده محجوز',
+    fullDayBody: 'ممكن برضه نلاقي حل. كلمنا على واتساب ونشوف اليوم ده مع بعض.',
+    fullDayCta: 'اسأل عن اليوم ده على واتساب',
+    calendarLoading: 'بنجيب المواعيد',
+    calendarError: 'مش قادرين نجيب المواعيد دلوقتي. جرب تاني بعد شوية.',
+
+    formTitle: 'بيانات الحجز',
+    formSub: 'دقيقة واحدة، وبعدها بتأكد على واتساب.',
+    fieldDate: 'يوم الفرح',
+    fieldStart: 'الفوتوبوث يشتغل الساعة كام',
+    fieldHours: 'كام ساعة',
+    fieldPackage: 'الباقة',
+    fieldVenue: 'المكان',
+    fieldVenueHint: 'اسم القاعة أو الفندق',
+    fieldArea: 'المنطقة',
+    fieldName: 'اسمك',
+    fieldPhone: 'رقم موبايلك',
+    fieldPhoneHint: 'عشان نكلمك ونأكد الحجز',
+    fieldEventType: 'المناسبة',
+    fieldNotes: 'أي حاجة تحب تقولهالنا',
+    fieldNotesHint: 'اختياري',
+
+    eventTypeWedding: 'فرح',
+    eventTypeEngagement: 'خطوبة',
+    eventTypeKatb: 'كتب كتاب',
+    eventTypeBirthday: 'عيد ميلاد',
+    eventTypeCorporate: 'مناسبة شركة',
+    eventTypeOther: 'حاجة تانية',
+
+    submit: 'راجع الحجز',
+    submitting: 'ثانية واحدة',
+
+    summaryTitle: 'مراجعة الحجز',
+    summaryBooking: 'رقم الحجز',
+    summaryDate: 'اليوم',
+    summaryTime: 'الساعة',
+    summaryPackage: 'الباقة',
+    summaryVenue: 'المكان',
+    summaryTotal: 'الإجمالي',
+    summaryDeposit: 'العربون',
+    summaryCta: 'أكّد على واتساب',
+    summaryNote:
+      'الحجز بيتثبت بالعربون. هتبعتلنا الرسالة على واتساب وإحنا هنرد عليك بتفاصيل التحويل.',
+    summaryHoldNote: 'أول ما تبعت الرسالة، اليوم ده بيتحجزلك.',
+
+    errorTaken: 'اليوم ده اتحجز دلوقتي حالاً.',
+    errorTakenSuggest: 'أقرب مواعيد فاضية:',
+    errorRate: 'بعتّ طلبات كتير. استنى شوية وجرب تاني.',
+    errorServer: 'في حاجة وقعت عندنا. جرب تاني، ولو فضلت، كلمنا على واتساب.',
+    errorPickDate: 'اختار يوم من التقويم الأول.',
+
+    statusTitle: 'حجز الفوتوبوث',
+    statusRequested: 'طلبك وصلنا. أكّد على واتساب عشان نثبتلك اليوم.',
+    statusHeld: 'اليوم محجوزلك مؤقتاً لحد ما يوصل العربون.',
+    statusHeldExpiry: 'الحجز المؤقت بينتهي',
+    statusConfirmed: 'الحجز اتأكد. إحنا هنبقى عندك في المعاد.',
+    statusCompleted: 'الفرح خلص. ألف مبروك.',
+    statusCancelled: 'الحجز ده اتلغى.',
+    statusSupport: 'كلمنا على واتساب',
+    statusNotFound: 'مفيش حجز بالرابط ده.',
+
+    supportMessage: 'السلام عليكم، عايز أسأل عن تأجير الفوتوبوث',
+
+    faqTitle: 'أسئلة بتتسأل كتير',
+    faq: [
+      {
+        q: 'الفوتوبوث محتاج مساحة قد إيه؟',
+        a: 'حوالي متر ونص في متر ونص للفوتوبوث نفسه، وزيادة شوية قدامه عشان الضيوف يقفوا. بنحتاج كهرباء عادية قريبة.',
+      },
+      {
+        q: 'بتركبوه إمتى؟',
+        a: 'بنوصل قبل بداية الفرح بساعة ونص على الأقل، وبنفك بعد ما الوقت المتفق عليه يخلص.',
+      },
+      {
+        q: 'الصور بتتطبع على طول؟',
+        a: 'أيوة، الطباعة فورية ومن غير عدد طول مدة الحجز. الضيف بياخد صورته في إيده قبل ما يمشي من عند الفوتوبوث.',
+      },
+      {
+        q: 'هستلم الصور الرقمية إمتى؟',
+        a: 'بنبعتلكم ألبوم رقمي بكل الصور. في الباقة الأساسية بيوصل خلال يومين، وفي باقة الليلة كاملة بيوصل في نفس الليلة.',
+      },
+      {
+        q: 'ينفع ألغي أو أغير اليوم؟',
+        a: 'كلمنا على واتساب في أقرب وقت. تغيير اليوم بيعتمد على إن اليوم الجديد يكون فاضي، والعربون بيتحول معاه.',
+      },
+      {
+        q: 'بتشتغلوا برة القاهرة والجيزة؟',
+        a: 'بنشتغل أساساً في القاهرة والجيزة. لو الفرح في مكان تاني كلمنا وهنقولك لو ينفع وإيه تكلفة الانتقال.',
+      },
+    ],
+  },
+
   landing: {
+    /* The page's own metadata, moved off the root layout when the home took the root. */
+    metaTitle: 'دعوات فرح إلكترونية',
+    metaDescription:
+      'اعمل دعوة إلكترونية لخطوبتك أو فرحك في دقايق، وابعتها لضيوفك على واتساب برابط واحد.',
+
     title: 'دعوة فرحك، بشكل يليق بيها',
     subtitle:
       'اعمل دعوة إلكترونية لخطوبتك أو فرحك في دقايق، وابعتها لضيوفك على واتساب برابط واحد.',
@@ -73,8 +282,8 @@ const AR = {
         body: 'الدعوة بتفتح قدامك بالظبط زي ما الضيف هيشوفها، بالحركة والموسيقى. ده قبل ما تدفع، مش بعده.',
       },
       {
-        title: 'حوّل وابعتلنا',
-        body: 'تحوّل على إنستاباي، وتضغط زرار واحد يفتحلك واتساب برسالة فيها رقم طلبك جاهزة. ترفق صورة التحويل وتبعت.',
+        title: 'ابعتلنا الطلب',
+        body: 'زرار واحد يفتحلك واتساب برسالة فيها كل تفاصيل طلبك جاهزة، وإحنا بنظبط معاك الدفع في نفس المحادثة. الدفع بالكارت جاي قريب.',
       },
       {
         title: 'نفعّل الرابط',
@@ -268,15 +477,10 @@ const AR = {
     customRequestLabel: 'اكتبلنا التصميم اللي في بالك',
     customRequestHint:
       'الألوان، الاستايل، أي حاجة شوفتها وعجبتك. كل ما تكتب أكتر كل ما التصميم يطلع أقرب لتخيلك.',
-    methodsLabel: 'ادفع من هنا، الزرار هيفتحلك التطبيق وينسخلك العنوان',
-    payInstapay: 'ادفع بإنستاباي',
-    payVodafone: 'ادفع بفودافون كاش',
-    addressCopied: 'العنوان اتنسخ. الصقه في التطبيق وحوّل المبلغ.',
     afterPayLabel: 'اضغط هنا وابعتلنا الطلب، وحد من الفريق هيرد عليك على طول',
-    instapayTitle: 'حوّل على إنستاباي',
-    copyAddress: 'انسخ عنوان إنستاباي',
-    instapayAddress: 'عنوان إنستاباي',
-    instapayName: 'اسم المستلم',
+    /** Card payments are coming. Until then the whole payment is a WhatsApp conversation. */
+    cardsComingSoon: 'الدفع بالكارت جاي قريب',
+    cardsComingSoonBody: 'لحد ما يتفعّل، بنظبط الدفع معاك على واتساب في نفس المحادثة.',
     requestIdLabel: 'رقم الطلب',
     requestIdHint: 'الرقم ده بيربط تحويلك بدعوتك. ابعته معاك في الرسالة.',
     phoneLabel: 'رقم واتساب عشان نبعتلك رابط دعوتك',
@@ -385,7 +589,186 @@ const EN: Dictionary = {
     stepPayment: 'Payment',
   },
 
+  home: {
+    navInvitations: 'Invitations',
+    navBooth: 'Photo booth',
+
+    tagline: 'We make the moments the event is remembered for',
+    subline: 'Digital invitations and photo booth hire, for events in Cairo and Giza.',
+    ctaBooth: 'Book a photo booth',
+    ctaInvitations: 'Create your invitation',
+
+    fromLabel: 'from',
+    currency: 'EGP',
+
+    invitationsTitle: 'Digital invitations',
+    invitationsBody: 'An invitation for your engagement or wedding, sent as one WhatsApp link.',
+    invitationsCta: 'Create your invitation',
+
+    boothTitle: 'Photo booth hire',
+    boothBody: 'A photo corner at your event, and every guest leaves holding the picture.',
+    boothCta: 'Check available dates',
+
+    continueTitle: 'Your invitation is where you left it',
+    continueCta: 'Continue',
+
+    howInvitationsTitle: 'How an invitation is made',
+    howInvitationsSteps: [
+      { title: 'Answer the questions', body: 'Names, date, venue. One question at a time.' },
+      { title: 'Choose how it looks', body: 'Finished designs, changing in front of you as you pick.' },
+      { title: 'Send it to your guests', body: 'One link, on WhatsApp, to as many people as you like.' },
+    ],
+
+    howBoothTitle: 'How booking works',
+    howBoothSteps: [
+      { title: 'Pick a free date', body: 'The calendar shows what is genuinely still available.' },
+      { title: 'Send us the request', body: 'We talk on WhatsApp and a deposit holds the date.' },
+      { title: 'We come to you', body: 'Set up before the event, with an attendant who stays.' },
+    ],
+
+    instagramTitle: 'From our work',
+    instagramCta: 'Follow us on Instagram',
+
+    footerAreasLabel: 'We work in',
+    footerAreas: 'Cairo and Giza',
+    footerWhatsapp: 'Message us on WhatsApp',
+    footerInstagram: 'Instagram',
+
+    supportMessage: 'Hello, I would like to know more about what QLTY does',
+
+    metaTitle: 'QLTY — digital invitations and photo booth hire',
+    metaDescription:
+      'Digital wedding invitations and photo booth hire in Cairo and Giza. Build an invitation in minutes, or book a photo corner for your event.',
+  },
+
+  photobooth: {
+    metaTitle: 'Photo booth hire for weddings',
+    metaDescription:
+      'Photo booth hire in Cairo and Giza, with instant prints and a digital gallery. See which dates are free and book yours.',
+
+    heroTitle: 'A photo booth your guests will still talk about',
+    heroSubline: 'Instant prints, a backdrop you choose, and an attendant there all night.',
+    heroCta: 'Check available dates',
+
+    packagesTitle: 'The package',
+    packagesSub: 'One package with everything in it. Add to it if you want to.',
+    packagesChoose: 'Choose this',
+    packagesChosen: 'Chosen',
+    hoursLabel: 'hours',
+    extraHourLabel: 'Extra hour',
+    offerLabel: 'Offer',
+    listPriceLabel: 'Standard rate',
+
+    addOnsTitle: 'Add to your package',
+    addOnsSub: 'Optional. Added to the total straight away.',
+    addOnsNone: 'No extras',
+
+    galleryTitle: 'From past events',
+
+    calendarTitle: 'Available dates',
+    calendarSub: 'Updated as bookings come in. Pick a date to carry on.',
+    legendAvailable: 'Free',
+    legendLast: 'Last booth',
+    legendFull: 'Booked',
+    legendUnavailable: 'Not available',
+
+    fullDayTitle: 'That day is booked',
+    fullDayBody: 'There may still be a way. Message us on WhatsApp and we will look at it with you.',
+    fullDayCta: 'Ask about this date on WhatsApp',
+    calendarLoading: 'Loading dates',
+    calendarError: 'We cannot load the dates right now. Try again in a moment.',
+
+    formTitle: 'Booking details',
+    formSub: 'A minute to fill in, then you confirm on WhatsApp.',
+    fieldDate: 'Date of the event',
+    fieldStart: 'What time should the booth start',
+    fieldHours: 'How many hours',
+    fieldPackage: 'Package',
+    fieldVenue: 'Venue',
+    fieldVenueHint: 'The name of the hall or hotel',
+    fieldArea: 'Area',
+    fieldName: 'Your name',
+    fieldPhone: 'Your mobile number',
+    fieldPhoneHint: 'So we can reach you and confirm',
+    fieldEventType: 'Occasion',
+    fieldNotes: 'Anything you want us to know',
+    fieldNotesHint: 'Optional',
+
+    eventTypeWedding: 'Wedding',
+    eventTypeEngagement: 'Engagement',
+    eventTypeKatb: 'Katb ketab',
+    eventTypeBirthday: 'Birthday',
+    eventTypeCorporate: 'Company event',
+    eventTypeOther: 'Something else',
+
+    submit: 'Review the booking',
+    submitting: 'One moment',
+
+    summaryTitle: 'Review your booking',
+    summaryBooking: 'Booking ID',
+    summaryDate: 'Date',
+    summaryTime: 'Start time',
+    summaryPackage: 'Package',
+    summaryVenue: 'Venue',
+    summaryTotal: 'Total',
+    summaryDeposit: 'Deposit',
+    summaryCta: 'Confirm on WhatsApp',
+    summaryNote:
+      'A deposit holds the date. Send us the message on WhatsApp and we will reply with the transfer details.',
+    summaryHoldNote: 'Sending the message holds this date for you.',
+
+    errorTaken: 'That date was taken while you were filling this in.',
+    errorTakenSuggest: 'The next free dates:',
+    errorRate: 'That is a lot of requests. Wait a little and try again.',
+    errorServer: 'Something broke on our side. Try again, and if it keeps happening, message us on WhatsApp.',
+    errorPickDate: 'Pick a date from the calendar first.',
+
+    statusTitle: 'Photo booth booking',
+    statusRequested: 'We have your request. Confirm on WhatsApp so we can hold the date.',
+    statusHeld: 'The date is held for you until the deposit arrives.',
+    statusHeldExpiry: 'The hold runs out',
+    statusConfirmed: 'Booked. We will be there.',
+    statusCompleted: 'The event is over. Congratulations.',
+    statusCancelled: 'This booking was cancelled.',
+    statusSupport: 'Message us on WhatsApp',
+    statusNotFound: 'There is no booking at this link.',
+
+    supportMessage: 'Hello, I would like to ask about photo booth hire',
+
+    faqTitle: 'Questions we get asked',
+    faq: [
+      {
+        q: 'How much space does the booth need?',
+        a: 'About a metre and a half square for the booth itself, plus room in front for guests to stand. We need an ordinary power socket nearby.',
+      },
+      {
+        q: 'When do you set up?',
+        a: 'We arrive at least an hour and a half before the event starts, and pack up once the booked time is over.',
+      },
+      {
+        q: 'Are the photos printed straight away?',
+        a: 'Yes. Printing is instant and unlimited for the whole booking. Guests walk away from the booth holding their photo.',
+      },
+      {
+        q: 'When do we get the digital photos?',
+        a: 'We send a digital gallery of every shot. On Essential it arrives within two days; on Full night it arrives the same night.',
+      },
+      {
+        q: 'Can I cancel or move the date?',
+        a: 'Message us on WhatsApp as soon as you can. Moving the date depends on the new one being free, and the deposit moves with it.',
+      },
+      {
+        q: 'Do you work outside Cairo and Giza?',
+        a: 'We mainly work in Cairo and Giza. If your event is elsewhere, message us and we will tell you whether we can and what the travel costs.',
+      },
+    ],
+  },
+
   landing: {
+    metaTitle: 'Digital wedding invitations',
+    metaDescription:
+      'Build a digital invitation for your engagement or wedding in minutes, then send it to your guests on WhatsApp as a single link.',
+
     title: 'An invitation worth sharing',
     subtitle:
       'Build a digital invitation for your engagement or wedding in minutes, then send it to your guests on WhatsApp as a single link.',
@@ -423,8 +806,8 @@ const EN: Dictionary = {
         body: 'The invitation opens exactly as a guest will see it, animation and music included. Before you pay, not after.',
       },
       {
-        title: 'Pay and send',
-        body: 'Transfer over InstaPay, then one button opens WhatsApp with your request number already written. Attach the screenshot and send.',
+        title: 'Send us the request',
+        body: 'One button opens WhatsApp with every detail already written, and we settle the payment with you in the same conversation. Card payments are coming soon.',
       },
       {
         title: 'We make it live',
@@ -608,15 +991,9 @@ const EN: Dictionary = {
     customRequestLabel: 'Tell us about the design you want',
     customRequestHint:
       'Colours, style, anything you have seen and liked. The more you tell us, the closer the result will be to what you pictured.',
-    methodsLabel: 'Pay here. The button opens the app and copies the address for you',
-    payInstapay: 'Pay with InstaPay',
-    payVodafone: 'Pay with Vodafone Cash',
-    addressCopied: 'Address copied. Paste it in the app and send the amount.',
     afterPayLabel: 'Tap here to send us the request, and someone from the team will reply straight away',
-    instapayTitle: 'Pay with InstaPay',
-    copyAddress: 'Copy the InstaPay address',
-    instapayAddress: 'InstaPay address',
-    instapayName: 'Recipient name',
+    cardsComingSoon: 'Card payments are coming soon',
+    cardsComingSoonBody: 'Until they are live, we settle the payment with you on WhatsApp in the same conversation.',
     requestIdLabel: 'Request ID',
     requestIdHint: 'This is what links your transfer to your invitation. Send it with your message.',
     phoneLabel: 'WhatsApp number so we can send you your invitation link',

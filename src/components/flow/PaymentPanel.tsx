@@ -103,6 +103,18 @@ export function PaymentPanel({
         </p>
       ) : null}
 
+      {/*
+        Card payments are coming. Saying so is worth a line: a customer who expected to
+        pay by card on the site, and instead finds a WhatsApp button, otherwise reads
+        the site as unfinished rather than as a business that settles payment by hand.
+      */}
+      <p className="mt-6 rounded-xl border border-line bg-cream-deep/60 px-4 py-3">
+        <span className="block text-sm font-semibold">{t.payment.cardsComingSoon}</span>
+        <span className="mt-1 block text-xs leading-relaxed text-muted-foreground">
+          {t.payment.cardsComingSoonBody}
+        </span>
+      </p>
+
       <p className="mt-6 text-sm font-medium">{t.payment.afterPayLabel}</p>
       <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
         {t.payment.attachReminder}

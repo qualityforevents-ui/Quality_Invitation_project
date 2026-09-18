@@ -1,4 +1,4 @@
-import { invitations, reviews } from './db';
+import { boothReservations, invitations, reviews } from './db';
 import { mapInvitation } from './invitations';
 import { getEventInstant } from './format';
 import { EVENT_TIMEZONE } from './constants';
@@ -186,17 +186,27 @@ export async function getNavCounts(): Promise<{
   pending: number;
   drafts: number;
   reviews: number;
+  booth: number;
 }> {
-  const [pending, drafts, reviewsPending] = await Promise.all([
+  const [pending, drafts, reviewsPending, boothHeld, boothRequested] = await Promise.all([
     invitations().where('status', '==', 'AWAITING_CONFIRMATION').count().get(),
     invitations().where('status', '==', 'DRAFT').count().get(),
     reviews().where('status', '==', 'PENDING').count().get(),
+    /*
+     * Held and requested together, because both are waiting on a human. A hold is the
+     * more urgent of the two — it is a clock running down on somebody who has already
+     * messaged us — but a badge is one number and the operator finds out which is which
+     * by opening the tab.
+     */
+    boothReservations().where('status', '==', 'HELD').count().get(),
+    boothReservations().where('status', '==', 'REQUESTED').count().get(),
   ]);
 
   return {
     pending: pending.data().count,
     drafts: drafts.data().count,
     reviews: reviewsPending.data().count,
+    booth: boothHeld.data().count + boothRequested.data().count,
   };
 }
 

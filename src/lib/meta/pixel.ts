@@ -5,6 +5,7 @@ import {
   isBrowserReportable,
   isStandardEvent,
   newEventId,
+  type ContentCategory,
   type MetaEventName,
 } from './events';
 
@@ -84,15 +85,28 @@ function mirror(
 }
 
 /**
+ * The parameters every event must carry.
+ *
+ * `content_category` is required by the type rather than by a convention, and that is
+ * deliberate. QLTY sells two things at very different prices, and an event that arrives
+ * without saying which one it belongs to is an event that can never be split out again:
+ * a three hundred pound invitation and an eight thousand pound booth booking both land
+ * as "a Lead", the algorithm optimises for whichever is cheaper to get, and no custom
+ * conversion can unpick it afterwards because the label was never there.
+ *
+ * Making it a required field means a new call site cannot forget it. The compiler
+ * refuses, which is the only enforcement that survives the person who wrote the rule
+ * moving on.
+ */
+export type TrackParams = Record<string, unknown> & { content_category: ContentCategory };
+
+/**
  * Reports one event from the browser and from the server, as a single conversion.
  *
  * Returns the event id, which callers almost never need — it exists so a test can
  * assert the two copies agree.
  */
-export function metaTrack(
-  eventName: MetaEventName,
-  params?: Record<string, unknown>,
-): string | null {
+export function metaTrack(eventName: MetaEventName, params: TrackParams): string | null {
   if (typeof window === 'undefined') return null;
 
   /*
@@ -114,12 +128,9 @@ export function metaTrack(
     // The pixel may legitimately be absent: no id configured, or an ad blocker removed
     // it. The server copy still goes out, which is most of the point of sending two.
     if (window.fbq) {
-      window.fbq(
-        isStandardEvent(eventName) ? 'track' : 'trackCustom',
-        eventName,
-        params ?? {},
-        { eventID: eventId },
-      );
+      window.fbq(isStandardEvent(eventName) ? 'track' : 'trackCustom', eventName, params, {
+        eventID: eventId,
+      });
     }
   } catch {
     // Never let a reporting call take a click handler down with it.
@@ -137,13 +148,17 @@ export function metaTrack(
    * opening the console.
    */
   if (process.env.NODE_ENV !== 'production') {
-    console.info(`[meta] ${eventName}`, { eventId, ...(params ?? {}) });
+    console.info(`[meta] ${eventName}`, { eventId, ...params });
   }
 
   return eventId;
 }
 
 /** A priced event's parameters, so no call site has to remember the currency. */
-export function priced(value: number, extra?: Record<string, unknown>): Record<string, unknown> {
-  return { value, currency: META_CURRENCY, ...extra };
+export function priced(
+  value: number,
+  category: ContentCategory,
+  extra?: Record<string, unknown>,
+): TrackParams {
+  return { value, currency: META_CURRENCY, content_category: category, ...extra };
 }

@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { AlertTriangle } from 'lucide-react';
 import { CancelRequestButton } from '@/components/status/CancelRequestButton';
 import { StatusWatcher } from '@/components/status/StatusWatcher';
-import { SupportButton } from '@/components/SupportButton';
+import { TrackedSupportButton } from '@/components/site/TrackedSupportButton';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { CopyField } from '@/components/ui/CopyField';
@@ -145,9 +145,11 @@ export default async function StatusPage({ params }: Params) {
 
       {/* Carries the request id into the prefilled message. This is the screen where
           somebody who has already paid comes looking for a human. */}
-      <SupportButton
+      <TrackedSupportButton
         message={buildSupportMessage(lang, invitation.requestId)}
         label={t.status.trouble}
+        page="invitation-status"
+        contentCategory="invitation"
       />
     </main>
   );
