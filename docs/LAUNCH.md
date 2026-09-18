@@ -92,7 +92,7 @@ Full steps in [notion-booth-setup.md](notion-booth-setup.md). The database is al
 done; this is the token.
 
 1. <https://www.notion.so/my-integrations> → **New integration**, name it `QLTY site`,
-   workspace **Modern Sciences and Arts University**.
+   workspace **Qlty events's Space**.
 2. Capabilities: **Read**, **Update**, **Insert** content. Leave user information off.
 3. Copy the secret (starts `ntn_`) → `NOTION_TOKEN`.
 4. Open **🗓️ Bookings** → **•••** → **Connections** → **Connect to** → `QLTY site`.
@@ -101,7 +101,7 @@ done; this is the token.
 The data source id is already known:
 
 ```
-NOTION_BOOTH_DATA_SOURCE_ID=af2cfb8d-b3a5-4735-a717-69b915ff5d51
+NOTION_BOOTH_DATA_SOURCE_ID=3f28f304-0188-4721-8a4e-d6d5682f0443
 ```
 
 > **The Claude connector is not this.** That is a chat session authenticating as you. The

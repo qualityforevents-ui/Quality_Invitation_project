@@ -12,6 +12,7 @@
     "check:music": "tsx scripts/check-music.ts",
     "check:booth": "tsx scripts/check-booth.ts",
     "check:meta": "tsx scripts/check-meta.ts",
+    "check:notion": "tsx scripts/check-notion.ts",
     "notion:import": "tsx scripts/notion-import.ts"
   },
   "dependencies": {

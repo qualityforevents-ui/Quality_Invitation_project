@@ -4,12 +4,23 @@ The site mirrors booth bookings into the **🗓️ Bookings** database you alrea
 both directions. Edit a booking in the admin and Notion updates; drag a date in Notion
 and the site's calendar follows.
 
-It uses your existing database. Your columns, your habits, your 26 bookings. Three
-properties were added and nothing was renamed, retyped or deleted.
+It uses your columns and your habits, and it already holds your 26 bookings.
 
-- Database: **🗓️ Bookings**
-- Database id: `babf466f-38c9-4df0-ad84-4373028df81e`
-- Data source id: `af2cfb8d-b3a5-4735-a717-69b915ff5d51` ← **this is the one the site needs**
+> **The database moved workspaces.** It began in *Modern Sciences and Arts University*,
+> which does not allow creating integration tokens, so it was rebuilt in
+> **Qlty events's Space** (eventsqlty@gmail.com) and all 26 bookings were migrated. The
+> ids below are the new ones.
+
+- Workspace: **Qlty events's Space**
+- Database: **Bookings**
+- Database id: `f39afb5507e344d6ac1e7700596cd9cd`
+- Data source id: `3f28f304-0188-4721-8a4e-d6d5682f0443` ← **this is the one the site needs**
+- Integration: **QLTY WEB**
+
+**What did not survive the move:** `Notes`, `Location`, `Guesbook Type` and
+`Photo Completed` were not captured before access to the old workspace was lost. The
+columns exist and are empty. Everything else — names, dates, times, venues, phones,
+event types, prices, deposits, and the five add on columns — came across intact.
 
 > The property names are a contract. The site reads and writes the exact names in
 > `src/lib/notion/booth-schema.ts`. Renaming a column in Notion breaks the sync with
@@ -18,9 +29,9 @@ properties were added and nothing was renamed, retyped or deleted.
 
 ---
 
-## 1. What was added, and why
+## 1. The three properties the site added
 
-Three properties, all additive:
+Everything else is exactly as you had it:
 
 | Property | Type | Why it was needed |
 | --- | --- | --- |
@@ -35,9 +46,9 @@ and your calendar are built on, so the site keeps writing them:
 - the site completes one → `Done` is ticked
 - you tick `Deposit Received` yourself → the site reads it as Confirmed
 
-`Status` is written alongside them and wins when it is set. On all 26 existing rows it is
-empty, and the site falls back to reading the checkboxes, so nothing had to be
-backfilled.
+`Status` is written alongside them and wins when it is set. It was filled in on all 26
+migrated rows from the checkboxes, and the fallback stays in the code for any row that
+is created by hand without one.
 
 ---
 
@@ -84,9 +95,9 @@ Anything it cannot read leaves the site's existing value alone rather than guess
 
 ### `Package Price`
 
-A select whose six options are spelled six ways: `1500`, `2000EGP`, `3700EGP`,
-`2999 EGP`, `4000 EGP`, `3500 EGP`. The site reads the digits out of whichever is set, so
-all six work. When it writes, it uses `NNNN EGP`, and Notion creates the option if it is
+A select whose options are spelled several ways, because they were typed by hand over
+months: `1500`, `2000EGP`, `2995 EGP`, `2999 EGP`, `3500 EGP`, `3700EGP`, `4000 EGP`.
+The site reads the digits out of whichever is set, so all of them work. When it writes, it uses `NNNN EGP`, and Notion creates the option if it is
 new. Over time the spellings converge; nothing forces you to tidy them.
 
 ---
@@ -97,14 +108,13 @@ new. Over time the spellings converge; nothing forces you to tidy them.
 authenticates as you. The deployed website cannot use it, and it will not exist when a
 cron job runs at two in the morning. The site needs its own internal integration.
 
-1. Go to <https://www.notion.so/my-integrations> and press **New integration**.
-2. Name it `QLTY site`. Pick the workspace **Modern Sciences and Arts University**.
-3. Under **Capabilities**, tick **Read content**, **Update content** and **Insert
-   content**. Leave user information unticked: the site never needs to know who edited a
-   row.
-4. Copy the **Internal Integration Secret**, which starts `ntn_`.
+Already done: the integration **QLTY WEB** exists in **Qlty events's Space** and its
+token is in `.env`. It was created here rather than in the university workspace because
+that one does not permit integration tokens at all.
 
-Set it as `NOTION_TOKEN`, locally in `.env` and on Vercel for production.
+If it ever needs recreating: <https://www.notion.so/my-integrations> → **New
+integration**, capabilities **Read**, **Update** and **Insert** content, leave user
+information unticked.
 
 > This token can read and rewrite every booking, including customer names and phone
 > numbers. It must never carry the `NEXT_PUBLIC_` prefix, which would compile it into the
@@ -112,23 +122,34 @@ Set it as `NOTION_TOKEN`, locally in `.env` and on Vercel for production.
 
 ### Share the database with it
 
-Open **🗓️ Bookings** as a full page. Press **•••** at the top right → **Connections** →
-**Connect to** → `QLTY site`.
+**This is the one step still outstanding.**
 
-Nothing works until this is done, and the error when it is missing says the page does not
-exist rather than that it is not shared, which is a confusing half hour.
+Open **Bookings** as a full page → **•••** at the top right → **Connections** →
+**Connect to** → **QLTY WEB**.
+
+Nothing works until this is done, and the error when it is missing says the data source
+does not exist rather than that it is not shared, which is a confusing half hour.
+
+Then confirm it:
+
+```bash
+npm run check:notion
+```
+
+That checks the token, the share, every property name the site depends on, and whether a
+real row maps cleanly, so it tells you which of the usual four mistakes you have made.
 
 ### The data source id
 
-Already known, and already in this document:
+Already known, and already in `.env`:
 
 ```
-NOTION_BOOTH_DATA_SOURCE_ID=af2cfb8d-b3a5-4735-a717-69b915ff5d51
+NOTION_BOOTH_DATA_SOURCE_ID=3f28f304-0188-4721-8a4e-d6d5682f0443
 ```
 
 > This is a **data source** id, not a database id. Notion split the two in API version
 > 2025-09-03: a database is a container and the rows live in a data source. Pasting the
-> database id (`babf466f…`) fails with a message about the parent rather than about the
+> database id (`f39afb55…`) fails with a message about the parent rather than about the
 > version, which is the single most common way to wire this up wrong.
 
 ---
@@ -150,7 +171,6 @@ What to expect:
   Myrna & yasser — also become **Confirmed** and hold their date. They are commitments
   you have made, and the website must not resell those nights. `Deposit Paid` still
   records the truth about the money, separately.
-- The two empty rows become **Blocked** and are harmless.
 - Each row gets a `Booking ID` written back into Notion.
 
 Safe to run more than once: rows are matched on their Notion page id first and their
@@ -256,7 +276,7 @@ now** runs one on demand and waits for it.
 
 | What you see | Usually means |
 | --- | --- |
-| Every booking `error`, message mentions the parent | `NOTION_BOOTH_DATA_SOURCE_ID` holds the database id. Use `af2cfb8d-…` |
+| Every booking `error`, message mentions the parent | `NOTION_BOOTH_DATA_SOURCE_ID` holds the database id. Use `3f28f304-…` |
 | `Could not find page` on everything | The database was never shared with the integration |
 | Webhook never fires, scheduled sync works | The subscription was created but never verified, or `NOTION_WEBHOOK_SECRET` is unset |
 | A booking's price reads as 0 | Its `Package Price` is empty, or holds text with no digits |
