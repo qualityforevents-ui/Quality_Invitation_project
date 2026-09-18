@@ -19,6 +19,11 @@ import {
  * both fail in ways that are invisible until they matter.
  */
 
+/*
+ * Obviously not a real token. It was the example from Notion's own webhook
+ * documentation, which is public, but a credential shaped string sitting in a
+ * repository is a secret scanner alert and a minute of somebody's worry either way.
+ */
 const SECRET = 'test-verification-token-not-a-real-secret';
 
 describe('webhook signature', () => {
